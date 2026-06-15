@@ -24,8 +24,9 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("0.1.0", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("0.1.1", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Deucarian", DeucarianEditorPackageConstants.MenuRoot);
+            Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
 
         [Test]
@@ -84,7 +85,7 @@ namespace Deucarian.Editor.Tests
         public void UxStandards_BuildExpectedMenuPath()
         {
             Assert.AreEqual(
-                "Deucarian/Theming/Open Theme Manager",
+                "Tools/Deucarian/Theming/Open Theme Manager",
                 DeucarianEditorUxStandards.GetPackageMenuPath("Theming", "Open Theme Manager"));
         }
     }

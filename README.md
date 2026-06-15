@@ -1,5 +1,7 @@
 # Deucarian Editor
 
+## Overview
+
 `com.deucarian.editor` is an editor-only Unity package for shared Deucarian editor tooling, branded editor chrome, fixed icons, layout helpers, and UX standards.
 
 This package is not runtime theming. It is not user-customizable. Deucarian editor windows use fixed package-owned brand colors and resources so every Deucarian package presents the same clean, technical, readable editor experience.
@@ -14,7 +16,9 @@ Install from the Unity Package Manager using:
 https://github.com/Deucarian/Editor.git#main
 ```
 
-## Core APIs
+## Usage
+
+### Core APIs
 
 - `DeucarianEditorChrome` draws fixed package headers, section headers, section boxes, inline help, and footer version text.
 - `DeucarianEditorFields.DrawAssetFieldWithSelectButton` draws an asset object field with the project selection action on the same row.
@@ -23,9 +27,9 @@ https://github.com/Deucarian/Editor.git#main
 - `DeucarianEditorStyles` exposes shared cached `GUIStyle` instances.
 - `DeucarianEditorColors` contains fixed Deucarian editor colors with minimal light/dark skin readability adaptation.
 
-## Deucarian UX Standards
+### Deucarian UX Standards
 
-### Asset Fields
+#### Asset Fields
 
 Asset rows must keep the select action inline with the visible object field.
 
@@ -48,24 +52,25 @@ Actions:
 
 If an asset is already visible in an `ObjectField`, do not create a separate action row just to select or ping that asset.
 
-### Menus
+#### Menus
 
 Packages with meaningful tooling should expose editor menu entries under:
 
 ```text
-Deucarian/<PackageName>/...
+Tools/Deucarian/<PackageName>/...
 ```
 
 Examples:
 
-- `Deucarian/Package Installer`
-- `Deucarian/Theming/Open Theme Manager`
-- `Deucarian/Logging/Open Logging Settings`
-- `Deucarian/Object Loading/Open Manager`
+- `Tools/Deucarian/Theming/Open Theme Manager`
+- `Tools/Deucarian/Logging/Open Logging Settings`
+- `Tools/Deucarian/Object Loading/Open Manager`
 
 Do not create menus for packages without meaningful tooling.
 
-### Actions Sections
+The Package Installer is the bootstrap exception and may keep `Deucarian/Package Installer` for discoverability and backwards compatibility.
+
+#### Actions Sections
 
 Actions sections should contain real actions such as create, apply, scan, repair, import, export, or refresh.
 
@@ -98,3 +103,15 @@ public sealed class ExampleManagerWindow : EditorWindow
     }
 }
 ```
+
+## Samples
+
+This package only includes editor helpers. See `Samples~/README.md` for notes on adding lightweight example content when a package-specific sample is needed.
+
+## Tests
+
+Run the package's EditMode tests in Unity. Tests cover constants, style accessors, icon fallbacks, status helpers, and asset field API availability.
+
+## License
+
+See [LICENSE.md](LICENSE.md).
