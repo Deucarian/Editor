@@ -10,7 +10,13 @@ Runtime theme assets from `com.deucarian.theming` must never control Deucarian e
 
 ## Installation
 
-Install from the Unity Package Manager using:
+For normal Deucarian setup, install Deucarian Bootstrap first. Bootstrap configures the Deucarian scoped registry, installs Package Installer, and lets Unity resolve this shared editor package as needed.
+
+```text
+https://github.com/Deucarian/Bootstrap.git#main
+```
+
+Direct install is supported for advanced/manual setups when you are working on this package itself or repairing a project by hand:
 
 ```text
 https://github.com/Deucarian/Editor.git#main
@@ -86,7 +92,7 @@ Examples:
 
 Do not create menus for packages without meaningful tooling.
 
-The Package Installer is the bootstrap exception and may keep `Deucarian/Package Installer` for discoverability and backwards compatibility.
+Bootstrap is the official first-time setup entry point. Package Installer is normally installed by Bootstrap and exposes `Tools/Deucarian/Package Installer` for day-to-day ecosystem management.
 
 #### Actions Sections
 
