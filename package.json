@@ -1,0 +1,19 @@
+{
+  "name": "com.deucarian.editor",
+  "displayName": "Deucarian Editor",
+  "version": "0.1.0",
+  "unity": "2021.3",
+  "description": "Shared editor tooling and branded editor UI helpers for Deucarian Unity packages.",
+  "keywords": [
+    "deucarian",
+    "editor",
+    "upm",
+    "unity",
+    "tools"
+  ],
+  "category": "Editor",
+  "author": {
+    "name": "Deucarian"
+  },
+  "dependencies": {}
+}
