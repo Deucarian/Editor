@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 - 2026-06-15
+
+- Added reusable fixed-rect status badge drawing helpers for row and table UIs.
+- Exposed the shared status badge style factory for packages that need custom layout.
+
 ## 0.1.1 - 2026-06-15
 
 - Documented `Tools/Deucarian/<PackageName>/...` as the package-owned tooling menu convention.

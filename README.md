@@ -23,7 +23,7 @@ https://github.com/Deucarian/Editor.git#main
 - `DeucarianEditorChrome` draws fixed package headers, section headers, section boxes, inline help, and footer version text.
 - `DeucarianEditorFields.DrawAssetFieldWithSelectButton` draws an asset object field with the project selection action on the same row.
 - `DeucarianEditorIcons` resolves known Deucarian package icons and provides safe fallback content.
-- `DeucarianEditorStatusBadge` draws fixed-color status badges for info, success, warning, error, and disabled states.
+- `DeucarianEditorStatusBadge` draws fixed-color GUILayout and fixed-rect status badges for info, success, warning, error, and disabled states.
 - `DeucarianEditorStyles` exposes shared cached `GUIStyle` instances.
 - `DeucarianEditorColors` contains fixed Deucarian editor colors with minimal light/dark skin readability adaptation.
 
@@ -110,7 +110,7 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 
 ## Tests
 
-Run the package's EditMode tests in Unity. Tests cover constants, style accessors, icon fallbacks, status helpers, and asset field API availability.
+Run the package's EditMode tests in Unity. Tests cover constants, style accessors, icon fallbacks, status badge helpers, and asset field API availability.
 
 ## License
 

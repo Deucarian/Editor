@@ -21,6 +21,24 @@ namespace Deucarian.Editor
             EditorGUILayout.LabelField(new GUIContent(label ?? string.Empty), style, options);
         }
 
+        public static void Draw(Rect rect, string label, DeucarianEditorStatus status, GUIStyle style = null)
+        {
+            Draw(rect, new GUIContent(label ?? string.Empty), status, style);
+        }
+
+        public static void Draw(Rect rect, GUIContent content, DeucarianEditorStatus status, GUIStyle style = null)
+        {
+            GUIStyle resolvedStyle = style ?? CreateStyle(status);
+            if (resolvedStyle.normal.background == null)
+            {
+                resolvedStyle = new GUIStyle(resolvedStyle);
+                resolvedStyle.normal.background = DeucarianEditorTextureCache.Get("badge-" + status, GetColor(status));
+                resolvedStyle.normal.textColor = DeucarianEditorColors.BadgeText;
+            }
+
+            GUI.Label(rect, content ?? GetContent(null, status), resolvedStyle);
+        }
+
         public static GUIContent GetContent(string label, DeucarianEditorStatus status)
         {
             return new GUIContent(label ?? GetDefaultLabel(status));
@@ -36,7 +54,7 @@ namespace Deucarian.Editor
             return Enum.IsDefined(typeof(DeucarianEditorStatus), status);
         }
 
-        private static GUIStyle CreateStyle(DeucarianEditorStatus status)
+        public static GUIStyle CreateStyle(DeucarianEditorStatus status)
         {
             GUIStyle style = new GUIStyle(DeucarianEditorStyles.StatusBadge);
             style.normal.background = DeucarianEditorTextureCache.Get("badge-" + status, GetColor(status));

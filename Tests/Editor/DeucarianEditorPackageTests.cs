@@ -24,7 +24,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("0.1.1", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("0.1.2", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -71,8 +71,16 @@ namespace Deucarian.Editor.Tests
             {
                 Assert.DoesNotThrow(() => DeucarianEditorStatusBadge.GetColor(status));
                 Assert.DoesNotThrow(() => DeucarianEditorStatusBadge.GetContent(status.ToString(), status));
+                Assert.DoesNotThrow(() => DeucarianEditorStatusBadge.CreateStyle(status));
                 Assert.IsTrue(DeucarianEditorStatusBadge.IsValid(status));
             }
+
+            Assert.NotNull(typeof(DeucarianEditorStatusBadge).GetMethod(
+                "Draw",
+                new[] { typeof(Rect), typeof(string), typeof(DeucarianEditorStatus), typeof(GUIStyle) }));
+            Assert.NotNull(typeof(DeucarianEditorStatusBadge).GetMethod(
+                "Draw",
+                new[] { typeof(Rect), typeof(GUIContent), typeof(DeucarianEditorStatus), typeof(GUIStyle) }));
         }
 
         [Test]
