@@ -23,9 +23,27 @@ https://github.com/Deucarian/Editor.git#main
 - `DeucarianEditorChrome` draws fixed package headers, section headers, section boxes, inline help, and footer version text.
 - `DeucarianEditorFields.DrawAssetFieldWithSelectButton` draws an asset object field with the project selection action on the same row.
 - `DeucarianEditorIcons` resolves known Deucarian package icons and provides safe fallback content.
+- `DeucarianEditorUIResources` resolves shared UI Toolkit USS, logo, hero, and package placeholder assets.
 - `DeucarianEditorStatusBadge` draws fixed-color GUILayout and fixed-rect status badges for info, success, warning, error, and disabled states.
 - `DeucarianEditorStyles` exposes shared cached `GUIStyle` instances.
 - `DeucarianEditorColors` contains fixed Deucarian editor colors with minimal light/dark skin readability adaptation.
+
+### UI Toolkit Assets
+
+Shared UI Toolkit assets live under these package-owned locations:
+
+- `Editor/Assets/Icons/`
+- `Editor/Assets/Logos/`
+- `Editor/Assets/Styles/`
+- `Editor/Assets/Images/`
+
+Current placeholder assets are intentionally named for easy replacement:
+
+- Drop the real Deucarian logo at `Editor/Assets/Logos/DeucarianPlaceholderLogo.png`.
+- Drop the real Package Installer hero image at `Editor/Assets/Images/DeucarianPackageInstallerPlaceholderHero.png`.
+- Drop the real default package icon at `Editor/Assets/Icons/DeucarianPackagePlaceholderIcon.png`.
+
+Package-specific UI Toolkit files stay in the owning package. Long-term shared logos, icons, and editor brand imagery belong here in `com.deucarian.editor`.
 
 ### Deucarian UX Standards
 

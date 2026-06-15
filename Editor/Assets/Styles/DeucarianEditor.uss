@@ -1,0 +1,177 @@
+.deucarian-editor {
+    --deucarian-bg: #11161a;
+    --deucarian-panel: #192126;
+    --deucarian-panel-soft: #202a31;
+    --deucarian-sidebar: #151c21;
+    --deucarian-border: #30404a;
+    --deucarian-text: #e7edf0;
+    --deucarian-muted: #9aa8b1;
+    --deucarian-teal: #4daaa2;
+    --deucarian-blue: #5a8fc0;
+    --deucarian-green: #5fbf86;
+    --deucarian-amber: #d99d48;
+    --deucarian-red: #d36a68;
+    background-color: var(--deucarian-bg);
+    color: var(--deucarian-text);
+}
+
+.deucarian-window {
+    flex-grow: 1;
+    background-color: var(--deucarian-bg);
+    color: var(--deucarian-text);
+}
+
+.deucarian-header {
+    flex-direction: row;
+    align-items: center;
+    min-height: 90px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: var(--deucarian-panel);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--deucarian-border);
+}
+
+.deucarian-header__title {
+    font-size: 19px;
+    -unity-font-style: bold;
+    color: var(--deucarian-text);
+}
+
+.deucarian-header__subtitle {
+    font-size: 12px;
+    color: var(--deucarian-muted);
+}
+
+.deucarian-sidebar {
+    width: 216px;
+    min-width: 216px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: var(--deucarian-sidebar);
+    border-right-width: 1px;
+    border-right-color: var(--deucarian-border);
+}
+
+.deucarian-sidebar__button {
+    height: 34px;
+    margin-bottom: 6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    background-color: transparent;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    color: var(--deucarian-muted);
+    -unity-text-align: middle-left;
+}
+
+.deucarian-sidebar__button:hover {
+    background-color: var(--deucarian-panel-soft);
+    color: var(--deucarian-text);
+}
+
+.deucarian-sidebar__button--active {
+    background-color: #243942;
+    color: var(--deucarian-text);
+    border-left-width: 3px;
+    border-left-color: var(--deucarian-teal);
+}
+
+.deucarian-section {
+    margin-bottom: 14px;
+}
+
+.deucarian-section__title {
+    margin-bottom: 8px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--deucarian-muted);
+}
+
+.deucarian-card {
+    min-height: 112px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-panel);
+}
+
+.deucarian-card:hover {
+    background-color: var(--deucarian-panel-soft);
+}
+
+.deucarian-badge {
+    height: 20px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background-color: #2b3b44;
+    color: var(--deucarian-text);
+    font-size: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.deucarian-badge--success {
+    background-color: #2f6b4e;
+}
+
+.deucarian-badge--warning {
+    background-color: #735b2e;
+}
+
+.deucarian-badge--error {
+    background-color: #743737;
+}
+
+.deucarian-button {
+    height: 28px;
+    min-width: 94px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.deucarian-button--primary {
+    background-color: #326e83;
+    color: var(--deucarian-text);
+    -unity-font-style: bold;
+}
+
+.deucarian-status-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 28px;
+    margin-bottom: 6px;
+}
+
+.deucarian-muted {
+    color: var(--deucarian-muted);
+}

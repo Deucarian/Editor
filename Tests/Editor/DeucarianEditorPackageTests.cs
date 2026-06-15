@@ -65,6 +65,25 @@ namespace Deucarian.Editor.Tests
         }
 
         [Test]
+        public void UiToolkitResourceHelpers_AreAvailable()
+        {
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Styles/DeucarianEditor.uss",
+                DeucarianEditorUIResources.SharedStyleSheetPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Logos/DeucarianPlaceholderLogo.png",
+                DeucarianEditorUIResources.PlaceholderLogoPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianPackageInstallerPlaceholderHero.png",
+                DeucarianEditorUIResources.PackageInstallerPlaceholderHeroPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Icons/DeucarianPackagePlaceholderIcon.png",
+                DeucarianEditorUIResources.PackagePlaceholderIconPath);
+            Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("LoadAsset"));
+            Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("TryAddSharedStyleSheet"));
+        }
+
+        [Test]
         public void StatusBadgeHelpers_DoNotThrow()
         {
             foreach (DeucarianEditorStatus status in Enum.GetValues(typeof(DeucarianEditorStatus)))
