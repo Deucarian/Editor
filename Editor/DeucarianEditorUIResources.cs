@@ -14,6 +14,7 @@ namespace Deucarian.Editor
 
         public const string SharedStyleSheetPath = StylesPath + "/DeucarianEditor.uss";
         public const string PlaceholderLogoPath = LogosPath + "/DeucarianPlaceholderLogo.png";
+        public const string InstallerBackgroundPath = ImagesPath + "/DeucarianInstallerBackground.png";
         public const string PackageInstallerPlaceholderHeroPath = ImagesPath + "/DeucarianPackageInstallerPlaceholderHero.png";
         public const string PackagePlaceholderIconPath = IconsPath + "/DeucarianPackagePlaceholderIcon.png";
 
@@ -25,6 +26,11 @@ namespace Deucarian.Editor
         public static Texture2D LoadPlaceholderLogo()
         {
             return LoadTexture(PlaceholderLogoPath);
+        }
+
+        public static Texture2D LoadInstallerBackground()
+        {
+            return LoadTexture(InstallerBackgroundPath);
         }
 
         public static Texture2D LoadPackageInstallerPlaceholderHero()
