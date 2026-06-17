@@ -24,7 +24,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("0.1.2", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("1.0.0", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -74,6 +74,9 @@ namespace Deucarian.Editor.Tests
                 "Packages/com.deucarian.editor/Editor/Assets/Logos/DeucarianPlaceholderLogo.png",
                 DeucarianEditorUIResources.PlaceholderLogoPath);
             Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianInstallerBackground.png",
+                DeucarianEditorUIResources.InstallerBackgroundPath);
+            Assert.AreEqual(
                 "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianPackageInstallerPlaceholderHero.png",
                 DeucarianEditorUIResources.PackageInstallerPlaceholderHeroPath);
             Assert.AreEqual(
@@ -81,6 +84,17 @@ namespace Deucarian.Editor.Tests
                 DeucarianEditorUIResources.PackagePlaceholderIconPath);
             Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("LoadAsset"));
             Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("TryAddSharedStyleSheet"));
+        }
+
+        [Test]
+        public void VisualShellHelpers_AreAvailable()
+        {
+            Assert.AreEqual(0.72f, DeucarianEditorVisualShell.MainPanel.a, 0.001f);
+            Assert.AreEqual(0.62f, DeucarianEditorVisualShell.NestedSurface.a, 0.001f);
+            Assert.AreEqual(0.68f, DeucarianEditorVisualShell.HeaderPanel.a, 0.001f);
+            Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("CreateWindowShell"));
+            Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("DrawFrostedSurface"));
+            Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("DrawInsetSurface"));
         }
 
         [Test]
