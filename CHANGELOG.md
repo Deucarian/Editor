@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0 - 2026-06-22
+
+- Marked the shared Deucarian Editor package as the current 1.0.0 editor-helper surface.
+- Kept the documented editor chrome, status badge, icon, asset field, and menu helper APIs unchanged from the existing release stream.
+
 ## 0.1.2 - 2026-06-15
 
 - Added reusable fixed-rect status badge drawing helpers for row and table UIs.
