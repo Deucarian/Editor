@@ -130,6 +130,12 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 
 Run the package's EditMode tests in Unity. Tests cover constants, style accessors, icon fallbacks, status badge helpers, and asset field API availability.
 
+## Architecture / Contributor Notes
+
+- [AGENTS.md](AGENTS.md) contains repository-specific ownership and Codex guidance.
+- Deucarian architecture rules live in [Package Registry](https://github.com/Deucarian/Package-Registry/blob/develop/ARCHITECTURE.md).
+- Capability ownership is tracked in [CAPABILITY_OWNERSHIP.md](https://github.com/Deucarian/Package-Registry/blob/develop/CAPABILITY_OWNERSHIP.md).
+
 ## License
 
 See [LICENSE.md](LICENSE.md).
