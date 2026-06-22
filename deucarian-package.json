@@ -1,0 +1,20 @@
+{
+  "packageId": "com.deucarian.editor",
+  "displayName": "Deucarian Editor",
+  "ownedCapabilities": [
+    "editor-shell"
+  ],
+  "runtimeAssemblies": [],
+  "editorAssemblies": [
+    "Deucarian.Editor"
+  ],
+  "sampleAssemblies": [],
+  "testAssemblies": [
+    "Deucarian.Editor.Tests"
+  ],
+  "requiredDependencies": [],
+  "optionalVersionDefinedDependencies": [],
+  "allowedDirectDebugCalls": [],
+  "allowedDirectUnityObjectLifetimeCalls": [],
+  "expectedSamplesRoot": "Samples~"
+}
