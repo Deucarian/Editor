@@ -13,7 +13,7 @@
 ## 0.1.1 - 2026-06-15
 
 - Documented `Tools/Deucarian/<PackageName>/...` as the package-owned tooling menu convention.
-- Clarified that `Deucarian/Package Installer` is the bootstrap menu exception.
+- Clarified that the Package Installer also lives under the shared `Tools/Deucarian/...` tooling root.
 - Added `PackageToolMenuRoot` and updated UX menu path helpers to build `Tools/Deucarian/...` paths.
 
 ## 0.1.0 - 2026-06-15

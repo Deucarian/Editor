@@ -86,7 +86,7 @@ Examples:
 
 Do not create menus for packages without meaningful tooling.
 
-The Package Installer is the bootstrap exception and may keep `Deucarian/Package Installer` for discoverability and backwards compatibility.
+The Package Installer uses the same shared tooling root: `Tools/Deucarian/Package Installer`.
 
 #### Actions Sections
 
