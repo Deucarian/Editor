@@ -25,7 +25,7 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
             Assert.AreEqual("1.0.0", DeucarianEditorPackageConstants.Version);
-            Assert.AreEqual("Deucarian", DeucarianEditorPackageConstants.MenuRoot);
+            Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
 
@@ -95,6 +95,38 @@ namespace Deucarian.Editor.Tests
             Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("CreateWindowShell"));
             Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("DrawFrostedSurface"));
             Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("DrawInsetSurface"));
+            Assert.NotNull(typeof(DeucarianEditorTheme).GetProperty("GlassPanel"));
+            Assert.NotNull(typeof(DeucarianEditorSpacing).GetField("SidebarWidth"));
+            Assert.NotNull(typeof(DeucarianEditorTextures).GetMethod("Background"));
+            Assert.NotNull(typeof(DeucarianEditorWindowChrome).GetMethod("ConfigureFixedWallpaper"));
+            Assert.NotNull(typeof(DeucarianEditorCards).GetMethod("DrawCard"));
+            Assert.NotNull(typeof(DeucarianEditorSidebar).GetMethod("DrawItem"));
+            Assert.NotNull(typeof(DeucarianEditorButtons).GetMethod("Primary"));
+            Assert.NotNull(typeof(DeucarianEditorStatusPanel).GetMethod("DrawStatusBar"));
+        }
+
+        [Test]
+        public void AmbientGlassHelpers_AreOwnedByEditor()
+        {
+            Assert.AreEqual("deucarian-ambient-lighting-layer", DeucarianEditorAmbientGlass.AmbientLayerName);
+            Assert.AreEqual("deucarian-fixed-wallpaper-layer", DeucarianEditorWindowChrome.BackgroundLayerClass);
+            Assert.AreEqual("deucarian-readability-overlay", DeucarianEditorWindowChrome.ReadabilityOverlayClass);
+
+            try
+            {
+                DeucarianEditorAmbientMotionSettings.SetModeForTests(DeucarianEditorAmbientMotionMode.On);
+                Assert.AreEqual(1f, DeucarianEditorAmbientMotionSettings.MotionScale);
+
+                DeucarianEditorAmbientMotionSettings.SetModeForTests(DeucarianEditorAmbientMotionMode.Reduced);
+                Assert.That(DeucarianEditorAmbientMotionSettings.MotionScale, Is.GreaterThan(0f).And.LessThan(1f));
+
+                DeucarianEditorAmbientMotionSettings.SetModeForTests(DeucarianEditorAmbientMotionMode.Off);
+                Assert.AreEqual(0f, DeucarianEditorAmbientMotionSettings.MotionScale);
+            }
+            finally
+            {
+                DeucarianEditorAmbientMotionSettings.SetModeForTests(null);
+            }
         }
 
         [Test]
