@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added shared frosted-glass editor theme primitives for Deucarian product windows: ambient wallpaper layers, glass cards, sidebar items, branded buttons, status panels, spacing tokens, texture helpers, and fixed wallpaper chrome.
+- Standardized the canonical Deucarian editor menu root constant on `Tools/Deucarian`.
+
 ## 1.0.0 - 2026-06-22
 
 - Marked the shared Deucarian Editor package as the current 1.0.0 editor-helper surface.

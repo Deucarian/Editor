@@ -24,6 +24,9 @@ https://github.com/Deucarian/Editor.git#main
 - `DeucarianEditorFields.DrawAssetFieldWithSelectButton` draws an asset object field with the project selection action on the same row.
 - `DeucarianEditorIcons` resolves known Deucarian package icons and provides safe fallback content.
 - `DeucarianEditorUIResources` resolves shared UI Toolkit USS, logo, hero, and package placeholder assets.
+- `DeucarianEditorTheme`, `DeucarianEditorSpacing`, and `DeucarianEditorTextures` expose fixed Deucarian visual tokens.
+- `DeucarianEditorWindowChrome` and `DeucarianEditorAmbientGlass` provide shared wallpaper, readability overlay, ambient glow, grain, vignette, and fixed-window chrome.
+- `DeucarianEditorCards`, `DeucarianEditorSidebar`, `DeucarianEditorButtons`, and `DeucarianEditorStatusPanel` provide shared IMGUI frosted-glass cards, sidebars, buttons, validation/status cards, and bottom status bars.
 - `DeucarianEditorStatusBadge` draws fixed-color GUILayout and fixed-rect status badges for info, success, warning, error, and disabled states.
 - `DeucarianEditorStyles` exposes shared cached `GUIStyle` instances.
 - `DeucarianEditorColors` contains fixed Deucarian editor colors with minimal light/dark skin readability adaptation.
