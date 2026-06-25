@@ -6,10 +6,11 @@ namespace Deucarian.Editor
     public static class DeucarianEditorSidebar
     {
         private static GUIStyle sidebarStyle;
-        private static GUIStyle buttonStyle;
-        private static GUIStyle selectedButtonStyle;
-        private static GUIStyle disabledButtonStyle;
         private static GUIStyle headingStyle;
+        private static GUIStyle itemLayoutStyle;
+        private static GUIStyle itemLabelStyle;
+        private static GUIStyle selectedItemLabelStyle;
+        private static GUIStyle disabledItemLabelStyle;
 
         public static GUIStyle ContainerStyle
         {
@@ -50,69 +51,117 @@ namespace Deucarian.Editor
 
         public static bool DrawItem(string label, string tooltip, bool selected, bool enabled, params GUILayoutOption[] options)
         {
-            GUIStyle style = enabled
-                ? selected ? SelectedButtonStyle : ButtonStyle
-                : DisabledButtonStyle;
-            using (new EditorGUI.DisabledScope(!enabled))
+            GUIContent content = new GUIContent(label ?? string.Empty, tooltip ?? string.Empty);
+            Rect rect = GUILayoutUtility.GetRect(content, ItemLayoutStyle, options);
+            Event currentEvent = Event.current;
+
+            if (currentEvent != null && currentEvent.type == EventType.Repaint)
             {
-                return GUILayout.Button(new GUIContent(label ?? string.Empty, tooltip ?? string.Empty), style, options);
+                bool hovered = enabled && rect.Contains(currentEvent.mousePosition);
+                Color background = selected
+                    ? new Color(0.07f, 0.30f, 0.32f, 0.82f)
+                    : hovered
+                        ? new Color(0.09f, 0.22f, 0.27f, 0.78f)
+                        : enabled
+                            ? new Color(0.07f, 0.13f, 0.17f, 0.68f)
+                            : new Color(0.07f, 0.09f, 0.11f, 0.52f);
+                Color border = selected
+                    ? DeucarianEditorTheme.Accent
+                    : hovered
+                        ? DeucarianEditorColors.WithAlpha(DeucarianEditorColors.Teal, 0.44f)
+                        : DeucarianEditorTheme.BorderSubtle;
+                DeucarianEditorVisualShell.DrawInsetSurface(rect, background, border, 5f);
+
+                if (selected)
+                {
+                    Rect accentRect = new Rect(rect.x, rect.y + 4f, 3f, rect.height - 8f);
+                    EditorGUI.DrawRect(accentRect, DeucarianEditorTheme.Accent);
+                }
             }
+
+            if (enabled)
+            {
+                EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
+            }
+
+            Rect labelRect = new Rect(rect.x + 12f, rect.y, rect.width - 20f, rect.height);
+            GUI.Label(labelRect, content, enabled ? selected ? SelectedItemLabelStyle : ItemLabelStyle : DisabledItemLabelStyle);
+
+            if (enabled && currentEvent != null && currentEvent.type == EventType.MouseUp && rect.Contains(currentEvent.mousePosition))
+            {
+                currentEvent.Use();
+                return true;
+            }
+
+            return false;
         }
 
-        private static GUIStyle ButtonStyle
+        private static GUIStyle ItemLayoutStyle
         {
             get
             {
-                if (buttonStyle == null)
+                if (itemLayoutStyle == null)
                 {
-                    buttonStyle = CreateButtonStyle(new Color(0.10f, 0.15f, 0.19f, 0.45f), DeucarianEditorTheme.MutedText, FontStyle.Bold);
+                    itemLayoutStyle = new GUIStyle(GUIStyle.none)
+                    {
+                        fixedHeight = 38f,
+                        margin = new RectOffset(0, 0, 0, 6)
+                    };
                 }
 
-                return buttonStyle;
+                return itemLayoutStyle;
             }
         }
 
-        private static GUIStyle SelectedButtonStyle
+        private static GUIStyle ItemLabelStyle
         {
             get
             {
-                if (selectedButtonStyle == null)
+                if (itemLabelStyle == null)
                 {
-                    selectedButtonStyle = CreateButtonStyle(new Color(0.13f, 0.34f, 0.36f, 0.76f), DeucarianEditorTheme.Text, FontStyle.Bold);
+                    itemLabelStyle = CreateItemLabelStyle(DeucarianEditorTheme.MutedText, FontStyle.Bold);
                 }
 
-                return selectedButtonStyle;
+                return itemLabelStyle;
             }
         }
 
-        private static GUIStyle DisabledButtonStyle
+        private static GUIStyle SelectedItemLabelStyle
         {
             get
             {
-                if (disabledButtonStyle == null)
+                if (selectedItemLabelStyle == null)
                 {
-                    disabledButtonStyle = CreateButtonStyle(new Color(0.08f, 0.11f, 0.14f, 0.35f), new Color(0.44f, 0.51f, 0.56f, 0.75f), FontStyle.Normal);
+                    selectedItemLabelStyle = CreateItemLabelStyle(DeucarianEditorTheme.Text, FontStyle.Bold);
                 }
 
-                return disabledButtonStyle;
+                return selectedItemLabelStyle;
             }
         }
 
-        private static GUIStyle CreateButtonStyle(Color background, Color text, FontStyle fontStyle)
+        private static GUIStyle DisabledItemLabelStyle
         {
-            GUIStyle style = new GUIStyle(EditorStyles.miniButton)
+            get
+            {
+                if (disabledItemLabelStyle == null)
+                {
+                    disabledItemLabelStyle = CreateItemLabelStyle(new Color(0.44f, 0.51f, 0.56f, 0.72f), FontStyle.Normal);
+                }
+
+                return disabledItemLabelStyle;
+            }
+        }
+
+        private static GUIStyle CreateItemLabelStyle(Color textColor, FontStyle fontStyle)
+        {
+            GUIStyle style = new GUIStyle(EditorStyles.label)
             {
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = fontStyle,
-                fixedHeight = 38f,
-                padding = new RectOffset(12, 8, 5, 5),
-                margin = new RectOffset(0, 0, 0, 6),
-                border = new RectOffset(4, 4, 4, 4)
+                clipping = TextClipping.Ellipsis,
+                padding = new RectOffset(0, 0, 0, 1)
             };
-            style.normal.background = DeucarianEditorTextures.Solid("sidebar-button-" + background.GetHashCode(), background);
-            style.hover.background = DeucarianEditorTextures.Solid("sidebar-button-hover-" + background.GetHashCode(), DeucarianEditorColors.WithAlpha(DeucarianEditorColors.Teal, 0.34f));
-            style.normal.textColor = text;
-            style.hover.textColor = DeucarianEditorTheme.Text;
+            style.normal.textColor = textColor;
             return style;
         }
     }
