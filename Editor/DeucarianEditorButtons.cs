@@ -16,9 +16,13 @@ namespace Deucarian.Editor
                 if (primaryButton == null)
                 {
                     primaryButton = CreateBaseButton(true);
-                    primaryButton.normal.background = DeucarianEditorTextures.Solid("button-primary", new Color(0.13f, 0.40f, 0.42f, 0.90f));
-                    primaryButton.hover.background = DeucarianEditorTextures.Solid("button-primary-hover", new Color(0.16f, 0.50f, 0.52f, 0.95f));
-                    primaryButton.active.background = DeucarianEditorTextures.Solid("button-primary-active", new Color(0.10f, 0.32f, 0.35f, 1f));
+                    primaryButton.normal.background = DeucarianEditorTextures.Solid("button-primary", new Color(0.08f, 0.43f, 0.45f, 0.96f));
+                    primaryButton.hover.background = DeucarianEditorTextures.Solid("button-primary-hover", new Color(0.10f, 0.55f, 0.58f, 0.98f));
+                    primaryButton.active.background = DeucarianEditorTextures.Solid("button-primary-active", new Color(0.05f, 0.34f, 0.37f, 1f));
+                    primaryButton.focused.background = primaryButton.normal.background;
+                    primaryButton.onNormal.background = primaryButton.normal.background;
+                    primaryButton.onHover.background = primaryButton.hover.background;
+                    primaryButton.onActive.background = primaryButton.active.background;
                 }
 
                 return primaryButton;
@@ -32,9 +36,13 @@ namespace Deucarian.Editor
                 if (secondaryButton == null)
                 {
                     secondaryButton = CreateBaseButton(false);
-                    secondaryButton.normal.background = DeucarianEditorTextures.Solid("button-secondary", new Color(0.11f, 0.18f, 0.23f, 0.82f));
-                    secondaryButton.hover.background = DeucarianEditorTextures.Solid("button-secondary-hover", new Color(0.14f, 0.25f, 0.30f, 0.88f));
-                    secondaryButton.active.background = DeucarianEditorTextures.Solid("button-secondary-active", new Color(0.08f, 0.14f, 0.19f, 0.94f));
+                    secondaryButton.normal.background = DeucarianEditorTextures.Solid("button-secondary", new Color(0.08f, 0.20f, 0.25f, 0.88f));
+                    secondaryButton.hover.background = DeucarianEditorTextures.Solid("button-secondary-hover", new Color(0.10f, 0.31f, 0.36f, 0.94f));
+                    secondaryButton.active.background = DeucarianEditorTextures.Solid("button-secondary-active", new Color(0.05f, 0.16f, 0.21f, 1f));
+                    secondaryButton.focused.background = secondaryButton.normal.background;
+                    secondaryButton.onNormal.background = secondaryButton.normal.background;
+                    secondaryButton.onHover.background = secondaryButton.hover.background;
+                    secondaryButton.onActive.background = secondaryButton.active.background;
                 }
 
                 return secondaryButton;
