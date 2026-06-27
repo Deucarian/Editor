@@ -152,6 +152,11 @@ namespace Deucarian.Editor.Tests
         public void AssetFieldHelperApi_IsAvailable()
         {
             Assert.NotNull(typeof(DeucarianEditorFields).GetMethod("DrawAssetFieldWithSelectButton"));
+            Assert.NotNull(typeof(DeucarianEditorAccordion).GetMethod("DrawFoldoutCard"));
+            Assert.NotNull(typeof(DeucarianEditorFoldoutCard).GetMethod("Draw"));
+            Assert.NotNull(typeof(DeucarianEditorFieldRow).GetMethod("TextField"));
+            Assert.NotNull(typeof(DeucarianEditorObjectFieldRow).GetMethod("Draw"));
+            Assert.NotNull(typeof(DeucarianEditorMiniToolbar).GetMethod("Button"));
         }
 
         [Test]
@@ -160,6 +165,32 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(
                 "Tools/Deucarian/Theming/Open Theme Manager",
                 DeucarianEditorUxStandards.GetPackageMenuPath("Theming", "Open Theme Manager"));
+        }
+
+        [Test]
+        public void AccordionStateKeys_AreStableAndSanitized()
+        {
+            string first = DeucarianEditorAccordion.BuildStateKey("Attack", "attack.example.fire-orb", "Status Effects");
+            string second = DeucarianEditorAccordion.BuildStateKey(" Attack ", "attack.example.fire-orb", "Status Effects");
+
+            Assert.AreEqual(first, second);
+            Assert.AreEqual("status_effects", DeucarianEditorAccordion.NormalizeSegmentForTests("Status Effects"));
+            StringAssert.StartsWith("Deucarian.Editor.Accordion.", first);
+        }
+
+        [Test]
+        public void ResponsiveLayout_ComputesExpectedBreakpoints()
+        {
+            DeucarianEditorResponsiveLayoutState wide = DeucarianEditorResponsiveLayout.Calculate(1400f, 800f);
+            DeucarianEditorResponsiveLayoutState medium = DeucarianEditorResponsiveLayout.Calculate(940f, 800f);
+            DeucarianEditorResponsiveLayoutState narrow = DeucarianEditorResponsiveLayout.Calculate(640f, 800f);
+
+            Assert.IsTrue(wide.Wide);
+            Assert.IsFalse(wide.PreviewStacked);
+            Assert.IsFalse(medium.Wide);
+            Assert.IsTrue(medium.PreviewStacked);
+            Assert.IsTrue(narrow.Narrow);
+            Assert.Less(narrow.SidebarWidth, DeucarianEditorSpacing.SidebarWidth);
         }
     }
 }
