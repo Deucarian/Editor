@@ -17,8 +17,13 @@ namespace Deucarian.Editor
     {
         public static void Draw(string label, DeucarianEditorStatus status, params GUILayoutOption[] options)
         {
+            Draw(new GUIContent(label ?? string.Empty), status, options);
+        }
+
+        public static void Draw(GUIContent content, DeucarianEditorStatus status, params GUILayoutOption[] options)
+        {
             GUIStyle style = CreateStyle(status);
-            EditorGUILayout.LabelField(new GUIContent(label ?? string.Empty), style, options);
+            EditorGUILayout.LabelField(content ?? GetContent(null, status), style, options);
         }
 
         public static void Draw(Rect rect, string label, DeucarianEditorStatus status, GUIStyle style = null)
