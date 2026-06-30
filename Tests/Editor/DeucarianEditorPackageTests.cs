@@ -192,5 +192,31 @@ namespace Deucarian.Editor.Tests
             Assert.IsTrue(narrow.Narrow);
             Assert.Less(narrow.SidebarWidth, DeucarianEditorSpacing.SidebarWidth);
         }
+
+        [Test]
+        public void WorkflowControlHelpers_AreAvailable()
+        {
+            Assert.NotNull(typeof(DeucarianEditorSearchField).GetMethod("Draw"));
+            Assert.NotNull(typeof(DeucarianEditorSegmentedControl).GetMethod("DrawPageChips"));
+            Assert.NotNull(typeof(DeucarianEditorStatusChipRow).GetMethod("Draw", new[] { typeof(DeucarianEditorStatusChip[]) }));
+            Assert.NotNull(typeof(DeucarianEditorIconToolbar).GetMethod("BuildContent"));
+            Assert.NotNull(typeof(DeucarianEditorSplitPane).GetMethod("Calculate"));
+            Assert.NotNull(typeof(DeucarianEditorWizardHeader).GetMethod("Draw"));
+            Assert.NotNull(typeof(DeucarianEditorEventTimeline).GetMethod("Draw"));
+            Assert.NotNull(typeof(DeucarianEditorCompactObjectCard).GetMethod("Draw"));
+            Assert.NotNull(typeof(DeucarianEditorPreviewLabChrome).GetMethod("Begin"));
+            Assert.NotNull(typeof(DeucarianEditorDiagnosticsDrawer).GetMethod("Draw"));
+        }
+
+        [Test]
+        public void SplitPane_CalculatesStableUsableWidths()
+        {
+            DeucarianEditorSplitPaneWidths widths = DeucarianEditorSplitPane.Calculate(1040f, 280f, 360f, 340f);
+
+            Assert.That(widths.Left, Is.GreaterThanOrEqualTo(180f));
+            Assert.That(widths.Center, Is.GreaterThanOrEqualTo(260f));
+            Assert.That(widths.Right, Is.GreaterThanOrEqualTo(240f));
+            Assert.That(widths.Left + widths.Center + widths.Right, Is.GreaterThan(900f));
+        }
     }
 }
