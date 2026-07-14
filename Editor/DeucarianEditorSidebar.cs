@@ -5,6 +5,8 @@ namespace Deucarian.Editor
 {
     public static class DeucarianEditorSidebar
     {
+        private const TextClipping ItemLabelClipping = TextClipping.Clip;
+
         private static GUIStyle sidebarStyle;
         private static GUIStyle headingStyle;
         private static GUIStyle itemLayoutStyle;
@@ -158,7 +160,7 @@ namespace Deucarian.Editor
             {
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = fontStyle,
-                clipping = TextClipping.Ellipsis,
+                clipping = ItemLabelClipping,
                 padding = new RectOffset(0, 0, 0, 1)
             };
             style.normal.textColor = textColor;
