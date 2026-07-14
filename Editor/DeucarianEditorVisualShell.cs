@@ -82,7 +82,7 @@ namespace Deucarian.Editor
             if (resolvedBackground != null)
             {
                 backgroundLayer.style.backgroundImage = new StyleBackground(resolvedBackground);
-                backgroundLayer.style.unityBackgroundScaleMode = ScaleMode.ScaleAndCrop;
+                ApplyScaleAndCropBackground(backgroundLayer);
             }
 
             VisualElement overlay = new VisualElement { name = "deucarian-window-overlay" };
@@ -97,6 +97,23 @@ namespace Deucarian.Editor
             root.Add(shell);
 
             return content;
+        }
+
+        internal static void ApplyScaleAndCropBackground(VisualElement element)
+        {
+            if (element == null)
+            {
+                return;
+            }
+
+#if UNITY_2022_2_OR_NEWER
+            element.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Cover);
+            element.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
+            element.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Center);
+            element.style.backgroundRepeat = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
+#else
+            element.style.unityBackgroundScaleMode = ScaleMode.ScaleAndCrop;
+#endif
         }
 
         public static VisualElement CreateHeader(string title, string subtitle)
