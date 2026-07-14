@@ -20,5 +20,8 @@
     "type": "git",
     "url": "https://github.com/Deucarian/Editor.git"
   },
+  "documentationUrl": "https://github.com/Deucarian/Editor/blob/main/README.md",
+  "changelogUrl": "https://github.com/Deucarian/Editor/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/Deucarian/Editor/blob/main/LICENSE.md",
   "dependencies": {}
 }
