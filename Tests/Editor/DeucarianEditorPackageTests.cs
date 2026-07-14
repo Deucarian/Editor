@@ -1,6 +1,8 @@
 using System;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Deucarian.Editor.Tests
 {
@@ -103,6 +105,53 @@ namespace Deucarian.Editor.Tests
             Assert.NotNull(typeof(DeucarianEditorSidebar).GetMethod("DrawItem"));
             Assert.NotNull(typeof(DeucarianEditorButtons).GetMethod("Primary"));
             Assert.NotNull(typeof(DeucarianEditorStatusPanel).GetMethod("DrawStatusBar"));
+        }
+
+        [Test]
+        public void SidebarItemLabelStyle_UsesSupportedClipping()
+        {
+            FieldInfo clippingField = typeof(DeucarianEditorSidebar).GetField(
+                "ItemLabelClipping",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            Assert.NotNull(clippingField);
+            Assert.AreEqual((int)TextClipping.Clip, clippingField.GetRawConstantValue());
+        }
+
+        [Test]
+        public void VisualShellBackground_UsesScaleAndCropStyling()
+        {
+            VisualElement root = new VisualElement();
+            Texture2D texture = new Texture2D(2, 2);
+
+            try
+            {
+                Assert.NotNull(DeucarianEditorVisualShell.CreateWindowShell(root, texture));
+
+                VisualElement background = root.Q<VisualElement>("deucarian-window-background");
+
+                Assert.NotNull(background);
+                AssertScaleAndCropBackground(background);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(texture);
+            }
+        }
+
+        [Test]
+        public void FixedWallpaperBackground_UsesScaleAndCropStyling()
+        {
+            VisualElement root = new VisualElement();
+            VisualElement background = new VisualElement { name = "deucarian-window-background" };
+            VisualElement overlay = new VisualElement { name = "deucarian-window-overlay" };
+            root.Add(background);
+            root.Add(overlay);
+
+            DeucarianEditorWindowChrome.ConfigureFixedWallpaper(root);
+
+            AssertScaleAndCropBackground(background);
+            AssertScaleAndCropBackground(overlay);
         }
 
         [Test]
@@ -217,6 +266,19 @@ namespace Deucarian.Editor.Tests
             Assert.That(widths.Center, Is.GreaterThanOrEqualTo(260f));
             Assert.That(widths.Right, Is.GreaterThanOrEqualTo(240f));
             Assert.That(widths.Left + widths.Center + widths.Right, Is.GreaterThan(900f));
+        }
+
+        private static void AssertScaleAndCropBackground(VisualElement element)
+        {
+#if UNITY_2022_2_OR_NEWER
+            Assert.AreEqual(BackgroundSizeType.Cover, element.style.backgroundSize.value.sizeType);
+            Assert.AreEqual(BackgroundPositionKeyword.Center, element.style.backgroundPositionX.value.keyword);
+            Assert.AreEqual(BackgroundPositionKeyword.Center, element.style.backgroundPositionY.value.keyword);
+            Assert.AreEqual(Repeat.NoRepeat, element.style.backgroundRepeat.value.x);
+            Assert.AreEqual(Repeat.NoRepeat, element.style.backgroundRepeat.value.y);
+#else
+            Assert.AreEqual(ScaleMode.ScaleAndCrop, element.style.unityBackgroundScaleMode.value);
+#endif
         }
     }
 }

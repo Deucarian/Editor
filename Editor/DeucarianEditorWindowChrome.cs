@@ -87,7 +87,7 @@ namespace Deucarian.Editor
             element.style.bottom = 0f;
             element.style.translate = new Translate(0f, 0f, 0f);
             element.style.scale = new Scale(Vector3.one);
-            element.style.unityBackgroundScaleMode = ScaleMode.ScaleAndCrop;
+            DeucarianEditorVisualShell.ApplyScaleAndCropBackground(element);
         }
     }
 }
