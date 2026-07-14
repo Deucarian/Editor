@@ -23,7 +23,7 @@ The package distribution includes these PNG assets:
 | `Editor/Assets/Images/DeucarianPackageInstallerPlaceholderHero.png` | `754ba3487973604cc22156e7051ce4fb85905a2fffb2c5c09181df91e27d91db` | Added in `850e35996cb8c51a67773929914419b783ca7f69` by the repository owner |
 | `Editor/Assets/Logos/DeucarianPlaceholderLogo.png` | `aa5df75de81ff70c4fdf69eb94b8d9c316ab8786a1d3483ce72a19a968c0f43f` | Added in `850e35996cb8c51a67773929914419b783ca7f69` by the repository owner |
 
-No separate third-party license or attribution marker accompanies these assets, and their Git history records only the repository owner's authorship. On that evidence they are classified as Deucarian package content, not third-party components. This classification should be revisited when final brand assets replace the placeholders.
+No separate third-party license or attribution marker accompanies these assets, and their Git history records their addition under the repository owner's identity. The repository does not contain independent source files, purchase records, or a provenance declaration proving how the PNGs were created, so this notice does not claim conclusive third-party-free provenance. Owner confirmation or replacement with approved final brand assets remains a publication and commercial-reuse gate.
 
 ## Host platform
 
