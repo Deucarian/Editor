@@ -1,13 +1,58 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
+    public enum DeucarianEditorLayoutMode
+    {
+        Wide,
+        Compact,
+        Narrow
+    }
+
     public static class DeucarianEditorResponsiveLayout
     {
         public const float WideBreakpoint = 1180f;
         public const float MediumBreakpoint = 760f;
+        public const float WorkbenchWideBreakpoint = WideBreakpoint;
+        public const float WorkbenchNarrowBreakpoint = 900f;
         public const float PreviewPanelWidth = 390f;
         public const float NarrowSidebarWidth = 176f;
+
+        public const string WideClass = "deucarian-responsive--wide";
+        public const string CompactClass = "deucarian-responsive--compact";
+        public const string NarrowClass = "deucarian-responsive--narrow";
+
+        public static DeucarianEditorLayoutMode ResolveMode(float width)
+        {
+            if (width >= WorkbenchWideBreakpoint)
+            {
+                return DeucarianEditorLayoutMode.Wide;
+            }
+
+            return width >= WorkbenchNarrowBreakpoint
+                ? DeucarianEditorLayoutMode.Compact
+                : DeucarianEditorLayoutMode.Narrow;
+        }
+
+        public static DeucarianEditorLayoutMode ApplyResponsiveClasses(VisualElement element, float width)
+        {
+            DeucarianEditorLayoutMode mode = ResolveMode(width);
+            ApplyModeClasses(element, mode);
+            return mode;
+        }
+
+        public static void ApplyModeClasses(VisualElement element, DeucarianEditorLayoutMode mode)
+        {
+            if (element == null)
+            {
+                return;
+            }
+
+            element.EnableInClassList(WideClass, mode == DeucarianEditorLayoutMode.Wide);
+            element.EnableInClassList(CompactClass, mode == DeucarianEditorLayoutMode.Compact);
+            element.EnableInClassList(NarrowClass, mode == DeucarianEditorLayoutMode.Narrow);
+        }
 
         public static DeucarianEditorResponsiveLayoutState Calculate(float windowWidth, float windowHeight)
         {

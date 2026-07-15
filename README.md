@@ -69,6 +69,39 @@ public sealed class ExampleManagerWindow : EditorWindow
 }
 ```
 
+For a hybrid UI Toolkit/IMGUI tool, compose the shared workbench and add only
+package-owned controls and state to its regions:
+
+```csharp
+private DeucarianEditorWorkbench workbench;
+
+public void CreateGUI()
+{
+    workbench = DeucarianEditorWorkbench.Create(
+        rootVisualElement,
+        new DeucarianEditorWorkbenchOptions
+        {
+            IncludeToolbar = true,
+            IncludeDrawer = true,
+            IncludeFooter = true
+        });
+
+    workbench.Toolbar.Add(
+        DeucarianEditorWorkbenchToolbar.CreateActionButton("Refresh", Refresh));
+    workbench.AddImGuiContent(DrawPackageContent);
+}
+
+private void OnDisable()
+{
+    workbench?.Dispose();
+}
+```
+
+The workbench uses the established Installer layout modes: Narrow below 900 px,
+Compact from 900 through 1179 px, and Wide at 1180 px or above. The shared
+drawer/footer factories provide presentation only; operation models and package
+behavior remain in the consuming package.
+
 ## Samples
 
 This package only includes editor helpers. See `Samples~/README.md` for notes on adding lightweight example content when a package-specific sample is needed.
@@ -85,6 +118,11 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 - `DeucarianEditorStatusBadge`: fixed-color GUILayout and fixed-rect status badges for info, success, warning, error, and disabled states.
 - `DeucarianEditorStyles`: shared cached `GUIStyle` instances.
 - `DeucarianEditorColors`: fixed Deucarian editor colors with minimal light/dark skin readability adaptation.
+- `DeucarianEditorWorkbench` and `DeucarianEditorWorkbenchOptions`: composable hybrid window shell exposing toolbar, content, optional drawer, and optional footer regions.
+- `DeucarianEditorResponsiveLayout`: legacy preview calculations plus the exact Wide/Compact/Narrow workbench resolver and idempotent UI Toolkit class application.
+- `DeucarianEditorWorkbenchToolbar` and `DeucarianEditorWorkbenchSurfaces`: domain-neutral toolbar, drawer, row, and footer factories backed by shared USS contracts.
+- `DeucarianEditorWorkbenchGUI`: shared 24 px IMGUI actions, surface colors, panel scopes, separators, key/value rows, and status rows.
+- `DeucarianEditorCardScope`, `DeucarianEditorFoldoutScope`, and `DeucarianEditorWorkbenchPanelScope`: exception-safe layout scopes for composable drawing.
 
 ## Integrations
 
