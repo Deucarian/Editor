@@ -29,7 +29,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("1.0.1", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("1.0.2", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -376,6 +376,37 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(0.46f, DeucarianEditorWorkbenchGUI.RowBackgroundColor.a, 0.001f);
             Assert.AreEqual(0.62f, DeucarianEditorWorkbenchGUI.RowHoverColor.a, 0.001f);
             Assert.AreEqual(0.58f, DeucarianEditorWorkbenchGUI.RowSelectedColor.a, 0.001f);
+        }
+
+        [Test]
+        public void WorkbenchStatusRows_PreserveInstallerContentColorComposition()
+        {
+            const string assetPath =
+                "Packages/com.deucarian.editor/Editor/DeucarianEditorWorkbenchGUI.cs";
+            PackageInfo package = PackageInfo.FindForAssetPath(assetPath);
+            const string packagePrefix = "Packages/com.deucarian.editor/";
+            string relativePath = assetPath.Substring(packagePrefix.Length);
+            string absolutePath = package == null
+                ? Path.GetFullPath(assetPath)
+                : Path.Combine(package.resolvedPath, relativePath);
+            string source = File.ReadAllText(absolutePath);
+            int methodStart = source.IndexOf(
+                "private static void DrawColoredLabel",
+                StringComparison.Ordinal);
+            int methodEnd = source.IndexOf(
+                "private static void EnsureStyles",
+                methodStart,
+                StringComparison.Ordinal);
+
+            Assert.GreaterOrEqual(methodStart, 0);
+            Assert.Greater(methodEnd, methodStart);
+            string methodSource = source.Substring(methodStart, methodEnd - methodStart);
+
+            StringAssert.Contains("Color previousColor = GUI.contentColor;", methodSource);
+            StringAssert.Contains("GUI.contentColor = color;", methodSource);
+            StringAssert.Contains("GUI.Label(rect, content, style);", methodSource);
+            StringAssert.Contains("GUI.contentColor = previousColor;", methodSource);
+            StringAssert.DoesNotContain("new GUIStyle(style)", methodSource);
         }
 
         [Test]

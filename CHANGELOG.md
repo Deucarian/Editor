@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.0.2 - 2026-07-15
+
+- Preserved the released Package Installer IMGUI status-row color composition while retaining exception-safe restoration of `GUI.contentColor` in the shared workbench helper.
 
 ## 1.0.1 - 2026-07-15
 
