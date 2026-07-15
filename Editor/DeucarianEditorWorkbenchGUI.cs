@@ -177,12 +177,18 @@ namespace Deucarian.Editor
 
         private static void DrawColoredLabel(Rect rect, GUIContent content, GUIStyle style, Color color)
         {
-            GUIStyle coloredStyle = new GUIStyle(style);
-            coloredStyle.normal.textColor = color;
-            coloredStyle.hover.textColor = color;
-            coloredStyle.active.textColor = color;
-            coloredStyle.focused.textColor = color;
-            GUI.Label(rect, content, coloredStyle);
+            Color previousColor = GUI.contentColor;
+            try
+            {
+                // Preserve the released Package Installer composition: Unity multiplies
+                // GUI.contentColor with the style state's text color at draw time.
+                GUI.contentColor = color;
+                GUI.Label(rect, content, style);
+            }
+            finally
+            {
+                GUI.contentColor = previousColor;
+            }
         }
 
         private static void EnsureStyles()
