@@ -403,7 +403,14 @@ namespace Deucarian.Editor.Tests
             Assert.IsTrue(iconAction.ClassListContains(DeucarianEditorIconTextButton.RootClass));
             Assert.NotNull(iconAction.Q<VisualElement>(
                 className: DeucarianEditorIconTextButton.ContentClass));
+            Assert.AreEqual(
+                "deucarian-workbench-toolbar__icon",
+                DeucarianEditorWorkbenchToolbar.IconClass);
+            Assert.AreEqual(
+                "deucarian-workbench-toolbar__icon-label",
+                DeucarianEditorWorkbenchToolbar.IconLabelClass);
             Assert.NotNull(iconAction.Q<Image>(className: DeucarianEditorWorkbenchToolbar.IconClass));
+            Assert.NotNull(iconAction.Q<Image>(className: DeucarianEditorIconTextButton.IconClass));
             Assert.AreEqual(
                 "Refresh",
                 iconAction.Q<Label>(className: DeucarianEditorWorkbenchToolbar.IconLabelClass).text);
