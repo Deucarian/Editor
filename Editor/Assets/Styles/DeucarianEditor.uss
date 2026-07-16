@@ -233,6 +233,7 @@
     min-width: 0;
     min-height: 0;
     flex-direction: row;
+    position: relative;
 }
 
 .deucarian-workbench__content {
@@ -244,6 +245,16 @@
 .deucarian-workbench__drawer {
     min-width: 0;
     min-height: 0;
+}
+
+.deucarian-workbench__drawer--overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 45%;
+    max-height: 260px;
+    flex-grow: 0;
 }
 
 .deucarian-workbench__footer {
@@ -298,6 +309,28 @@
     border-bottom-color: rgba(59, 166, 154, 0.18);
     background-color: rgba(22, 38, 48, 0.52);
     color: var(--deucarian-text);
+}
+
+.deucarian-workbench-toolbar__action--icon {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.deucarian-workbench-toolbar__icon {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+    margin-right: 5px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.deucarian-workbench-toolbar__icon-label {
+    -unity-text-align: middle-center;
 }
 
 .deucarian-workbench-toolbar__action--standard:hover,
@@ -357,6 +390,63 @@
     flex-grow: 1;
 }
 
+.deucarian-workbench-toolbar__group {
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.deucarian-workbench-toolbar__group--actions {
+    justify-content: flex-end;
+}
+
+.deucarian-workbench-toolbar__reserved-slot {
+    height: 24px;
+    min-height: 24px;
+    max-height: 24px;
+    margin-left: 4px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.deucarian-workbench-toolbar__reserved-slot > .deucarian-workbench-toolbar__action,
+.deucarian-workbench-toolbar__reserved-slot > .deucarian-workbench-toolbar__status-pill {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.deucarian-workbench-toolbar__status-pill {
+    height: 24px;
+    min-height: 24px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding-left: 7px;
+    padding-right: 7px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(59, 166, 154, 0.48);
+    border-right-color: rgba(59, 166, 154, 0.40);
+    border-top-color: rgba(126, 172, 202, 0.32);
+    border-bottom-color: rgba(59, 166, 154, 0.34);
+    background-color: rgba(25, 53, 57, 0.54);
+    color: var(--deucarian-text);
+}
+
+.deucarian-workbench-toolbar--stable-action-lanes {
+    flex-wrap: nowrap;
+}
+
 .deucarian-responsive--compact .deucarian-workbench-toolbar__action,
 .deucarian-responsive--compact .dpi-view-toolbar__action,
 .dpi-responsive--compact .deucarian-workbench-toolbar__action,
@@ -409,6 +499,51 @@
     margin-top: 4px;
 }
 
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes {
+    height: 68px;
+    min-height: 68px;
+    max-height: 68px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group {
+    width: 100%;
+    min-height: 24px;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group--actions,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group--actions {
+    margin-top: 4px;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--compact-single-line {
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line .deucarian-workbench-toolbar__spacer,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--compact-single-line .deucarian-workbench-toolbar__spacer {
+    display: flex;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line .deucarian-workbench-toolbar__summary,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--compact-single-line .deucarian-workbench-toolbar__summary {
+    width: auto;
+    margin-left: 6px;
+    margin-top: 0;
+    flex-grow: 0;
+}
+
 /* Shared workbench drawer and footer. The dpi aliases preserve the released
    Package Installer contract while allowing consumers to migrate incrementally. */
 
@@ -451,6 +586,10 @@
 
 .deucarian-workbench-operation-drawer--expanded,
 .dpi-operation-drawer--expanded {
+    display: flex;
+    height: 220px;
+    min-height: 180px;
+    max-height: 260px;
     margin-bottom: 6px;
     border-left-width: 1px;
     border-right-width: 1px;
@@ -460,13 +599,21 @@
     border-right-color: rgba(59, 166, 154, 0.30);
     border-top-color: rgba(90, 111, 160, 0.34);
     border-bottom-color: rgba(59, 166, 154, 0.24);
-    background-color: rgba(10, 20, 30, 0.62);
+    background-color: rgba(10, 20, 30, 0.96);
 }
 
 .deucarian-workbench-operation-drawer--collapsed,
 .dpi-operation-drawer--collapsed {
+    display: none;
     margin-bottom: 0;
     background-color: rgba(17, 29, 39, 0.00);
+}
+
+.deucarian-workbench__drawer--overlay .deucarian-workbench-operation-drawer--expanded {
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    margin-bottom: 0;
 }
 
 .deucarian-workbench-operation-drawer__scroll,
@@ -490,6 +637,97 @@
     padding-right: var(--deucarian-workbench-operation-inline-padding);
     padding-top: var(--deucarian-workbench-operation-block-padding);
     padding-bottom: var(--deucarian-workbench-operation-block-padding);
+}
+
+.deucarian-workbench-operation-drawer__header {
+    height: 30px;
+    min-height: 30px;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 6px;
+}
+
+.deucarian-workbench-operation-drawer__header-title {
+    color: var(--deucarian-text);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.deucarian-workbench-operation-drawer__columns {
+    flex-grow: 1;
+    min-height: 0;
+    flex-direction: row;
+}
+
+.deucarian-workbench-operation-drawer__column {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-right: 10px;
+}
+
+.deucarian-workbench-operation-drawer__group-title {
+    height: 20px;
+    color: var(--deucarian-muted);
+    font-size: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+}
+
+.deucarian-workbench-operation-drawer__action {
+    height: 28px;
+    min-height: 28px;
+    margin-top: 0;
+    margin-bottom: 4px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(90, 111, 160, 0.28);
+    border-right-color: rgba(90, 111, 160, 0.24);
+    border-top-color: rgba(126, 172, 202, 0.22);
+    border-bottom-color: rgba(59, 166, 154, 0.16);
+    background-color: rgba(22, 38, 48, 0.48);
+    color: var(--deucarian-text);
+}
+
+.deucarian-workbench-operation-drawer__action:hover {
+    border-left-color: var(--deucarian-border-active);
+    border-right-color: var(--deucarian-border-active);
+    border-top-color: var(--deucarian-border-active);
+    border-bottom-color: var(--deucarian-border-active);
+    background-color: rgba(28, 56, 64, 0.66);
+}
+
+.deucarian-workbench-operation-drawer__action .deucarian-workbench-toolbar__icon-label {
+    -unity-text-align: middle-left;
+}
+
+.deucarian-workbench-operation-drawer__action .deucarian-workbench-toolbar__icon {
+    margin-right: 8px;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-operation-drawer__columns,
+.dpi-responsive--narrow .deucarian-workbench-operation-drawer__columns {
+    flex-direction: column;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-operation-drawer__column,
+.dpi-responsive--narrow .deucarian-workbench-operation-drawer__column {
+    flex-grow: 0;
+    flex-basis: auto;
+    width: 100%;
+    margin-right: 0;
 }
 
 .deucarian-workbench-operation-row,
@@ -663,6 +901,12 @@
     min-width: 0;
     max-width: 0;
     flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.deucarian-workbench-operation-footer__actions {
+    flex-direction: row;
+    align-items: center;
     flex-shrink: 0;
 }
 

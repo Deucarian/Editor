@@ -4,16 +4,33 @@ using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
+    public enum DeucarianEditorWorkbenchToolbarLayout
+    {
+        Responsive,
+        StableActionLanes,
+        CompactSingleLine
+    }
+
+    public enum DeucarianEditorWorkbenchDrawerMode
+    {
+        Inline,
+        Overlay
+    }
+
     public sealed class DeucarianEditorWorkbenchOptions
     {
         public DeucarianEditorWorkbenchOptions()
         {
             IncludeToolbar = true;
+            ToolbarLayout = DeucarianEditorWorkbenchToolbarLayout.Responsive;
+            DrawerMode = DeucarianEditorWorkbenchDrawerMode.Inline;
         }
 
         public bool IncludeToolbar { get; set; }
         public bool IncludeDrawer { get; set; }
         public bool IncludeFooter { get; set; }
+        public DeucarianEditorWorkbenchToolbarLayout ToolbarLayout { get; set; }
+        public DeucarianEditorWorkbenchDrawerMode DrawerMode { get; set; }
         public Texture2D Background { get; set; }
         public string TopSafeFadeName { get; set; }
     }
@@ -47,7 +64,7 @@ namespace Deucarian.Editor
 
             if (options.IncludeToolbar)
             {
-                Toolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar();
+                Toolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar(options.ToolbarLayout);
                 ShellContent.Add(Toolbar);
             }
 
@@ -62,6 +79,9 @@ namespace Deucarian.Editor
             {
                 Drawer = new VisualElement { name = "deucarian-workbench-drawer" };
                 Drawer.AddToClassList(DrawerClass);
+                Drawer.EnableInClassList(
+                    DeucarianEditorWorkbenchSurfaces.OverlayDrawerHostClass,
+                    options.DrawerMode == DeucarianEditorWorkbenchDrawerMode.Overlay);
                 Main.Add(Drawer);
             }
 
@@ -158,14 +178,105 @@ namespace Deucarian.Editor
         public const string EmphasizedActionClass = "deucarian-workbench-toolbar__action--emphasized";
         public const string ToggleClass = "deucarian-workbench-toolbar__toggle";
         public const string ToggleActiveClass = "deucarian-workbench-toolbar__toggle--active";
+        public const string IconActionClass = "deucarian-workbench-toolbar__action--icon";
+        public const string IconClass = "deucarian-workbench-toolbar__icon";
+        public const string IconLabelClass = "deucarian-workbench-toolbar__icon-label";
         public const string SpacerClass = "deucarian-workbench-toolbar__spacer";
+        public const string StableActionLanesClass = "deucarian-workbench-toolbar--stable-action-lanes";
+        public const string CompactSingleLineClass = "deucarian-workbench-toolbar--compact-single-line";
+        public const string GroupClass = "deucarian-workbench-toolbar__group";
+        public const string NavigationGroupClass = "deucarian-workbench-toolbar__group--navigation";
+        public const string ActionGroupClass = "deucarian-workbench-toolbar__group--actions";
+        public const string ReservedSlotClass = "deucarian-workbench-toolbar__reserved-slot";
+        public const string StatusPillClass = "deucarian-workbench-toolbar__status-pill";
 
         public static VisualElement CreateToolbar()
+        {
+            return CreateToolbar(DeucarianEditorWorkbenchToolbarLayout.Responsive);
+        }
+
+        public static VisualElement CreateToolbar(DeucarianEditorWorkbenchToolbarLayout layout)
         {
             VisualElement toolbar = DeucarianEditorVisualShell.CreateToolbarRow();
             toolbar.name = "deucarian-workbench-toolbar";
             toolbar.AddToClassList(ToolbarClass);
+            toolbar.EnableInClassList(
+                StableActionLanesClass,
+                layout == DeucarianEditorWorkbenchToolbarLayout.StableActionLanes);
+            toolbar.EnableInClassList(
+                CompactSingleLineClass,
+                layout == DeucarianEditorWorkbenchToolbarLayout.CompactSingleLine);
             return toolbar;
+        }
+
+        public static VisualElement CreateGroup(bool actions = false)
+        {
+            var group = new VisualElement();
+            group.AddToClassList(GroupClass);
+            group.AddToClassList(actions ? ActionGroupClass : NavigationGroupClass);
+            return group;
+        }
+
+        public static VisualElement CreateReservedActionSlot(float width)
+        {
+            float safeWidth = Mathf.Max(0f, width);
+            var slot = new VisualElement();
+            slot.AddToClassList(ReservedSlotClass);
+            slot.style.width = safeWidth;
+            slot.style.minWidth = safeWidth;
+            slot.style.maxWidth = safeWidth;
+            return slot;
+        }
+
+        public static void SetReservedAction(
+            VisualElement slot,
+            VisualElement content,
+            bool visible = true)
+        {
+            if (slot == null)
+            {
+                return;
+            }
+
+            slot.Clear();
+            if (content != null)
+            {
+                slot.Add(content);
+            }
+
+            SetReservedActionVisible(slot, visible && content != null);
+        }
+
+        public static void SetReservedActionVisible(VisualElement slot, bool visible)
+        {
+            if (slot == null)
+            {
+                return;
+            }
+
+            slot.style.visibility = visible ? Visibility.Visible : Visibility.Hidden;
+            slot.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+        }
+
+        public static VisualElement CreateStatusPill(string iconId, string text, string tooltip = null)
+        {
+            var pill = new VisualElement { tooltip = tooltip ?? string.Empty };
+            pill.AddToClassList(StatusPillClass);
+
+            var icon = new Image
+            {
+                image = DeucarianEditorIcons.GetIcon(iconId),
+                scaleMode = ScaleMode.ScaleToFit,
+                tintColor = DeucarianEditorTheme.Success,
+                pickingMode = PickingMode.Ignore
+            };
+            icon.AddToClassList(IconClass);
+
+            var label = new Label(text ?? string.Empty) { pickingMode = PickingMode.Ignore };
+            label.AddToClassList(IconLabelClass);
+            pill.Add(icon);
+            pill.Add(label);
+            return pill;
         }
 
         public static Label CreateSummary(string text)
@@ -183,6 +294,18 @@ namespace Deucarian.Editor
             return button;
         }
 
+        public static Button CreateIconActionButton(
+            string iconId,
+            string text,
+            Action clicked,
+            bool emphasized = false,
+            string tooltip = null)
+        {
+            Button button = CreateActionButton(string.Empty, clicked, emphasized);
+            SetButtonIcon(button, iconId, text, tooltip);
+            return button;
+        }
+
         public static Button CreateToggleButton(string text, Action clicked, bool active = false)
         {
             var button = new Button(clicked) { text = text ?? string.Empty };
@@ -191,6 +314,36 @@ namespace Deucarian.Editor
             button.AddToClassList("deucarian-toggle-button");
             SetToggleActive(button, active);
             return button;
+        }
+
+        public static Button CreateIconToggleButton(
+            string iconId,
+            string text,
+            Action clicked,
+            bool active = false,
+            string tooltip = null)
+        {
+            Button button = CreateToggleButton(string.Empty, clicked, active);
+            SetButtonIcon(button, iconId, text, tooltip);
+            return button;
+        }
+
+        public static void SetIconActionButtonText(Button button, string text)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            Label label = button.Q<Label>(className: IconLabelClass);
+            if (label != null)
+            {
+                label.text = text ?? string.Empty;
+            }
+            else
+            {
+                button.text = text ?? string.Empty;
+            }
         }
 
         public static void SetToggleActive(VisualElement toggle, bool active)
@@ -210,6 +363,45 @@ namespace Deucarian.Editor
             spacer.AddToClassList(SpacerClass);
             spacer.AddToClassList("deucarian-toolbar-spacer");
             return spacer;
+        }
+
+        public static void SetButtonIcon(
+            Button button,
+            string iconId,
+            string text,
+            string tooltip)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.Clear();
+            button.text = string.Empty;
+            button.tooltip = tooltip ?? string.Empty;
+            button.AddToClassList(IconActionClass);
+
+            var icon = new Image
+            {
+                image = DeucarianEditorIcons.GetIcon(iconId),
+                scaleMode = ScaleMode.ScaleToFit,
+                tintColor = DeucarianEditorTheme.Text,
+                pickingMode = PickingMode.Ignore
+            };
+            icon.AddToClassList(IconClass);
+
+            var label = new Label(text ?? string.Empty)
+            {
+                pickingMode = PickingMode.Ignore,
+                style =
+                {
+                    color = DeucarianEditorTheme.Text
+                }
+            };
+            label.AddToClassList(IconLabelClass);
+
+            button.Add(icon);
+            button.Add(label);
         }
     }
 
@@ -233,18 +425,22 @@ namespace Deucarian.Editor
             VisualElement root,
             VisualElement status,
             Label statusIcon,
+            Image statusImage,
             Label statusLabel,
             Label summary,
             VisualElement spacer,
+            VisualElement actions,
             Button action,
             Label version)
         {
             Root = root;
             Status = status;
             StatusIcon = statusIcon;
+            StatusImage = statusImage;
             StatusLabel = statusLabel;
             Summary = summary;
             Spacer = spacer;
+            Actions = actions;
             Action = action;
             Version = version;
         }
@@ -252,9 +448,11 @@ namespace Deucarian.Editor
         public VisualElement Root { get; }
         public VisualElement Status { get; }
         public Label StatusIcon { get; }
+        public Image StatusImage { get; }
         public Label StatusLabel { get; }
         public Label Summary { get; }
         public VisualElement Spacer { get; }
+        public VisualElement Actions { get; }
         public Button Action { get; }
         public Label Version { get; }
     }
@@ -266,7 +464,14 @@ namespace Deucarian.Editor
         public const string DrawerExpandedClass = "deucarian-workbench-operation-drawer--expanded";
         public const string DrawerCollapsedClass = "deucarian-workbench-operation-drawer--collapsed";
         public const string DrawerScrollClass = "deucarian-workbench-operation-drawer__scroll";
+        public const string OverlayDrawerHostClass = "deucarian-workbench__drawer--overlay";
         public const string DrawerContentClass = "deucarian-workbench-operation-content";
+        public const string DrawerHeaderClass = "deucarian-workbench-operation-drawer__header";
+        public const string DrawerHeaderTitleClass = "deucarian-workbench-operation-drawer__header-title";
+        public const string DrawerColumnsClass = "deucarian-workbench-operation-drawer__columns";
+        public const string DrawerColumnClass = "deucarian-workbench-operation-drawer__column";
+        public const string DrawerGroupTitleClass = "deucarian-workbench-operation-drawer__group-title";
+        public const string DrawerActionClass = "deucarian-workbench-operation-drawer__action";
         public const string RowClass = "deucarian-workbench-operation-row";
         public const string HeaderRowClass = "deucarian-workbench-operation-row--header";
         public const string OptionRowClass = "deucarian-workbench-operation-row--option";
@@ -280,6 +485,7 @@ namespace Deucarian.Editor
         public const string FooterSummaryClass = "deucarian-workbench-operation-footer__summary";
         public const string FooterSpacerClass = "deucarian-workbench-operation-footer__spacer";
         public const string FooterActionClass = "deucarian-workbench-operation-footer__action";
+        public const string FooterActionsClass = "deucarian-workbench-operation-footer__actions";
         public const string FooterVersionClass = "deucarian-workbench-operation-footer__version";
         public const string FooterStatusSuccessClass = "deucarian-workbench-operation-footer__status-icon--success";
         public const string FooterStatusNeutralClass = "deucarian-workbench-operation-footer__status-icon--neutral";
@@ -313,6 +519,46 @@ namespace Deucarian.Editor
 
             drawer.EnableInClassList(DrawerExpandedClass, expanded);
             drawer.EnableInClassList(DrawerCollapsedClass, !expanded);
+        }
+
+        public static VisualElement CreateDrawerHeader(string title)
+        {
+            var header = new VisualElement();
+            header.AddToClassList(DrawerHeaderClass);
+            var titleLabel = new Label(title ?? string.Empty);
+            titleLabel.AddToClassList(DrawerHeaderTitleClass);
+            header.Add(titleLabel);
+            header.Add(DeucarianEditorWorkbenchToolbar.CreateSpacer());
+            return header;
+        }
+
+        public static VisualElement CreateDrawerColumns()
+        {
+            var columns = new VisualElement();
+            columns.AddToClassList(DrawerColumnsClass);
+            return columns;
+        }
+
+        public static VisualElement CreateDrawerColumn(string heading)
+        {
+            var column = new VisualElement();
+            column.AddToClassList(DrawerColumnClass);
+            var title = new Label(heading ?? string.Empty);
+            title.AddToClassList(DrawerGroupTitleClass);
+            column.Add(title);
+            return column;
+        }
+
+        public static Button CreateDrawerAction(
+            string iconId,
+            string text,
+            Action clicked,
+            string tooltip = null)
+        {
+            var button = new Button(clicked) { tooltip = tooltip ?? text ?? string.Empty };
+            button.AddToClassList(DrawerActionClass);
+            DeucarianEditorWorkbenchToolbar.SetButtonIcon(button, iconId, text, button.tooltip);
+            return button;
         }
 
         public static VisualElement CreateRow(params string[] additionalClasses)
@@ -350,9 +596,17 @@ namespace Deucarian.Editor
 
             var icon = new Label(statusIcon ?? string.Empty);
             icon.AddToClassList(FooterStatusIconClass);
+            var iconImage = new Image
+            {
+                scaleMode = ScaleMode.ScaleToFit,
+                pickingMode = PickingMode.Ignore
+            };
+            iconImage.AddToClassList(FooterStatusIconClass);
+            iconImage.style.display = DisplayStyle.None;
             var label = new Label(status ?? string.Empty);
             label.AddToClassList(FooterStatusLabelClass);
             statusGroup.Add(icon);
+            statusGroup.Add(iconImage);
             statusGroup.Add(label);
 
             var summaryLabel = new Label(summary ?? string.Empty);
@@ -361,8 +615,12 @@ namespace Deucarian.Editor
             var spacer = new VisualElement();
             spacer.AddToClassList(FooterSpacerClass);
 
+            var actions = new VisualElement();
+            actions.AddToClassList(FooterActionsClass);
+
             var actionButton = new Button(action) { text = actionText ?? string.Empty };
             actionButton.AddToClassList(FooterActionClass);
+            actions.Add(actionButton);
 
             var versionLabel = new Label(version ?? string.Empty);
             versionLabel.AddToClassList(FooterVersionClass);
@@ -370,18 +628,57 @@ namespace Deucarian.Editor
             root.Add(statusGroup);
             root.Add(summaryLabel);
             root.Add(spacer);
-            root.Add(actionButton);
+            root.Add(actions);
             root.Add(versionLabel);
 
             return new DeucarianEditorWorkbenchFooter(
                 root,
                 statusGroup,
                 icon,
+                iconImage,
                 label,
                 summaryLabel,
                 spacer,
+                actions,
                 actionButton,
                 versionLabel);
+        }
+
+        public static Button AddFooterAction(
+            DeucarianEditorWorkbenchFooter footer,
+            string iconId,
+            string text,
+            Action action,
+            string tooltip = null,
+            float width = 96f)
+        {
+            if (footer?.Actions == null)
+            {
+                return null;
+            }
+
+            float safeWidth = Mathf.Max(0f, width);
+            var button = new Button(action) { tooltip = tooltip ?? string.Empty };
+            button.AddToClassList(FooterActionClass);
+            button.style.width = safeWidth;
+            button.style.minWidth = safeWidth;
+            button.style.maxWidth = safeWidth;
+            DeucarianEditorWorkbenchToolbar.SetButtonIcon(button, iconId, text, tooltip);
+            footer.Actions.Add(button);
+            return button;
+        }
+
+        public static void SetFooterIcon(DeucarianEditorWorkbenchFooter footer, string iconId)
+        {
+            if (footer?.StatusIcon == null || footer.StatusImage == null)
+            {
+                return;
+            }
+
+            bool hasIcon = !string.IsNullOrWhiteSpace(iconId);
+            footer.StatusIcon.style.display = hasIcon ? DisplayStyle.None : DisplayStyle.Flex;
+            footer.StatusImage.style.display = hasIcon ? DisplayStyle.Flex : DisplayStyle.None;
+            footer.StatusImage.image = hasIcon ? DeucarianEditorIcons.GetIcon(iconId) : null;
         }
 
         public static void SetFooterStatus(DeucarianEditorWorkbenchFooter footer, DeucarianEditorStatus status)
@@ -398,6 +695,10 @@ namespace Deucarian.Editor
                 FooterStatusNeutralClass,
                 status == DeucarianEditorStatus.Info || status == DeucarianEditorStatus.Disabled);
             footer.StatusIcon.EnableInClassList(FooterStatusBusyClass, false);
+            if (footer.StatusImage != null)
+            {
+                footer.StatusImage.tintColor = DeucarianEditorStatusBadge.GetColor(status);
+            }
         }
 
         public static void SetFooterBusy(DeucarianEditorWorkbenchFooter footer, bool busy)

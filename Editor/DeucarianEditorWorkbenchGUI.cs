@@ -16,6 +16,9 @@ namespace Deucarian.Editor
         public const float StatusRowHeight = 20f;
         public const float StatusMarkerSize = 18f;
         public const float StatusMarkerGap = 4f;
+        public const float CompactIconActionHeight = 28f;
+        public const float CompactIconSize = 14f;
+        public const float CompactIconTextGap = 8f;
 
         private static bool initialized;
         private static bool lastProSkin;
@@ -26,6 +29,9 @@ namespace Deucarian.Editor
         private static GUIStyle titleStyle;
         private static GUIStyle subtitleStyle;
         private static GUIStyle sectionTitleStyle;
+        private static GUIStyle labelStyle;
+        private static GUIStyle boldLabelStyle;
+        private static GUIStyle wordWrappedMiniLabelStyle;
         private static GUIStyle miniLabelStyle;
         private static GUIStyle mutedMiniLabelStyle;
         private static GUIStyle rowTitleStyle;
@@ -47,6 +53,9 @@ namespace Deucarian.Editor
         public static Color SeparatorColor => DeucarianEditorVisualShell.SubtleBorder;
         public static Color TextColor => DeucarianEditorVisualShell.Text;
         public static Color MutedTextColor => DeucarianEditorVisualShell.MutedText;
+        public static Color InteractiveTextColor => EditorGUIUtility.isProSkin
+            ? TextColor
+            : new Color(31f / 255f, 43f / 255f, 50f / 255f, 1f);
         public static Color RowBackgroundColor => new Color(32f / 255f, 47f / 255f, 56f / 255f, 0.46f);
         public static Color RowHoverColor => new Color(32f / 255f, 47f / 255f, 56f / 255f, 0.62f);
         public static Color RowSelectedColor => new Color(35f / 255f, 62f / 255f, 66f / 255f, 0.58f);
@@ -58,6 +67,9 @@ namespace Deucarian.Editor
         public static GUIStyle TitleStyle { get { EnsureStyles(); return titleStyle; } }
         public static GUIStyle SubtitleStyle { get { EnsureStyles(); return subtitleStyle; } }
         public static GUIStyle SectionTitleStyle { get { EnsureStyles(); return sectionTitleStyle; } }
+        public static GUIStyle LabelStyle { get { EnsureStyles(); return labelStyle; } }
+        public static GUIStyle BoldLabelStyle { get { EnsureStyles(); return boldLabelStyle; } }
+        public static GUIStyle WordWrappedMiniLabelStyle { get { EnsureStyles(); return wordWrappedMiniLabelStyle; } }
         public static GUIStyle MiniLabelStyle { get { EnsureStyles(); return miniLabelStyle; } }
         public static GUIStyle MutedMiniLabelStyle { get { EnsureStyles(); return mutedMiniLabelStyle; } }
         public static GUIStyle RowTitleStyle { get { EnsureStyles(); return rowTitleStyle; } }
@@ -78,6 +90,9 @@ namespace Deucarian.Editor
             titleStyle = null;
             subtitleStyle = null;
             sectionTitleStyle = null;
+            labelStyle = null;
+            boldLabelStyle = null;
+            wordWrappedMiniLabelStyle = null;
             miniLabelStyle = null;
             mutedMiniLabelStyle = null;
             rowTitleStyle = null;
@@ -103,7 +118,7 @@ namespace Deucarian.Editor
         {
             if (!string.IsNullOrWhiteSpace(title))
             {
-                DeucarianEditorChrome.DrawSectionHeader(title);
+                EditorGUILayout.LabelField(title, SectionTitleStyle);
             }
 
             Rect rect = EditorGUILayout.BeginVertical(DeucarianEditorStyles.SectionBox, options);
@@ -138,13 +153,88 @@ namespace Deucarian.Editor
 
         public static void DrawKeyValueRow(string label, string value)
         {
+            DrawReadOnlyRow(label, value);
+        }
+
+        public static void DrawReadOnlyRow(string label, string value, string tooltip = null)
+        {
             string displayValue = string.IsNullOrWhiteSpace(value) ? "-" : value;
             using (new EditorGUILayout.HorizontalScope())
             {
-                var labelContent = new GUIContent(label ?? string.Empty, label ?? string.Empty);
-                var valueContent = new GUIContent(displayValue, displayValue);
+                string safeTooltip = string.IsNullOrWhiteSpace(tooltip) ? displayValue : tooltip;
+                var labelContent = new GUIContent(label ?? string.Empty, safeTooltip);
+                var valueContent = new GUIContent(displayValue, safeTooltip);
                 EditorGUILayout.LabelField(labelContent, MutedMiniLabelStyle, GUILayout.Width(DetailLabelWidth));
                 EditorGUILayout.LabelField(valueContent, MiniLabelStyle, GUILayout.ExpandWidth(true));
+            }
+        }
+
+        public static DeucarianEditorWorkbenchPanelScope BeginSettingsPage(params GUILayoutOption[] options)
+        {
+            Rect rect = EditorGUILayout.BeginVertical(WindowStyle, options);
+            DeucarianEditorVisualShell.DrawWindowBackground(rect);
+            return new DeucarianEditorWorkbenchPanelScope(0f);
+        }
+
+        public static Rect DrawLabeledField(
+            string label,
+            string tooltip = null,
+            float labelWidth = 140f,
+            float height = 18f)
+        {
+            Rect row = EditorGUILayout.GetControlRect(false, height);
+            float safeLabelWidth = Mathf.Clamp(labelWidth, 0f, row.width);
+            Rect labelRect = new Rect(row.x, row.y, safeLabelWidth, row.height);
+            Rect controlRect = new Rect(
+                labelRect.xMax + 6f,
+                row.y,
+                Mathf.Max(0f, row.width - safeLabelWidth - 6f),
+                row.height);
+            DrawColoredLabel(
+                labelRect,
+                new GUIContent(label ?? string.Empty, tooltip ?? string.Empty),
+                LabelStyle,
+                TextColor);
+            return controlRect;
+        }
+
+        public static bool DrawCompactIconAction(
+            string iconId,
+            string text,
+            string tooltip,
+            bool enabled = true,
+            params GUILayoutOption[] options)
+        {
+            Rect row = GUILayoutUtility.GetRect(
+                1f,
+                CompactIconActionHeight,
+                options == null || options.Length == 0
+                    ? new[] { GUILayout.ExpandWidth(true) }
+                    : options);
+            using (new EditorGUI.DisabledScope(!enabled))
+            {
+                bool clicked = GUI.Button(
+                    row,
+                    new GUIContent(string.Empty, tooltip ?? text ?? string.Empty),
+                    SecondaryButtonStyle);
+                float iconY = row.y + (row.height - CompactIconSize) * 0.5f;
+                Rect iconRect = new Rect(row.x + 8f, iconY, CompactIconSize, CompactIconSize);
+                Rect textRect = new Rect(
+                    iconRect.xMax + CompactIconTextGap,
+                    row.y,
+                    Mathf.Max(0f, row.xMax - iconRect.xMax - CompactIconTextGap - 8f),
+                    row.height);
+                Color interactiveText = InteractiveTextColor;
+                Color tint = enabled
+                    ? interactiveText
+                    : DeucarianEditorColors.WithAlpha(interactiveText, 0.58f);
+                DeucarianEditorIcons.DrawIcon(iconRect, DeucarianEditorIcons.GetIcon(iconId), tint);
+                DrawColoredLabel(
+                    textRect,
+                    new GUIContent(text ?? string.Empty, tooltip ?? string.Empty),
+                    LabelStyle,
+                    tint);
+                return clicked;
             }
         }
 
@@ -213,10 +303,23 @@ namespace Deucarian.Editor
 
             titleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderTitle);
             titleStyle.fontSize = 15;
+            titleStyle.normal.textColor = TextColor;
             titleStyle.wordWrap = true;
 
             subtitleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderSubtitle);
+            subtitleStyle.normal.textColor = MutedTextColor;
             sectionTitleStyle = CopyStyle(() => DeucarianEditorStyles.SectionTitle);
+            sectionTitleStyle.normal.textColor = TextColor;
+
+            labelStyle = CopyStyle(() => EditorStyles.label);
+            labelStyle.normal.textColor = TextColor;
+
+            boldLabelStyle = CopyStyle(() => EditorStyles.boldLabel);
+            boldLabelStyle.normal.textColor = TextColor;
+
+            wordWrappedMiniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
+            wordWrappedMiniLabelStyle.normal.textColor = MutedTextColor;
+            wordWrappedMiniLabelStyle.wordWrap = true;
 
             miniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
             miniLabelStyle.normal.textColor = TextColor;
