@@ -169,6 +169,121 @@ namespace Deucarian.Editor
         }
     }
 
+    /// <summary>
+    /// Shared icon-and-label button composition for UI Toolkit and IMGUI editor surfaces.
+    /// Surface-specific factories may add their own visual class, but the icon metrics,
+    /// content order, spacing, and text updates always come from this archetype.
+    /// </summary>
+    public static class DeucarianEditorIconTextButton
+    {
+        public const string RootClass = "deucarian-icon-text-button";
+        public const string ContentClass = "deucarian-icon-text-button__content";
+        public const string IconClass = "deucarian-icon-text-button__icon";
+        public const string LabelClass = "deucarian-icon-text-button__label";
+        public const string LeadingClass = "deucarian-icon-text-button--leading";
+        public const float IconSize = 14f;
+        public const float IconTextGap = 8f;
+        public const float HorizontalPadding = 8f;
+
+        public static Button Create(
+            string iconId,
+            string text,
+            Action clicked,
+            string tooltip = null,
+            bool leading = false)
+        {
+            var button = new Button(clicked);
+            Configure(button, iconId, text, tooltip, leading);
+            return button;
+        }
+
+        public static void Configure(
+            Button button,
+            string iconId,
+            string text,
+            string tooltip = null,
+            bool leading = false)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.Clear();
+            button.text = string.Empty;
+            button.tooltip = tooltip ?? string.Empty;
+            button.AddToClassList(RootClass);
+            button.EnableInClassList(LeadingClass, leading);
+
+            var content = new VisualElement { pickingMode = PickingMode.Ignore };
+            content.AddToClassList(ContentClass);
+
+            var icon = new Image
+            {
+                image = DeucarianEditorIcons.GetIcon(iconId),
+                scaleMode = ScaleMode.ScaleToFit,
+                tintColor = DeucarianEditorTheme.Text,
+                pickingMode = PickingMode.Ignore
+            };
+            icon.AddToClassList(IconClass);
+            icon.style.display = string.IsNullOrWhiteSpace(iconId)
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
+
+            var label = new Label(text ?? string.Empty)
+            {
+                pickingMode = PickingMode.Ignore,
+                style =
+                {
+                    color = DeucarianEditorTheme.Text
+                }
+            };
+            label.AddToClassList(LabelClass);
+
+            content.Add(icon);
+            content.Add(label);
+            button.Add(content);
+        }
+
+        public static void SetText(Button button, string text)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            Label label = button.Q<Label>(className: LabelClass);
+            if (label != null)
+            {
+                label.text = text ?? string.Empty;
+            }
+            else
+            {
+                button.text = text ?? string.Empty;
+            }
+        }
+
+        public static void CalculateImGuiContentRects(
+            Rect row,
+            out Rect iconRect,
+            out Rect textRect)
+        {
+            float iconY = row.y + (row.height - IconSize) * 0.5f;
+            iconRect = new Rect(
+                row.x + HorizontalPadding,
+                iconY,
+                IconSize,
+                IconSize);
+            textRect = new Rect(
+                iconRect.xMax + IconTextGap,
+                row.y,
+                Mathf.Max(
+                    0f,
+                    row.xMax - iconRect.xMax - IconTextGap - HorizontalPadding),
+                row.height);
+        }
+    }
+
     public static class DeucarianEditorWorkbenchToolbar
     {
         public const string ToolbarClass = "deucarian-workbench-toolbar";
@@ -179,8 +294,8 @@ namespace Deucarian.Editor
         public const string ToggleClass = "deucarian-workbench-toolbar__toggle";
         public const string ToggleActiveClass = "deucarian-workbench-toolbar__toggle--active";
         public const string IconActionClass = "deucarian-workbench-toolbar__action--icon";
-        public const string IconClass = "deucarian-workbench-toolbar__icon";
-        public const string IconLabelClass = "deucarian-workbench-toolbar__icon-label";
+        public const string IconClass = DeucarianEditorIconTextButton.IconClass;
+        public const string IconLabelClass = DeucarianEditorIconTextButton.LabelClass;
         public const string SpacerClass = "deucarian-workbench-toolbar__spacer";
         public const string StableActionLanesClass = "deucarian-workbench-toolbar--stable-action-lanes";
         public const string CompactSingleLineClass = "deucarian-workbench-toolbar--compact-single-line";
@@ -330,20 +445,7 @@ namespace Deucarian.Editor
 
         public static void SetIconActionButtonText(Button button, string text)
         {
-            if (button == null)
-            {
-                return;
-            }
-
-            Label label = button.Q<Label>(className: IconLabelClass);
-            if (label != null)
-            {
-                label.text = text ?? string.Empty;
-            }
-            else
-            {
-                button.text = text ?? string.Empty;
-            }
+            DeucarianEditorIconTextButton.SetText(button, text);
         }
 
         public static void SetToggleActive(VisualElement toggle, bool active)
@@ -376,32 +478,8 @@ namespace Deucarian.Editor
                 return;
             }
 
-            button.Clear();
-            button.text = string.Empty;
-            button.tooltip = tooltip ?? string.Empty;
             button.AddToClassList(IconActionClass);
-
-            var icon = new Image
-            {
-                image = DeucarianEditorIcons.GetIcon(iconId),
-                scaleMode = ScaleMode.ScaleToFit,
-                tintColor = DeucarianEditorTheme.Text,
-                pickingMode = PickingMode.Ignore
-            };
-            icon.AddToClassList(IconClass);
-
-            var label = new Label(text ?? string.Empty)
-            {
-                pickingMode = PickingMode.Ignore,
-                style =
-                {
-                    color = DeucarianEditorTheme.Text
-                }
-            };
-            label.AddToClassList(IconLabelClass);
-
-            button.Add(icon);
-            button.Add(label);
+            DeucarianEditorIconTextButton.Configure(button, iconId, text, tooltip);
         }
     }
 
@@ -555,9 +633,14 @@ namespace Deucarian.Editor
             Action clicked,
             string tooltip = null)
         {
-            var button = new Button(clicked) { tooltip = tooltip ?? text ?? string.Empty };
+            Button button = DeucarianEditorIconTextButton.Create(
+                iconId,
+                text,
+                clicked,
+                tooltip ?? text ?? string.Empty,
+                true);
             button.AddToClassList(DrawerActionClass);
-            DeucarianEditorWorkbenchToolbar.SetButtonIcon(button, iconId, text, button.tooltip);
+            button.AddToClassList(DeucarianEditorWorkbenchToolbar.IconActionClass);
             return button;
         }
 
@@ -618,7 +701,11 @@ namespace Deucarian.Editor
             var actions = new VisualElement();
             actions.AddToClassList(FooterActionsClass);
 
-            var actionButton = new Button(action) { text = actionText ?? string.Empty };
+            Button actionButton = DeucarianEditorIconTextButton.Create(
+                null,
+                actionText,
+                action,
+                actionText);
             actionButton.AddToClassList(FooterActionClass);
             actions.Add(actionButton);
 
@@ -658,12 +745,16 @@ namespace Deucarian.Editor
             }
 
             float safeWidth = Mathf.Max(0f, width);
-            var button = new Button(action) { tooltip = tooltip ?? string.Empty };
+            Button button = DeucarianEditorIconTextButton.Create(
+                iconId,
+                text,
+                action,
+                tooltip);
             button.AddToClassList(FooterActionClass);
+            button.AddToClassList(DeucarianEditorWorkbenchToolbar.IconActionClass);
             button.style.width = safeWidth;
             button.style.minWidth = safeWidth;
             button.style.maxWidth = safeWidth;
-            DeucarianEditorWorkbenchToolbar.SetButtonIcon(button, iconId, text, tooltip);
             footer.Actions.Add(button);
             return button;
         }

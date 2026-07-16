@@ -17,8 +17,8 @@ namespace Deucarian.Editor
         public const float StatusMarkerSize = 18f;
         public const float StatusMarkerGap = 4f;
         public const float CompactIconActionHeight = 28f;
-        public const float CompactIconSize = 14f;
-        public const float CompactIconTextGap = 8f;
+        public const float CompactIconSize = DeucarianEditorIconTextButton.IconSize;
+        public const float CompactIconTextGap = DeucarianEditorIconTextButton.IconTextGap;
 
         private static bool initialized;
         private static bool lastProSkin;
@@ -41,6 +41,7 @@ namespace Deucarian.Editor
         private static GUIStyle foldoutStyle;
         private static GUIStyle primaryButtonStyle;
         private static GUIStyle secondaryButtonStyle;
+        private static GUIStyle compactIconActionLabelStyle;
 
         public static Color MainBackgroundColor => DeucarianEditorVisualShell.DeepBackground;
         public static Color SidebarBackgroundColor => DeucarianEditorVisualShell.MainPanel;
@@ -102,6 +103,7 @@ namespace Deucarian.Editor
             foldoutStyle = null;
             primaryButtonStyle = null;
             secondaryButtonStyle = null;
+            compactIconActionLabelStyle = null;
         }
 
         public static void DrawPanel(string title, Action content, params GUILayoutOption[] options)
@@ -217,13 +219,10 @@ namespace Deucarian.Editor
                     row,
                     new GUIContent(string.Empty, tooltip ?? text ?? string.Empty),
                     SecondaryButtonStyle);
-                float iconY = row.y + (row.height - CompactIconSize) * 0.5f;
-                Rect iconRect = new Rect(row.x + 8f, iconY, CompactIconSize, CompactIconSize);
-                Rect textRect = new Rect(
-                    iconRect.xMax + CompactIconTextGap,
-                    row.y,
-                    Mathf.Max(0f, row.xMax - iconRect.xMax - CompactIconTextGap - 8f),
-                    row.height);
+                DeucarianEditorIconTextButton.CalculateImGuiContentRects(
+                    row,
+                    out Rect iconRect,
+                    out Rect textRect);
                 Color interactiveText = InteractiveTextColor;
                 Color tint = enabled
                     ? interactiveText
@@ -232,7 +231,7 @@ namespace Deucarian.Editor
                 DrawColoredLabel(
                     textRect,
                     new GUIContent(text ?? string.Empty, tooltip ?? string.Empty),
-                    LabelStyle,
+                    compactIconActionLabelStyle,
                     tint);
                 return clicked;
             }
@@ -364,6 +363,12 @@ namespace Deucarian.Editor
 
             secondaryButtonStyle = CopyStyle(() => DeucarianEditorStyles.ToolbarButton);
             secondaryButtonStyle.fixedHeight = ButtonHeight;
+
+            compactIconActionLabelStyle = CopyStyle(() => EditorStyles.label);
+            compactIconActionLabelStyle.alignment = TextAnchor.MiddleLeft;
+            compactIconActionLabelStyle.padding = new RectOffset(0, 0, 0, 0);
+            compactIconActionLabelStyle.margin = new RectOffset(0, 0, 0, 0);
+            compactIconActionLabelStyle.normal.textColor = TextColor;
         }
 
         private static GUIStyle CopyStyle(Func<GUIStyle> styleFactory)

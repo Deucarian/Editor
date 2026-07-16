@@ -315,22 +315,48 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding-left: 7px;
-    padding-right: 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-.deucarian-workbench-toolbar__icon {
+.deucarian-icon-text-button__content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    min-width: 0;
+    height: 100%;
+}
+
+.deucarian-icon-text-button__icon {
     width: 14px;
     height: 14px;
     min-width: 14px;
     min-height: 14px;
-    margin-right: 5px;
+    max-width: 14px;
+    max-height: 14px;
+    margin-right: 8px;
     flex-grow: 0;
     flex-shrink: 0;
 }
 
-.deucarian-workbench-toolbar__icon-label {
+.deucarian-icon-text-button__label {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    flex-shrink: 1;
     -unity-text-align: middle-center;
+}
+
+.deucarian-icon-text-button--leading .deucarian-icon-text-button__content {
+    justify-content: flex-start;
+}
+
+.deucarian-icon-text-button--leading .deucarian-icon-text-button__label {
+    -unity-text-align: middle-left;
 }
 
 .deucarian-workbench-toolbar__action--standard:hover,
@@ -709,11 +735,11 @@
     background-color: rgba(28, 56, 64, 0.66);
 }
 
-.deucarian-workbench-operation-drawer__action .deucarian-workbench-toolbar__icon-label {
+.deucarian-workbench-operation-drawer__action .deucarian-icon-text-button__label {
     -unity-text-align: middle-left;
 }
 
-.deucarian-workbench-operation-drawer__action .deucarian-workbench-toolbar__icon {
+.deucarian-workbench-operation-drawer__action .deucarian-icon-text-button__icon {
     margin-right: 8px;
 }
 
@@ -923,7 +949,7 @@
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 0;
-    padding-bottom: 1px;
+    padding-bottom: 0;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
