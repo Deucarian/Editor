@@ -4,6 +4,26 @@ using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
+    /// <summary>
+    /// Canonical spacing metrics shared by UI Toolkit and IMGUI editor surfaces.
+    /// Keep the matching USS declarations in DeucarianEditor.uss synchronized.
+    /// </summary>
+    public static class DeucarianEditorLayoutMetrics
+    {
+        public const int PageHorizontalPadding = 10;
+        public const int PageTopPadding = 8;
+        public const int PageBottomPadding = 10;
+        public const int IconTextHorizontalPadding = 8;
+        public const int IconTextVerticalPadding = 0;
+        public const int IconTextGap = 8;
+        public const int IconSize = 14;
+        public const int PackageHeaderHorizontalPadding = 12;
+        public const int PackageHeaderVerticalPadding = 10;
+        public const int PackageHeaderIconSize = 24;
+        public const int PackageHeaderIconTextGap = 10;
+        public const int PackageHeaderBottomMargin = 8;
+    }
+
     public enum DeucarianEditorWorkbenchToolbarLayout
     {
         Responsive,
@@ -27,8 +47,12 @@ namespace Deucarian.Editor
         }
 
         public bool IncludeToolbar { get; set; }
+        public bool IncludeHeader { get; set; }
         public bool IncludeDrawer { get; set; }
         public bool IncludeFooter { get; set; }
+        public string HeaderPackageKey { get; set; }
+        public string HeaderTitle { get; set; }
+        public string HeaderSubtitle { get; set; }
         public DeucarianEditorWorkbenchToolbarLayout ToolbarLayout { get; set; }
         public DeucarianEditorWorkbenchDrawerMode DrawerMode { get; set; }
         public Texture2D Background { get; set; }
@@ -42,6 +66,7 @@ namespace Deucarian.Editor
     public sealed class DeucarianEditorWorkbench : IDisposable
     {
         public const string RootClass = "deucarian-workbench";
+        public const string HeaderClass = "deucarian-workbench__header";
         public const string MainClass = "deucarian-workbench__main";
         public const string ContentClass = "deucarian-workbench__content";
         public const string DrawerClass = "deucarian-workbench__drawer";
@@ -61,6 +86,16 @@ namespace Deucarian.Editor
 
             ShellContent.AddToClassList(RootClass);
             DeucarianEditorWindowChrome.ConfigureFixedWallpaper(root, ShellContent, options.TopSafeFadeName);
+
+            if (options.IncludeHeader)
+            {
+                Header = DeucarianEditorPackageHeader.Create(
+                    options.HeaderPackageKey,
+                    options.HeaderTitle,
+                    options.HeaderSubtitle);
+                Header.AddToClassList(HeaderClass);
+                ShellContent.Add(Header);
+            }
 
             if (options.IncludeToolbar)
             {
@@ -101,6 +136,7 @@ namespace Deucarian.Editor
 
         public VisualElement Root { get; }
         public VisualElement ShellContent { get; }
+        public VisualElement Header { get; }
         public VisualElement Toolbar { get; }
         public VisualElement Main { get; }
         public VisualElement Content { get; }
@@ -181,9 +217,10 @@ namespace Deucarian.Editor
         public const string IconClass = "deucarian-icon-text-button__icon";
         public const string LabelClass = "deucarian-icon-text-button__label";
         public const string LeadingClass = "deucarian-icon-text-button--leading";
-        public const float IconSize = 14f;
-        public const float IconTextGap = 8f;
-        public const float HorizontalPadding = 8f;
+        public const float IconSize = DeucarianEditorLayoutMetrics.IconSize;
+        public const float IconTextGap = DeucarianEditorLayoutMetrics.IconTextGap;
+        public const float HorizontalPadding = DeucarianEditorLayoutMetrics.IconTextHorizontalPadding;
+        public const float VerticalPadding = DeucarianEditorLayoutMetrics.IconTextVerticalPadding;
 
         public static Button Create(
             string iconId,

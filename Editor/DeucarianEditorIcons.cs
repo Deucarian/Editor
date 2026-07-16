@@ -36,6 +36,7 @@ namespace Deucarian.Editor
             {
                 { "package-installer", new IconDefinition("Package Installer", DeucarianEditorIconIds.CreatePackage, "d_Package Manager", "Package Manager") },
                 { "theming", new IconDefinition("Theming", DeucarianEditorIconIds.Palette, "d_SceneViewFx", "SceneViewFx") },
+                { "diagnostics", new IconDefinition("Diagnostics", DeucarianEditorIconIds.Info, "d_console.infoicon", "console.infoicon") },
                 { "logging", new IconDefinition("Logging", DeucarianEditorIconIds.Logging, "d_UnityEditor.ConsoleWindow", "UnityEditor.ConsoleWindow") },
                 { "object-loading", new IconDefinition("Object Loading", DeucarianEditorIconIds.OpenFolder, "d_Prefab Icon", "Prefab Icon") },
                 { "api-helper", new IconDefinition("API Helper", null) },

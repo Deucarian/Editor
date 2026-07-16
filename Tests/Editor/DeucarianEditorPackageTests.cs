@@ -15,6 +15,7 @@ namespace Deucarian.Editor.Tests
         {
             "package-installer",
             "theming",
+            "diagnostics",
             "logging",
             "object-loading",
             "api-helper",
@@ -335,9 +336,13 @@ namespace Deucarian.Editor.Tests
             var root = new VisualElement();
             var options = new DeucarianEditorWorkbenchOptions
             {
+                IncludeHeader = true,
                 IncludeToolbar = true,
                 IncludeDrawer = true,
                 IncludeFooter = true,
+                HeaderPackageKey = "diagnostics",
+                HeaderTitle = "Deucarian Diagnostics",
+                HeaderSubtitle = "Inspect local runtime health.",
                 ToolbarLayout = DeucarianEditorWorkbenchToolbarLayout.StableActionLanes,
                 DrawerMode = DeucarianEditorWorkbenchDrawerMode.Overlay,
                 TopSafeFadeName = "workbench-safe-fade"
@@ -346,6 +351,7 @@ namespace Deucarian.Editor.Tests
             using (DeucarianEditorWorkbench workbench = DeucarianEditorWorkbench.Create(root, options))
             {
                 Assert.NotNull(workbench.ShellContent);
+                Assert.NotNull(workbench.Header);
                 Assert.NotNull(workbench.Toolbar);
                 Assert.NotNull(workbench.Main);
                 Assert.AreSame(workbench.Main, workbench.Content.parent);
@@ -354,6 +360,12 @@ namespace Deucarian.Editor.Tests
                     DeucarianEditorWorkbenchSurfaces.OverlayDrawerHostClass));
                 Assert.IsTrue(workbench.Toolbar.ClassListContains(
                     DeucarianEditorWorkbenchToolbar.StableActionLanesClass));
+                Assert.IsTrue(workbench.Header.ClassListContains(
+                    DeucarianEditorPackageHeader.RootClass));
+                Assert.AreSame(workbench.ShellContent, workbench.Header.parent);
+                Assert.Less(
+                    workbench.ShellContent.IndexOf(workbench.Header),
+                    workbench.ShellContent.IndexOf(workbench.Toolbar));
                 Assert.AreSame(workbench.ShellContent, workbench.Footer.parent);
                 Assert.AreSame(
                     workbench.ShellContent,
@@ -368,6 +380,39 @@ namespace Deucarian.Editor.Tests
                 Assert.AreEqual(DeucarianEditorLayoutMode.Narrow, workbench.ApplyResponsiveLayout(899f));
                 Assert.AreEqual(DeucarianEditorLayoutMode.Narrow, workbench.ApplyResponsiveLayout(899f));
             }
+        }
+
+        [Test]
+        public void PackageHeaderFactory_UsesCanonicalCompositionAndMetrics()
+        {
+            VisualElement header = DeucarianEditorPackageHeader.Create(
+                "theming",
+                "Deucarian Theming",
+                "Compose and activate the project theme.");
+
+            Assert.IsTrue(header.ClassListContains(DeucarianEditorPackageHeader.RootClass));
+            Assert.NotNull(header.Q<Image>(className: DeucarianEditorPackageHeader.IconClass));
+            Assert.AreEqual(
+                "Deucarian Theming",
+                header.Q<Label>(className: DeucarianEditorPackageHeader.TitleClass).text);
+            Assert.AreEqual(
+                "Compose and activate the project theme.",
+                header.Q<Label>(className: DeucarianEditorPackageHeader.SubtitleClass).text);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PackageHeaderIconSize,
+                DeucarianEditorPackageHeader.IconSize);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PackageHeaderIconTextGap,
+                DeucarianEditorPackageHeader.IconTextGap);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PackageHeaderHorizontalPadding,
+                DeucarianEditorStyles.PackageHeaderBox.padding.left);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PackageHeaderVerticalPadding,
+                DeucarianEditorStyles.PackageHeaderBox.padding.top);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PackageHeaderBottomMargin,
+                DeucarianEditorStyles.PackageHeaderBox.margin.bottom);
         }
 
         [Test]
@@ -495,6 +540,16 @@ namespace Deucarian.Editor.Tests
             Assert.IsTrue(drawerAction.ClassListContains(DeucarianEditorIconTextButton.RootClass));
             Assert.IsTrue(drawerAction.ClassListContains(DeucarianEditorIconTextButton.LeadingClass));
             Assert.NotNull(drawerAction.Q<Image>(className: DeucarianEditorWorkbenchToolbar.IconClass));
+
+            Button reset = DeucarianEditorSettingsActions.CreateResetToDefaultsButton(null);
+            Assert.IsTrue(reset.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.IsTrue(reset.ClassListContains(DeucarianEditorIconTextButton.LeadingClass));
+            Assert.IsTrue(reset.ClassListContains(DeucarianEditorSettingsActions.ResetActionClass));
+            Assert.AreEqual(
+                DeucarianEditorSettingsActions.ResetToDefaultsLabel,
+                reset.Q<Label>(className: DeucarianEditorIconTextButton.LabelClass).text);
+            Assert.AreEqual(DeucarianEditorSettingsActions.ResetButtonWidth, reset.style.width.value.value);
+            Assert.AreEqual(DeucarianEditorSettingsActions.ResetButtonHeight, reset.style.height.value.value);
         }
 
         [Test]
@@ -505,8 +560,15 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(24f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
             Assert.AreEqual(FontStyle.Bold, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
             Assert.AreEqual(24f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
-            Assert.AreEqual(12, DeucarianEditorWorkbenchGUI.WindowStyle.padding.left);
-            Assert.AreEqual(10, DeucarianEditorWorkbenchGUI.WindowStyle.padding.top);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PageHorizontalPadding,
+                DeucarianEditorWorkbenchGUI.WindowStyle.padding.left);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PageTopPadding,
+                DeucarianEditorWorkbenchGUI.WindowStyle.padding.top);
+            Assert.AreEqual(
+                DeucarianEditorLayoutMetrics.PageBottomPadding,
+                DeucarianEditorWorkbenchGUI.WindowStyle.padding.bottom);
             Assert.AreEqual(10, DeucarianEditorWorkbenchGUI.SidebarStyle.padding.left);
             Assert.AreEqual(10, DeucarianEditorWorkbenchGUI.DetailsStyle.padding.right);
             Assert.AreEqual(8, DeucarianEditorWorkbenchGUI.SampleRowStyle.padding.top);
@@ -516,6 +578,8 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.CompactIconActionHeight);
             Assert.AreEqual(14f, DeucarianEditorWorkbenchGUI.CompactIconSize);
             Assert.AreEqual(8f, DeucarianEditorWorkbenchGUI.CompactIconTextGap);
+            Assert.AreEqual(8, DeucarianEditorStyles.ToolbarButton.padding.left);
+            Assert.AreEqual(0, DeucarianEditorStyles.ToolbarButton.padding.top);
             Assert.AreEqual(
                 DeucarianEditorIconTextButton.IconSize,
                 DeucarianEditorWorkbenchGUI.CompactIconSize);
@@ -608,6 +672,76 @@ namespace Deucarian.Editor.Tests
             StringAssert.Contains(".deucarian-workbench-operation-footer__action:active", uss);
             StringAssert.Contains(".dpi-operation-footer__details-button:active", uss);
             StringAssert.Contains("--deucarian-workbench-operation-footer-height: 34px;", uss);
+        }
+
+        [Test]
+        public void SharedStyleSheet_UsesOneIconTextPaddingContractAcrossSurfaces()
+        {
+            PackageInfo package = PackageInfo.FindForAssetPath(DeucarianEditorUIResources.SharedStyleSheetPath);
+            const string packagePrefix = "Packages/com.deucarian.editor/";
+            string relativePath = DeucarianEditorUIResources.SharedStyleSheetPath.Substring(packagePrefix.Length);
+            string absolutePath = package == null
+                ? Path.GetFullPath(DeucarianEditorUIResources.SharedStyleSheetPath)
+                : Path.Combine(package.resolvedPath, relativePath);
+            string uss = File.ReadAllText(absolutePath);
+
+            Assert.AreEqual(8f, DeucarianEditorIconTextButton.HorizontalPadding);
+            Assert.AreEqual(0f, DeucarianEditorIconTextButton.VerticalPadding);
+            Assert.AreEqual(8f, DeucarianEditorIconTextButton.IconTextGap);
+            Assert.AreEqual(14f, DeucarianEditorIconTextButton.IconSize);
+
+            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-icon-text-button");
+            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-workbench-toolbar__action--icon");
+            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-workbench-operation-drawer__action");
+            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-workbench-operation-footer__action,");
+            StringAssert.DoesNotContain("padding-left: 6px;", uss);
+            StringAssert.DoesNotContain("padding-right: 6px;", uss);
+        }
+
+        [Test]
+        public void SharedStyleSheet_UsesOnePackageHeaderContractForCanonicalAndLegacyClasses()
+        {
+            PackageInfo package = PackageInfo.FindForAssetPath(DeucarianEditorUIResources.SharedStyleSheetPath);
+            const string packagePrefix = "Packages/com.deucarian.editor/";
+            string relativePath = DeucarianEditorUIResources.SharedStyleSheetPath.Substring(packagePrefix.Length);
+            string absolutePath = package == null
+                ? Path.GetFullPath(DeucarianEditorUIResources.SharedStyleSheetPath)
+                : Path.Combine(package.resolvedPath, relativePath);
+            string uss = File.ReadAllText(absolutePath);
+
+            string headerRule = GetStyleRule(uss, ".deucarian-package-header,");
+            StringAssert.Contains(".deucarian-header", headerRule);
+            StringAssert.Contains("min-height: 58px;", headerRule);
+            StringAssert.Contains("margin-bottom: 8px;", headerRule);
+            StringAssert.Contains("padding-left: 12px;", headerRule);
+            StringAssert.Contains("padding-right: 12px;", headerRule);
+            StringAssert.Contains("padding-top: 10px;", headerRule);
+            StringAssert.Contains("padding-bottom: 10px;", headerRule);
+
+            string iconRule = GetStyleRule(uss, ".deucarian-package-header__icon");
+            StringAssert.Contains("width: 24px;", iconRule);
+            StringAssert.Contains("height: 24px;", iconRule);
+            StringAssert.Contains("margin-right: 10px;", iconRule);
+            StringAssert.DoesNotContain("min-height: 90px;", uss);
+        }
+
+        private static void AssertIconTextRuleUsesSharedPadding(string uss, string selector)
+        {
+            string rule = GetStyleRule(uss, selector);
+
+            StringAssert.Contains("padding-left: 8px;", rule, selector);
+            StringAssert.Contains("padding-right: 8px;", rule, selector);
+            StringAssert.Contains("padding-top: 0;", rule, selector);
+            StringAssert.Contains("padding-bottom: 0;", rule, selector);
+        }
+
+        private static string GetStyleRule(string uss, string selector)
+        {
+            int ruleStart = uss.IndexOf(selector, StringComparison.Ordinal);
+            Assert.GreaterOrEqual(ruleStart, 0, selector);
+            int ruleEnd = uss.IndexOf('}', ruleStart);
+            Assert.Greater(ruleEnd, ruleStart, selector);
+            return uss.Substring(ruleStart, ruleEnd - ruleStart);
         }
 
         [Test]

@@ -1,13 +1,71 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
+    /// <summary>
+    /// The single package-header composition used by editor windows and settings pages.
+    /// UI Toolkit and IMGUI variants share these exact metrics and visual roles.
+    /// </summary>
+    public static class DeucarianEditorPackageHeader
+    {
+        public const string RootClass = "deucarian-package-header";
+        public const string IconClass = "deucarian-package-header__icon";
+        public const string TextClass = "deucarian-package-header__text";
+        public const string TitleClass = "deucarian-package-header__title";
+        public const string SubtitleClass = "deucarian-package-header__subtitle";
+        public const float IconSize = DeucarianEditorLayoutMetrics.PackageHeaderIconSize;
+        public const float HorizontalPadding = DeucarianEditorLayoutMetrics.PackageHeaderHorizontalPadding;
+        public const float VerticalPadding = DeucarianEditorLayoutMetrics.PackageHeaderVerticalPadding;
+        public const float IconTextGap = DeucarianEditorLayoutMetrics.PackageHeaderIconTextGap;
+        public const float BottomMargin = DeucarianEditorLayoutMetrics.PackageHeaderBottomMargin;
+
+        public static VisualElement Create(string packageKey, string title, string subtitle)
+        {
+            var header = new VisualElement { name = "deucarian-package-header" };
+            header.AddToClassList(RootClass);
+
+            var icon = new Image
+            {
+                image = DeucarianEditorIcons.GetPackageIcon(packageKey),
+                scaleMode = ScaleMode.ScaleToFit,
+                tintColor = DeucarianEditorTheme.Text,
+                pickingMode = PickingMode.Ignore
+            };
+            icon.AddToClassList(IconClass);
+
+            var text = new VisualElement { pickingMode = PickingMode.Ignore };
+            text.AddToClassList(TextClass);
+
+            var titleLabel = new Label(title ?? string.Empty)
+            {
+                pickingMode = PickingMode.Ignore
+            };
+            titleLabel.AddToClassList(TitleClass);
+            text.Add(titleLabel);
+
+            if (!string.IsNullOrWhiteSpace(subtitle))
+            {
+                var subtitleLabel = new Label(subtitle)
+                {
+                    pickingMode = PickingMode.Ignore
+                };
+                subtitleLabel.AddToClassList(SubtitleClass);
+                text.Add(subtitleLabel);
+            }
+
+            header.Add(icon);
+            header.Add(text);
+            return header;
+        }
+    }
+
     public static class DeucarianEditorChrome
     {
         public static void DrawPackageHeader(string title, string subtitle, Texture2D icon = null)
         {
-            DrawPackageHeader(title, subtitle, icon, 24f);
+            DrawPackageHeader(title, subtitle, icon, DeucarianEditorPackageHeader.IconSize);
         }
 
         public static void DrawPackageHeader(
@@ -32,7 +90,7 @@ namespace Deucarian.Editor
                     GUILayout.Width(safeIconSize),
                     GUILayout.Height(safeIconSize));
                 DeucarianEditorIcons.DrawIcon(iconRect, icon, DeucarianEditorColors.TitleText);
-                GUILayout.Space(8);
+                GUILayout.Space(DeucarianEditorPackageHeader.IconTextGap);
             }
 
             EditorGUILayout.BeginVertical();

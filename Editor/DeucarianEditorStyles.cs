@@ -122,8 +122,16 @@ namespace Deucarian.Editor
             cachedProSkin = proSkin;
 
             packageHeaderBox = CopyStyle(() => EditorStyles.helpBox);
-            packageHeaderBox.padding = new RectOffset(12, 12, 10, 10);
-            packageHeaderBox.margin = new RectOffset(0, 0, 0, 10);
+            packageHeaderBox.padding = new RectOffset(
+                DeucarianEditorLayoutMetrics.PackageHeaderHorizontalPadding,
+                DeucarianEditorLayoutMetrics.PackageHeaderHorizontalPadding,
+                DeucarianEditorLayoutMetrics.PackageHeaderVerticalPadding,
+                DeucarianEditorLayoutMetrics.PackageHeaderVerticalPadding);
+            packageHeaderBox.margin = new RectOffset(
+                0,
+                0,
+                0,
+                DeucarianEditorLayoutMetrics.PackageHeaderBottomMargin);
             packageHeaderBox.normal.background = TextureForColor("header", DeucarianEditorColors.HeaderBackground);
 
             packageHeaderTitle = CopyStyle(() => EditorStyles.boldLabel);
@@ -164,7 +172,11 @@ namespace Deucarian.Editor
 
             toolbarButton = CopyStyle(() => EditorStyles.toolbarButton);
             toolbarButton.alignment = TextAnchor.MiddleCenter;
-            toolbarButton.padding = new RectOffset(8, 8, 2, 2);
+            toolbarButton.padding = new RectOffset(
+                DeucarianEditorLayoutMetrics.IconTextHorizontalPadding,
+                DeucarianEditorLayoutMetrics.IconTextHorizontalPadding,
+                DeucarianEditorLayoutMetrics.IconTextVerticalPadding,
+                DeucarianEditorLayoutMetrics.IconTextVerticalPadding);
 
             footerVersionText = CopyStyle(() => EditorStyles.miniLabel);
             footerVersionText.alignment = TextAnchor.MiddleRight;
