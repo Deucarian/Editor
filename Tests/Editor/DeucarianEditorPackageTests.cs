@@ -1,6 +1,9 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -26,7 +29,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("1.0.0", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("1.0.2", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -240,6 +243,223 @@ namespace Deucarian.Editor.Tests
             Assert.IsTrue(medium.PreviewStacked);
             Assert.IsTrue(narrow.Narrow);
             Assert.Less(narrow.SidebarWidth, DeucarianEditorSpacing.SidebarWidth);
+        }
+
+        [TestCase(899f, DeucarianEditorLayoutMode.Narrow)]
+        [TestCase(900f, DeucarianEditorLayoutMode.Compact)]
+        [TestCase(1179f, DeucarianEditorLayoutMode.Compact)]
+        [TestCase(1180f, DeucarianEditorLayoutMode.Wide)]
+        public void WorkbenchResponsiveLayout_UsesInstallerBreakpoints(
+            float width,
+            DeucarianEditorLayoutMode expected)
+        {
+            Assert.AreEqual(expected, DeucarianEditorResponsiveLayout.ResolveMode(width));
+            Assert.AreEqual(900f, DeucarianEditorResponsiveLayout.WorkbenchNarrowBreakpoint);
+            Assert.AreEqual(1180f, DeucarianEditorResponsiveLayout.WorkbenchWideBreakpoint);
+        }
+
+        [Test]
+        public void WorkbenchResponsiveClasses_AreExclusiveAndIdempotent()
+        {
+            var element = new VisualElement();
+
+            DeucarianEditorResponsiveLayout.ApplyResponsiveClasses(element, 899f);
+            DeucarianEditorResponsiveLayout.ApplyResponsiveClasses(element, 899f);
+
+            Assert.IsTrue(element.ClassListContains(DeucarianEditorResponsiveLayout.NarrowClass));
+            Assert.AreEqual(
+                1,
+                element.GetClasses().Count(className =>
+                    className == DeucarianEditorResponsiveLayout.NarrowClass));
+
+            DeucarianEditorResponsiveLayout.ApplyResponsiveClasses(element, 1180f);
+
+            Assert.IsTrue(element.ClassListContains(DeucarianEditorResponsiveLayout.WideClass));
+            Assert.IsFalse(element.ClassListContains(DeucarianEditorResponsiveLayout.CompactClass));
+            Assert.IsFalse(element.ClassListContains(DeucarianEditorResponsiveLayout.NarrowClass));
+        }
+
+        [Test]
+        public void Workbench_ComposesExpectedHierarchyAndWallpaperHost()
+        {
+            var root = new VisualElement();
+            var options = new DeucarianEditorWorkbenchOptions
+            {
+                IncludeToolbar = true,
+                IncludeDrawer = true,
+                IncludeFooter = true,
+                TopSafeFadeName = "workbench-safe-fade"
+            };
+
+            using (DeucarianEditorWorkbench workbench = DeucarianEditorWorkbench.Create(root, options))
+            {
+                Assert.NotNull(workbench.ShellContent);
+                Assert.NotNull(workbench.Toolbar);
+                Assert.NotNull(workbench.Main);
+                Assert.AreSame(workbench.Main, workbench.Content.parent);
+                Assert.AreSame(workbench.Main, workbench.Drawer.parent);
+                Assert.AreSame(workbench.ShellContent, workbench.Footer.parent);
+                Assert.AreSame(
+                    workbench.ShellContent,
+                    root.Q<VisualElement>("deucarian-window-background").parent);
+                Assert.AreSame(
+                    workbench.ShellContent,
+                    root.Q<VisualElement>("deucarian-window-overlay").parent);
+                Assert.AreSame(
+                    workbench.ShellContent,
+                    root.Q<VisualElement>("workbench-safe-fade").parent);
+
+                Assert.AreEqual(DeucarianEditorLayoutMode.Narrow, workbench.ApplyResponsiveLayout(899f));
+                Assert.AreEqual(DeucarianEditorLayoutMode.Narrow, workbench.ApplyResponsiveLayout(899f));
+            }
+        }
+
+        [Test]
+        public void WorkbenchToolbarFactories_ApplySharedContractClasses()
+        {
+            VisualElement toolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar();
+            Button standard = DeucarianEditorWorkbenchToolbar.CreateActionButton("Refresh", null);
+            Button emphasized = DeucarianEditorWorkbenchToolbar.CreateActionButton("Apply", null, true);
+            Button toggle = DeucarianEditorWorkbenchToolbar.CreateToggleButton("Stable", null, true);
+            Label summary = DeucarianEditorWorkbenchToolbar.CreateSummary("3 packages");
+            VisualElement spacer = DeucarianEditorWorkbenchToolbar.CreateSpacer();
+
+            Assert.IsTrue(toolbar.ClassListContains(DeucarianEditorWorkbenchToolbar.ToolbarClass));
+            Assert.IsTrue(standard.ClassListContains(DeucarianEditorWorkbenchToolbar.StandardActionClass));
+            Assert.IsTrue(emphasized.ClassListContains(DeucarianEditorWorkbenchToolbar.EmphasizedActionClass));
+            Assert.IsTrue(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleClass));
+            Assert.IsTrue(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleActiveClass));
+            Assert.IsTrue(summary.ClassListContains(DeucarianEditorWorkbenchToolbar.SummaryClass));
+            Assert.IsTrue(spacer.ClassListContains(DeucarianEditorWorkbenchToolbar.SpacerClass));
+
+            DeucarianEditorWorkbenchToolbar.SetToggleActive(toggle, false);
+            Assert.IsFalse(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleActiveClass));
+        }
+
+        [Test]
+        public void WorkbenchDrawerAndFooterFactories_AreDomainNeutralAndStable()
+        {
+            DeucarianEditorWorkbenchDrawer drawer = DeucarianEditorWorkbenchSurfaces.CreateDrawer(true);
+            Assert.IsTrue(drawer.Root.ClassListContains(DeucarianEditorWorkbenchSurfaces.DrawerExpandedClass));
+            Assert.IsFalse(drawer.Root.ClassListContains(DeucarianEditorWorkbenchSurfaces.DrawerCollapsedClass));
+            Assert.NotNull(drawer.ScrollView);
+            Assert.NotNull(drawer.Content);
+
+            DeucarianEditorWorkbenchSurfaces.SetDrawerExpanded(drawer.Root, false);
+            Assert.IsFalse(drawer.Root.ClassListContains(DeucarianEditorWorkbenchSurfaces.DrawerExpandedClass));
+            Assert.IsTrue(drawer.Root.ClassListContains(DeucarianEditorWorkbenchSurfaces.DrawerCollapsedClass));
+
+            DeucarianEditorWorkbenchFooter footer = DeucarianEditorWorkbenchSurfaces.CreateFooter(
+                "i", "Idle", "Nothing running", "Details", null, DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual(5, footer.Root.childCount);
+            Assert.IsTrue(footer.Action.ClassListContains(DeucarianEditorWorkbenchSurfaces.FooterActionClass));
+            DeucarianEditorWorkbenchSurfaces.SetFooterStatus(footer, DeucarianEditorStatus.Success);
+            Assert.IsTrue(footer.StatusIcon.ClassListContains(DeucarianEditorWorkbenchSurfaces.FooterStatusSuccessClass));
+        }
+
+        [Test]
+        public void WorkbenchImGuiStyles_PreserveInstallerMetrics()
+        {
+            DeucarianEditorWorkbenchGUI.ClearCache();
+
+            Assert.AreEqual(24f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
+            Assert.AreEqual(FontStyle.Bold, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
+            Assert.AreEqual(24f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
+            Assert.AreEqual(12, DeucarianEditorWorkbenchGUI.WindowStyle.padding.left);
+            Assert.AreEqual(10, DeucarianEditorWorkbenchGUI.WindowStyle.padding.top);
+            Assert.AreEqual(10, DeucarianEditorWorkbenchGUI.SidebarStyle.padding.left);
+            Assert.AreEqual(10, DeucarianEditorWorkbenchGUI.DetailsStyle.padding.right);
+            Assert.AreEqual(8, DeucarianEditorWorkbenchGUI.SampleRowStyle.padding.top);
+            Assert.AreEqual(2, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.top);
+            Assert.AreEqual(6, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.bottom);
+            Assert.AreEqual(118f, DeucarianEditorWorkbenchGUI.DetailLabelWidth);
+            Assert.AreEqual(0.46f, DeucarianEditorWorkbenchGUI.RowBackgroundColor.a, 0.001f);
+            Assert.AreEqual(0.62f, DeucarianEditorWorkbenchGUI.RowHoverColor.a, 0.001f);
+            Assert.AreEqual(0.58f, DeucarianEditorWorkbenchGUI.RowSelectedColor.a, 0.001f);
+        }
+
+        [Test]
+        public void WorkbenchStatusRows_PreserveInstallerContentColorComposition()
+        {
+            const string assetPath =
+                "Packages/com.deucarian.editor/Editor/DeucarianEditorWorkbenchGUI.cs";
+            PackageInfo package = PackageInfo.FindForAssetPath(assetPath);
+            const string packagePrefix = "Packages/com.deucarian.editor/";
+            string relativePath = assetPath.Substring(packagePrefix.Length);
+            string absolutePath = package == null
+                ? Path.GetFullPath(assetPath)
+                : Path.Combine(package.resolvedPath, relativePath);
+            string source = File.ReadAllText(absolutePath);
+            int methodStart = source.IndexOf(
+                "private static void DrawColoredLabel",
+                StringComparison.Ordinal);
+            int methodEnd = source.IndexOf(
+                "private static void EnsureStyles",
+                methodStart,
+                StringComparison.Ordinal);
+
+            Assert.GreaterOrEqual(methodStart, 0);
+            Assert.Greater(methodEnd, methodStart);
+            string methodSource = source.Substring(methodStart, methodEnd - methodStart);
+
+            StringAssert.Contains("Color previousColor = GUI.contentColor;", methodSource);
+            StringAssert.Contains("GUI.contentColor = color;", methodSource);
+            StringAssert.Contains("GUI.Label(rect, content, style);", methodSource);
+            StringAssert.Contains("GUI.contentColor = previousColor;", methodSource);
+            StringAssert.DoesNotContain("new GUIStyle(style)", methodSource);
+        }
+
+        [Test]
+        public void SharedStyleSheet_ContainsWorkbenchAndCompatibilityContracts()
+        {
+            PackageInfo package = PackageInfo.FindForAssetPath(DeucarianEditorUIResources.SharedStyleSheetPath);
+            const string packagePrefix = "Packages/com.deucarian.editor/";
+            string relativePath = DeucarianEditorUIResources.SharedStyleSheetPath.Substring(packagePrefix.Length);
+            string absolutePath = package == null
+                ? Path.GetFullPath(DeucarianEditorUIResources.SharedStyleSheetPath)
+                : Path.Combine(package.resolvedPath, relativePath);
+            Assert.IsTrue(File.Exists(absolutePath), absolutePath);
+            string uss = File.ReadAllText(absolutePath);
+
+            StringAssert.Contains(".deucarian-workbench-toolbar", uss);
+            StringAssert.Contains(".dpi-view-toolbar", uss);
+            StringAssert.Contains("height: 24px;", uss);
+            StringAssert.Contains("min-width: 86px;", uss);
+            StringAssert.Contains(".deucarian-workbench-operation-drawer", uss);
+            StringAssert.Contains(".dpi-operation-drawer", uss);
+            StringAssert.Contains(".deucarian-workbench-operation-footer__action:active", uss);
+            StringAssert.Contains(".dpi-operation-footer__details-button:active", uss);
+            StringAssert.Contains("--deucarian-workbench-operation-footer-height: 34px;", uss);
+        }
+
+        [Test]
+        public void LayoutScopes_AreDisposableContracts()
+        {
+            Assert.IsTrue(typeof(IDisposable).IsAssignableFrom(typeof(DeucarianEditorCardScope)));
+            Assert.IsTrue(typeof(IDisposable).IsAssignableFrom(typeof(DeucarianEditorFoldoutScope)));
+            Assert.IsTrue(typeof(IDisposable).IsAssignableFrom(typeof(DeucarianEditorWorkbenchPanelScope)));
+            Assert.NotNull(typeof(DeucarianEditorCards).GetMethod("BeginCardScope"));
+            Assert.NotNull(typeof(DeucarianEditorCards).GetMethod("BeginInlineCardScope"));
+            Assert.NotNull(typeof(DeucarianEditorAccordion).GetMethod("BeginFoldoutCardScope"));
+            Assert.NotNull(typeof(DeucarianEditorFoldoutCard).GetMethod("BeginScope"));
+        }
+
+        [Test]
+        public void CardScope_DisposeEndsLayoutExactlyOnce()
+        {
+            int endCount = 0;
+            ConstructorInfo constructor = typeof(DeucarianEditorCardScope).GetConstructor(
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new[] { typeof(Action) },
+                null);
+
+            Assert.NotNull(constructor);
+            var scope = (IDisposable)constructor.Invoke(new object[] { (Action)(() => endCount++) });
+            scope.Dispose();
+            scope.Dispose();
+
+            Assert.AreEqual(1, endCount);
         }
 
         [Test]

@@ -52,30 +52,100 @@ namespace Deucarian.Editor
             bool enabled = true,
             Action drawHeaderActions = null)
         {
+            using (DeucarianEditorFoldoutScope scope = BeginFoldoutCardScope(
+                       stateKey,
+                       title,
+                       summary,
+                       defaultOpen,
+                       enabled,
+                       drawHeaderActions))
+            {
+                if (scope.Open)
+                {
+                    drawContent?.Invoke();
+                }
+
+                return scope.Open;
+            }
+        }
+
+        public static DeucarianEditorFoldoutScope BeginFoldoutCardScope(
+            string stateKey,
+            string title,
+            string summary,
+            bool defaultOpen = true,
+            bool enabled = true,
+            Action drawHeaderActions = null)
+        {
+            bool open = DrawFoldoutHeader(
+                stateKey,
+                title,
+                summary,
+                defaultOpen,
+                enabled,
+                drawHeaderActions);
+
+            if (!open)
+            {
+                return new DeucarianEditorFoldoutScope(false, null);
+            }
+
+            Rect bodyRect = EditorGUILayout.BeginVertical(BodyStyle);
+            if (Event.current != null && Event.current.type == EventType.Repaint)
+            {
+                DeucarianEditorVisualShell.DrawInsetSurface(
+                    bodyRect,
+                    DeucarianEditorTheme.GlassPanelSoft,
+                    DeucarianEditorTheme.BorderSubtle,
+                    DeucarianEditorSpacing.CardRadius);
+            }
+
+            return new DeucarianEditorFoldoutScope(true, new EditorGUI.DisabledScope(!enabled));
+        }
+
+        private static bool DrawFoldoutHeader(
+            string stateKey,
+            string title,
+            string summary,
+            bool defaultOpen,
+            bool enabled,
+            Action drawHeaderActions)
+        {
             bool open = GetFoldoutState(stateKey, defaultOpen);
             string key = NormalizeKey(stateKey);
             Rect headerRect = EditorGUILayout.BeginHorizontal(HeaderStyle, GUILayout.MinHeight(40f));
-            DrawHeaderBackground(headerRect, open, enabled);
-
-            GUILayout.Label(open ? "v" : ">", IndicatorStyle, GUILayout.Width(18f));
-            EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField(title ?? string.Empty, TitleStyle);
-            if (!string.IsNullOrWhiteSpace(summary))
+            try
             {
-                EditorGUILayout.LabelField(summary, SummaryStyle);
-            }
+                DrawHeaderBackground(headerRect, open, enabled);
 
-            EditorGUILayout.EndVertical();
-            if (drawHeaderActions != null)
-            {
-                GUILayout.FlexibleSpace();
-                using (new EditorGUI.DisabledScope(!enabled))
+                GUILayout.Label(open ? "v" : ">", IndicatorStyle, GUILayout.Width(18f));
+                EditorGUILayout.BeginVertical();
+                try
                 {
-                    drawHeaderActions();
+                    EditorGUILayout.LabelField(title ?? string.Empty, TitleStyle);
+                    if (!string.IsNullOrWhiteSpace(summary))
+                    {
+                        EditorGUILayout.LabelField(summary, SummaryStyle);
+                    }
+                }
+                finally
+                {
+                    EditorGUILayout.EndVertical();
+                }
+
+                if (drawHeaderActions != null)
+                {
+                    GUILayout.FlexibleSpace();
+                    using (new EditorGUI.DisabledScope(!enabled))
+                    {
+                        drawHeaderActions();
+                    }
                 }
             }
-
-            EditorGUILayout.EndHorizontal();
+            finally
+            {
+                EditorGUILayout.EndHorizontal();
+            }
 
             Rect toggleRect = headerRect;
             if (drawHeaderActions != null)
@@ -89,31 +159,6 @@ namespace Deucarian.Editor
                 SetFoldoutState(key, open);
                 GUI.changed = true;
                 Event.current.Use();
-            }
-
-            if (open)
-            {
-                Rect bodyRect = EditorGUILayout.BeginVertical(BodyStyle);
-                if (Event.current != null && Event.current.type == EventType.Repaint)
-                {
-                    DeucarianEditorVisualShell.DrawInsetSurface(
-                        bodyRect,
-                        DeucarianEditorTheme.GlassPanelSoft,
-                        DeucarianEditorTheme.BorderSubtle,
-                        DeucarianEditorSpacing.CardRadius);
-                }
-
-                using (new EditorGUI.DisabledScope(!enabled))
-                {
-                    drawContent?.Invoke();
-                }
-
-                EditorGUILayout.EndVertical();
-                GUILayout.Space(DeucarianEditorSpacing.Small);
-            }
-            else
-            {
-                GUILayout.Space(DeucarianEditorSpacing.Tiny);
             }
 
             return open;
@@ -271,6 +316,46 @@ namespace Deucarian.Editor
                 }
 
                 return indicatorStyle;
+            }
+        }
+    }
+
+    public sealed class DeucarianEditorFoldoutScope : IDisposable
+    {
+        private readonly IDisposable disabledScope;
+        private bool disposed;
+
+        internal DeucarianEditorFoldoutScope(bool open, IDisposable disabledScope)
+        {
+            Open = open;
+            this.disabledScope = disabledScope;
+        }
+
+        public bool Open { get; }
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            if (Open)
+            {
+                try
+                {
+                    disabledScope?.Dispose();
+                }
+                finally
+                {
+                    EditorGUILayout.EndVertical();
+                    GUILayout.Space(DeucarianEditorSpacing.Small);
+                }
+            }
+            else
+            {
+                GUILayout.Space(DeucarianEditorSpacing.Tiny);
             }
         }
     }
