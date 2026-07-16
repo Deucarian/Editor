@@ -24,6 +24,27 @@ namespace Deucarian.Editor.Tests
             "editor"
         };
 
+        private static readonly string[] KnownIconIds =
+        {
+            DeucarianEditorIconIds.Warning,
+            DeucarianEditorIconIds.Undo,
+            DeucarianEditorIconIds.Check,
+            DeucarianEditorIconIds.Wrench,
+            DeucarianEditorIconIds.CreateFolder,
+            DeucarianEditorIconIds.CreatePackage,
+            DeucarianEditorIconIds.OpenFolder,
+            DeucarianEditorIconIds.Palette,
+            DeucarianEditorIconIds.History,
+            DeucarianEditorIconIds.Refresh,
+            DeucarianEditorIconIds.Monitor,
+            DeucarianEditorIconIds.Copy,
+            DeucarianEditorIconIds.Info,
+            DeucarianEditorIconIds.Reset,
+            DeucarianEditorIconIds.Logging,
+            DeucarianEditorIconIds.ChevronDown,
+            DeucarianEditorIconIds.ChevronRight
+        };
+
         [Test]
         public void PackageConstants_AreCorrect()
         {
@@ -51,6 +72,35 @@ namespace Deucarian.Editor.Tests
         {
             Assert.NotNull(DeucarianEditorIcons.GetFallbackIcon("Missing"));
             Assert.NotNull(DeucarianEditorIcons.GetPackageContent("missing-package", "Missing", "Tooltip"));
+        }
+
+        [Test]
+        public void CuratedLucideIcons_LoadAndUnknownIdsFallback()
+        {
+            foreach (string iconId in KnownIconIds)
+            {
+                Assert.IsTrue(DeucarianEditorIcons.IsKnownIconId(iconId), iconId);
+                Assert.NotNull(DeucarianEditorIcons.GetIcon(iconId), iconId);
+                GUIContent content = DeucarianEditorIcons.GetIconContent(iconId, "Label", "Tooltip");
+                Assert.NotNull(content.image, iconId);
+                Assert.AreEqual("Label", content.text);
+                Assert.AreEqual("Tooltip", content.tooltip);
+            }
+
+            Assert.IsFalse(DeucarianEditorIcons.IsKnownIconId("missing"));
+            Assert.NotNull(DeucarianEditorIcons.GetIcon("missing"));
+        }
+
+        [Test]
+        public void EditorPackage_DoesNotDependOnVectorGraphics()
+        {
+            PackageInfo package = PackageInfo.FindForAssetPath(
+                "Packages/com.deucarian.editor/package.json");
+            string packagePath = package == null
+                ? Path.GetFullPath("package.json")
+                : Path.Combine(package.resolvedPath, "package.json");
+            string json = File.ReadAllText(packagePath);
+            StringAssert.DoesNotContain("com.unity.vectorgraphics", json);
         }
 
         [Test]
@@ -288,6 +338,8 @@ namespace Deucarian.Editor.Tests
                 IncludeToolbar = true,
                 IncludeDrawer = true,
                 IncludeFooter = true,
+                ToolbarLayout = DeucarianEditorWorkbenchToolbarLayout.StableActionLanes,
+                DrawerMode = DeucarianEditorWorkbenchDrawerMode.Overlay,
                 TopSafeFadeName = "workbench-safe-fade"
             };
 
@@ -298,6 +350,10 @@ namespace Deucarian.Editor.Tests
                 Assert.NotNull(workbench.Main);
                 Assert.AreSame(workbench.Main, workbench.Content.parent);
                 Assert.AreSame(workbench.Main, workbench.Drawer.parent);
+                Assert.IsTrue(workbench.Drawer.ClassListContains(
+                    DeucarianEditorWorkbenchSurfaces.OverlayDrawerHostClass));
+                Assert.IsTrue(workbench.Toolbar.ClassListContains(
+                    DeucarianEditorWorkbenchToolbar.StableActionLanesClass));
                 Assert.AreSame(workbench.ShellContent, workbench.Footer.parent);
                 Assert.AreSame(
                     workbench.ShellContent,
@@ -318,22 +374,67 @@ namespace Deucarian.Editor.Tests
         public void WorkbenchToolbarFactories_ApplySharedContractClasses()
         {
             VisualElement toolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar();
+            VisualElement stableToolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar(
+                DeucarianEditorWorkbenchToolbarLayout.StableActionLanes);
+            VisualElement compactToolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar(
+                DeucarianEditorWorkbenchToolbarLayout.CompactSingleLine);
             Button standard = DeucarianEditorWorkbenchToolbar.CreateActionButton("Refresh", null);
             Button emphasized = DeucarianEditorWorkbenchToolbar.CreateActionButton("Apply", null, true);
             Button toggle = DeucarianEditorWorkbenchToolbar.CreateToggleButton("Stable", null, true);
+            Button iconAction = DeucarianEditorWorkbenchToolbar.CreateIconActionButton(
+                DeucarianEditorIconIds.Refresh,
+                "Refresh",
+                null,
+                false,
+                "Reload");
             Label summary = DeucarianEditorWorkbenchToolbar.CreateSummary("3 packages");
             VisualElement spacer = DeucarianEditorWorkbenchToolbar.CreateSpacer();
 
             Assert.IsTrue(toolbar.ClassListContains(DeucarianEditorWorkbenchToolbar.ToolbarClass));
+            Assert.IsTrue(stableToolbar.ClassListContains(
+                DeucarianEditorWorkbenchToolbar.StableActionLanesClass));
+            Assert.IsTrue(compactToolbar.ClassListContains(
+                DeucarianEditorWorkbenchToolbar.CompactSingleLineClass));
             Assert.IsTrue(standard.ClassListContains(DeucarianEditorWorkbenchToolbar.StandardActionClass));
             Assert.IsTrue(emphasized.ClassListContains(DeucarianEditorWorkbenchToolbar.EmphasizedActionClass));
             Assert.IsTrue(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleClass));
             Assert.IsTrue(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleActiveClass));
+            Assert.IsTrue(iconAction.ClassListContains(DeucarianEditorWorkbenchToolbar.IconActionClass));
+            Assert.IsTrue(iconAction.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.NotNull(iconAction.Q<VisualElement>(
+                className: DeucarianEditorIconTextButton.ContentClass));
+            Assert.NotNull(iconAction.Q<Image>(className: DeucarianEditorWorkbenchToolbar.IconClass));
+            Assert.AreEqual(
+                "Refresh",
+                iconAction.Q<Label>(className: DeucarianEditorWorkbenchToolbar.IconLabelClass).text);
+            Assert.AreEqual(
+                DeucarianEditorTheme.Text,
+                iconAction.Q<Label>(className: DeucarianEditorWorkbenchToolbar.IconLabelClass).style.color.value);
+            Assert.AreEqual("Reload", iconAction.tooltip);
             Assert.IsTrue(summary.ClassListContains(DeucarianEditorWorkbenchToolbar.SummaryClass));
             Assert.IsTrue(spacer.ClassListContains(DeucarianEditorWorkbenchToolbar.SpacerClass));
 
             DeucarianEditorWorkbenchToolbar.SetToggleActive(toggle, false);
             Assert.IsFalse(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleActiveClass));
+
+            DeucarianEditorWorkbenchToolbar.SetIconActionButtonText(iconAction, "Reload now");
+            Assert.AreEqual(
+                "Reload now",
+                iconAction.Q<Label>(className: DeucarianEditorWorkbenchToolbar.IconLabelClass).text);
+
+            VisualElement navigation = DeucarianEditorWorkbenchToolbar.CreateGroup();
+            VisualElement actions = DeucarianEditorWorkbenchToolbar.CreateGroup(true);
+            VisualElement slot = DeucarianEditorWorkbenchToolbar.CreateReservedActionSlot(124f);
+            DeucarianEditorWorkbenchToolbar.SetReservedAction(slot, iconAction, false);
+            Assert.IsTrue(navigation.ClassListContains(
+                DeucarianEditorWorkbenchToolbar.NavigationGroupClass));
+            Assert.IsTrue(actions.ClassListContains(
+                DeucarianEditorWorkbenchToolbar.ActionGroupClass));
+            Assert.AreEqual(124f, slot.style.width.value.value);
+            Assert.AreEqual(Visibility.Hidden, slot.style.visibility.value);
+            Assert.AreSame(slot, iconAction.parent);
+            DeucarianEditorWorkbenchToolbar.SetReservedActionVisible(slot, true);
+            Assert.AreEqual(Visibility.Visible, slot.style.visibility.value);
         }
 
         [Test]
@@ -352,9 +453,41 @@ namespace Deucarian.Editor.Tests
             DeucarianEditorWorkbenchFooter footer = DeucarianEditorWorkbenchSurfaces.CreateFooter(
                 "i", "Idle", "Nothing running", "Details", null, DeucarianEditorPackageConstants.Version);
             Assert.AreEqual(5, footer.Root.childCount);
+            Assert.AreSame(footer.Actions, footer.Action.parent);
             Assert.IsTrue(footer.Action.ClassListContains(DeucarianEditorWorkbenchSurfaces.FooterActionClass));
+            Button secondary = DeucarianEditorWorkbenchSurfaces.AddFooterAction(
+                footer,
+                DeucarianEditorIconIds.Wrench,
+                "Tools",
+                null,
+                "Open tools",
+                112f);
+            Assert.NotNull(secondary);
+            Assert.AreEqual(2, footer.Actions.childCount);
+            Assert.AreEqual(112f, secondary.style.width.value.value);
+            Assert.IsTrue(secondary.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.NotNull(secondary.Q<Image>(className: DeucarianEditorWorkbenchToolbar.IconClass));
+            DeucarianEditorWorkbenchSurfaces.SetFooterIcon(footer, DeucarianEditorIconIds.Info);
+            Assert.AreEqual(DisplayStyle.None, footer.StatusIcon.style.display.value);
+            Assert.AreEqual(DisplayStyle.Flex, footer.StatusImage.style.display.value);
+            Assert.NotNull(footer.StatusImage.image);
             DeucarianEditorWorkbenchSurfaces.SetFooterStatus(footer, DeucarianEditorStatus.Success);
             Assert.IsTrue(footer.StatusIcon.ClassListContains(DeucarianEditorWorkbenchSurfaces.FooterStatusSuccessClass));
+
+            VisualElement column = DeucarianEditorWorkbenchSurfaces.CreateDrawerColumn("Create");
+            Button drawerAction = DeucarianEditorWorkbenchSurfaces.CreateDrawerAction(
+                DeucarianEditorIconIds.CreateFolder,
+                "Theme family...",
+                null,
+                "Create a family");
+            column.Add(drawerAction);
+            Assert.IsTrue(column.ClassListContains(
+                DeucarianEditorWorkbenchSurfaces.DrawerColumnClass));
+            Assert.IsTrue(drawerAction.ClassListContains(
+                DeucarianEditorWorkbenchSurfaces.DrawerActionClass));
+            Assert.IsTrue(drawerAction.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.IsTrue(drawerAction.ClassListContains(DeucarianEditorIconTextButton.LeadingClass));
+            Assert.NotNull(drawerAction.Q<Image>(className: DeucarianEditorWorkbenchToolbar.IconClass));
         }
 
         [Test]
@@ -373,9 +506,47 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(2, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.top);
             Assert.AreEqual(6, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.bottom);
             Assert.AreEqual(118f, DeucarianEditorWorkbenchGUI.DetailLabelWidth);
+            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.CompactIconActionHeight);
+            Assert.AreEqual(14f, DeucarianEditorWorkbenchGUI.CompactIconSize);
+            Assert.AreEqual(8f, DeucarianEditorWorkbenchGUI.CompactIconTextGap);
+            Assert.AreEqual(
+                DeucarianEditorIconTextButton.IconSize,
+                DeucarianEditorWorkbenchGUI.CompactIconSize);
+            Assert.AreEqual(
+                DeucarianEditorIconTextButton.IconTextGap,
+                DeucarianEditorWorkbenchGUI.CompactIconTextGap);
+            DeucarianEditorIconTextButton.CalculateImGuiContentRects(
+                new Rect(0f, 0f, 164f, 28f),
+                out Rect compactIconRect,
+                out Rect compactTextRect);
+            Assert.AreEqual(new Rect(8f, 7f, 14f, 14f), compactIconRect);
+            Assert.AreEqual(new Rect(30f, 0f, 126f, 28f), compactTextRect);
+            Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.LabelStyle.normal.textColor);
+            Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.BoldLabelStyle.normal.textColor);
+            Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.SectionTitleStyle.normal.textColor);
+            Assert.AreEqual(DeucarianEditorWorkbenchGUI.MutedTextColor, DeucarianEditorWorkbenchGUI.WordWrappedMiniLabelStyle.normal.textColor);
             Assert.AreEqual(0.46f, DeucarianEditorWorkbenchGUI.RowBackgroundColor.a, 0.001f);
             Assert.AreEqual(0.62f, DeucarianEditorWorkbenchGUI.RowHoverColor.a, 0.001f);
             Assert.AreEqual(0.58f, DeucarianEditorWorkbenchGUI.RowSelectedColor.a, 0.001f);
+        }
+
+        [Test]
+        public void BrandedImGuiSurfaces_KeepReadableContrastAcrossUnitySkins()
+        {
+            Assert.That(
+                ContrastRatio(DeucarianEditorColors.TitleText, DeucarianEditorColors.HeaderBackground),
+                Is.GreaterThanOrEqualTo(4.5f));
+            Assert.That(
+                ContrastRatio(DeucarianEditorColors.MutedText, DeucarianEditorColors.HeaderBackground),
+                Is.GreaterThanOrEqualTo(3f));
+            Assert.That(
+                ContrastRatio(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorColors.SectionBackground),
+                Is.GreaterThanOrEqualTo(4.5f));
+
+            Color lightSkinControlText = new Color(31f / 255f, 43f / 255f, 50f / 255f, 1f);
+            Assert.That(
+                ContrastRatio(lightSkinControlText, new Color(0.75f, 0.75f, 0.75f, 1f)),
+                Is.GreaterThanOrEqualTo(4.5f));
         }
 
         [Test]
@@ -499,6 +670,27 @@ namespace Deucarian.Editor.Tests
 #else
             Assert.AreEqual(ScaleMode.ScaleAndCrop, element.style.unityBackgroundScaleMode.value);
 #endif
+        }
+
+        private static float ContrastRatio(Color first, Color second)
+        {
+            float brighter = Mathf.Max(RelativeLuminance(first), RelativeLuminance(second));
+            float darker = Mathf.Min(RelativeLuminance(first), RelativeLuminance(second));
+            return (brighter + 0.05f) / (darker + 0.05f);
+        }
+
+        private static float RelativeLuminance(Color color)
+        {
+            return 0.2126f * Linearize(color.r) +
+                   0.7152f * Linearize(color.g) +
+                   0.0722f * Linearize(color.b);
+        }
+
+        private static float Linearize(float channel)
+        {
+            return channel <= 0.03928f
+                ? channel / 12.92f
+                : Mathf.Pow((channel + 0.055f) / 1.055f, 2.4f);
         }
     }
 }

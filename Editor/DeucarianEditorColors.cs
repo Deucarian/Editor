@@ -27,12 +27,14 @@ namespace Deucarian.Editor
 
         public static Color HeaderBackground
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(38, 47, 53) : FromRgb(227, 232, 235); }
+            // Branded IMGUI pages keep the same dark shell in both Unity skins.
+            // Their text colors therefore need to follow the shell, not the host skin.
+            get { return FromRgb(38, 47, 53); }
         }
 
         public static Color SectionBackground
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(45, 52, 58) : FromRgb(238, 241, 243); }
+            get { return FromRgb(45, 52, 58); }
         }
 
         public static Color Border
@@ -42,17 +44,17 @@ namespace Deucarian.Editor
 
         public static Color TitleText
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(232, 237, 240) : FromRgb(31, 43, 50); }
+            get { return FromRgb(232, 237, 240); }
         }
 
         public static Color BodyText
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(207, 216, 222) : FromRgb(46, 56, 63); }
+            get { return FromRgb(207, 216, 222); }
         }
 
         public static Color MutedText
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(155, 166, 174) : FromRgb(91, 105, 114); }
+            get { return FromRgb(155, 166, 174); }
         }
 
         public static Color BadgeText

@@ -118,7 +118,12 @@ namespace Deucarian.Editor
             {
                 DrawHeaderBackground(headerRect, open, enabled);
 
-                GUILayout.Label(open ? "v" : ">", IndicatorStyle, GUILayout.Width(18f));
+                Rect indicatorRect = GUILayoutUtility.GetRect(18f, 18f, IndicatorStyle, GUILayout.Width(18f));
+                DeucarianEditorIcons.DrawIcon(
+                    indicatorRect,
+                    DeucarianEditorIcons.GetIcon(
+                        open ? DeucarianEditorIconIds.ChevronDown : DeucarianEditorIconIds.ChevronRight),
+                    DeucarianEditorTheme.Accent);
                 EditorGUILayout.BeginVertical();
                 try
                 {
