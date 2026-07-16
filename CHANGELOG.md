@@ -1,7 +1,13 @@
 # Changelog
 
-## Unreleased
+## 1.0.2 - 2026-07-15
 
+- Preserved the released Package Installer IMGUI status-row color composition while retaining exception-safe restoration of `GUI.contentColor` in the shared workbench helper.
+
+## 1.0.1 - 2026-07-15
+
+- Added a domain-neutral hybrid workbench scaffold with exact 900/1180 responsive modes, shared toolbar/drawer/footer USS contracts, and Package Installer compatibility selectors.
+- Added shared Installer-calibrated IMGUI surface styles, 24 px action styles, key/value and status rows, and exception-safe card, inline-card, foldout, and panel scopes.
 - Added shared frosted-glass editor theme primitives for Deucarian product windows: ambient wallpaper layers, glass cards, sidebar items, branded buttons, status panels, spacing tokens, texture helpers, and fixed wallpaper chrome.
 - Standardized the canonical Deucarian editor menu root constant on `Tools/Deucarian`.
 

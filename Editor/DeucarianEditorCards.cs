@@ -8,28 +8,38 @@ namespace Deucarian.Editor
     {
         public static void DrawHeaderCard(string title, string subtitle, string meta = null)
         {
-            BeginCard(null, true);
-            DrawAccentLine();
-            EditorGUILayout.LabelField(title ?? string.Empty, HeaderTitleStyle);
-            if (!string.IsNullOrWhiteSpace(subtitle))
+            using (BeginCardScope(null, true))
             {
-                EditorGUILayout.LabelField(subtitle, HeaderSubtitleStyle);
-            }
+                DrawAccentLine();
+                EditorGUILayout.LabelField(title ?? string.Empty, HeaderTitleStyle);
+                if (!string.IsNullOrWhiteSpace(subtitle))
+                {
+                    EditorGUILayout.LabelField(subtitle, HeaderSubtitleStyle);
+                }
 
-            if (!string.IsNullOrWhiteSpace(meta))
-            {
-                GUILayout.Space(DeucarianEditorSpacing.Small);
-                DeucarianEditorStatusBadge.Draw(meta, DeucarianEditorStatus.Info, GUILayout.Width(150f));
+                if (!string.IsNullOrWhiteSpace(meta))
+                {
+                    GUILayout.Space(DeucarianEditorSpacing.Small);
+                    DeucarianEditorStatusBadge.Draw(meta, DeucarianEditorStatus.Info, GUILayout.Width(150f));
+                }
             }
-
-            EndCard();
         }
 
         public static void DrawCard(string title, Action content, string subtitle = null)
         {
-            BeginCard(title, false, subtitle);
-            content?.Invoke();
-            EndCard();
+            using (BeginCardScope(title, false, subtitle))
+            {
+                content?.Invoke();
+            }
+        }
+
+        public static DeucarianEditorCardScope BeginCardScope(
+            string title = null,
+            bool header = false,
+            string subtitle = null)
+        {
+            BeginCard(title, header, subtitle);
+            return new DeucarianEditorCardScope(EndCard);
         }
 
         public static Rect BeginCard(string title = null, bool header = false, string subtitle = null)
@@ -63,13 +73,31 @@ namespace Deucarian.Editor
 
         public static void DrawInlineCard(Action content)
         {
+            using (BeginInlineCardScope())
+            {
+                content?.Invoke();
+            }
+        }
+
+        public static DeucarianEditorCardScope BeginInlineCardScope()
+        {
+            BeginInlineCard();
+            return new DeucarianEditorCardScope(EndInlineCard);
+        }
+
+        public static Rect BeginInlineCard()
+        {
             Rect rect = EditorGUILayout.BeginVertical(InlineCardStyle);
             DeucarianEditorVisualShell.DrawInsetSurface(
                 rect,
                 DeucarianEditorTheme.GlassPanelSoft,
                 DeucarianEditorTheme.BorderSubtle,
                 DeucarianEditorSpacing.CardRadius);
-            content?.Invoke();
+            return rect;
+        }
+
+        public static void EndInlineCard()
+        {
             EditorGUILayout.EndVertical();
         }
 
@@ -211,6 +239,28 @@ namespace Deucarian.Editor
 
                 return mutedStyle;
             }
+        }
+    }
+
+    public sealed class DeucarianEditorCardScope : IDisposable
+    {
+        private readonly Action end;
+        private bool disposed;
+
+        internal DeucarianEditorCardScope(Action end)
+        {
+            this.end = end;
+        }
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            end?.Invoke();
         }
     }
 }
