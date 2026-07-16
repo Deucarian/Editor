@@ -330,7 +330,8 @@
     height: 100%;
 }
 
-.deucarian-icon-text-button__icon {
+.deucarian-icon-text-button__icon,
+.deucarian-workbench-toolbar__icon {
     width: 14px;
     height: 14px;
     min-width: 14px;
@@ -342,7 +343,8 @@
     flex-shrink: 0;
 }
 
-.deucarian-icon-text-button__label {
+.deucarian-icon-text-button__label,
+.deucarian-workbench-toolbar__icon-label {
     margin-left: 0;
     margin-right: 0;
     padding-left: 0;

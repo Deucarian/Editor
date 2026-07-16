@@ -226,6 +226,7 @@ namespace Deucarian.Editor
                 pickingMode = PickingMode.Ignore
             };
             icon.AddToClassList(IconClass);
+            icon.AddToClassList(DeucarianEditorWorkbenchToolbar.IconClass);
             icon.style.display = string.IsNullOrWhiteSpace(iconId)
                 ? DisplayStyle.None
                 : DisplayStyle.Flex;
@@ -239,6 +240,7 @@ namespace Deucarian.Editor
                 }
             };
             label.AddToClassList(LabelClass);
+            label.AddToClassList(DeucarianEditorWorkbenchToolbar.IconLabelClass);
 
             content.Add(icon);
             content.Add(label);
@@ -252,7 +254,9 @@ namespace Deucarian.Editor
                 return;
             }
 
-            Label label = button.Q<Label>(className: LabelClass);
+            Label label = button.Q<Label>(className: LabelClass)
+                ?? button.Q<Label>(
+                    className: DeucarianEditorWorkbenchToolbar.IconLabelClass);
             if (label != null)
             {
                 label.text = text ?? string.Empty;
@@ -294,8 +298,8 @@ namespace Deucarian.Editor
         public const string ToggleClass = "deucarian-workbench-toolbar__toggle";
         public const string ToggleActiveClass = "deucarian-workbench-toolbar__toggle--active";
         public const string IconActionClass = "deucarian-workbench-toolbar__action--icon";
-        public const string IconClass = DeucarianEditorIconTextButton.IconClass;
-        public const string IconLabelClass = DeucarianEditorIconTextButton.LabelClass;
+        public const string IconClass = "deucarian-workbench-toolbar__icon";
+        public const string IconLabelClass = "deucarian-workbench-toolbar__icon-label";
         public const string SpacerClass = "deucarian-workbench-toolbar__spacer";
         public const string StableActionLanesClass = "deucarian-workbench-toolbar--stable-action-lanes";
         public const string CompactSingleLineClass = "deucarian-workbench-toolbar--compact-single-line";
