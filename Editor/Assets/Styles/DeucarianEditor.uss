@@ -1416,3 +1416,195 @@
     background-color: rgba(218, 246, 250, 0.22);
     opacity: 0;
 }
+
+.deucarian-dialog .deucarian-window-content {
+    justify-content: center;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.deucarian-dialog__card {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 18px;
+    padding-bottom: 14px;
+    background-color: rgba(18, 30, 39, 0.94);
+    border-left-color: rgba(90, 111, 160, 0.48);
+    border-right-color: rgba(90, 111, 160, 0.48);
+    border-top-color: rgba(59, 166, 154, 0.52);
+    border-bottom-color: rgba(90, 111, 160, 0.48);
+}
+
+.deucarian-dialog__body {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.deucarian-dialog__icon {
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+    margin-right: 16px;
+    opacity: 0.94;
+    -unity-background-image-tint-color: var(--deucarian-text);
+}
+
+.deucarian-dialog__copy-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.deucarian-dialog__copy {
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.deucarian-dialog__title {
+    flex-shrink: 0;
+    color: var(--deucarian-text);
+    font-size: 15px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 8px;
+}
+
+.deucarian-dialog__message {
+    flex-shrink: 0;
+    color: var(--deucarian-text);
+    font-size: 12px;
+    white-space: normal;
+    margin-bottom: 8px;
+}
+
+.deucarian-dialog__details {
+    flex-shrink: 0;
+    min-height: 54px;
+    margin-top: 4px;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: rgba(7, 15, 23, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(90, 111, 160, 0.30);
+    border-right-color: rgba(90, 111, 160, 0.30);
+    border-top-color: rgba(90, 111, 160, 0.30);
+    border-bottom-color: rgba(90, 111, 160, 0.30);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.deucarian-dialog__details-text {
+    color: var(--deucarian-muted);
+    font-size: 10px;
+    white-space: normal;
+}
+
+.deucarian-dialog__actions {
+    flex-shrink: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 36px;
+    margin-top: 12px;
+}
+
+.deucarian-dialog__action {
+    min-width: 104px;
+    margin-left: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.deucarian-dialog__action--primary {
+    border-left-color: rgba(92, 201, 194, 0.82);
+    border-right-color: rgba(92, 201, 194, 0.62);
+    border-top-color: rgba(92, 201, 194, 0.62);
+    border-bottom-color: rgba(92, 201, 194, 0.62);
+    background-color: #326e83;
+    color: var(--deucarian-text);
+    -unity-font-style: bold;
+}
+
+.deucarian-dialog__action--primary:hover {
+    border-left-color: rgba(122, 231, 222, 0.94);
+    border-right-color: rgba(122, 231, 222, 0.76);
+    border-top-color: rgba(122, 231, 222, 0.76);
+    border-bottom-color: rgba(122, 231, 222, 0.76);
+    background-color: #3e8198;
+}
+
+.deucarian-dialog__action--destructive {
+    border-left-color: rgba(211, 106, 104, 0.68);
+    border-right-color: rgba(211, 106, 104, 0.48);
+    border-top-color: rgba(211, 106, 104, 0.48);
+    border-bottom-color: rgba(211, 106, 104, 0.48);
+    background-color: rgba(75, 35, 39, 0.84);
+}
+
+.deucarian-dialog__action--destructive:hover {
+    border-left-color: rgba(241, 139, 136, 0.86);
+    border-right-color: rgba(241, 139, 136, 0.68);
+    border-top-color: rgba(241, 139, 136, 0.68);
+    border-bottom-color: rgba(241, 139, 136, 0.68);
+    background-color: rgba(94, 43, 47, 0.90);
+}
+
+.deucarian-dialog--narrow .deucarian-dialog__card {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 14px;
+    padding-bottom: 10px;
+}
+
+.deucarian-dialog--narrow .deucarian-dialog__body {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.deucarian-dialog--narrow .deucarian-dialog__icon {
+    width: 36px;
+    min-width: 36px;
+    max-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    margin-right: 0;
+    margin-bottom: 10px;
+    align-self: center;
+}
+
+.deucarian-dialog--narrow .deucarian-dialog__title {
+    -unity-text-align: middle-center;
+}
+
+.deucarian-dialog--narrow .deucarian-dialog__actions {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.deucarian-dialog--narrow .deucarian-dialog__action {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
