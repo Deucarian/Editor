@@ -12,18 +12,19 @@ namespace Deucarian.Editor
     public static class DeucarianEditorWorkbenchGUI
     {
         public const float DetailLabelWidth = 118f;
-        public const float ButtonHeight = 24f;
-        public const float PanelSpacing = 8f;
+        public const float ButtonHeight = DeucarianEditorLayoutMetrics.CommandControlHeight;
+        public const float PanelSpacing = DeucarianEditorLayoutMetrics.SurfaceSpacing;
         public const float StatusRowHeight = 20f;
         public const float StatusMarkerSize = 18f;
         public const float StatusMarkerGap = 4f;
-        public const float CompactIconActionHeight = 28f;
+        public const float CompactIconActionHeight = DeucarianEditorLayoutMetrics.CommandControlHeight;
         public const float CompactIconSize = DeucarianEditorIconTextButton.IconSize;
         public const float CompactIconTextGap = DeucarianEditorIconTextButton.IconTextGap;
 
         private static bool initialized;
         private static bool lastProSkin;
         private static GUIStyle windowStyle;
+        private static GUIStyle embeddedPageStyle;
         private static GUIStyle sidebarStyle;
         private static GUIStyle detailsStyle;
         private static GUIStyle sampleRowStyle;
@@ -63,6 +64,7 @@ namespace Deucarian.Editor
         public static Color RowSelectedColor => new Color(35f / 255f, 62f / 255f, 66f / 255f, 0.58f);
 
         public static GUIStyle WindowStyle { get { EnsureStyles(); return windowStyle; } }
+        public static GUIStyle EmbeddedPageStyle { get { EnsureStyles(); return embeddedPageStyle; } }
         public static GUIStyle SidebarStyle { get { EnsureStyles(); return sidebarStyle; } }
         public static GUIStyle DetailsStyle { get { EnsureStyles(); return detailsStyle; } }
         public static GUIStyle SampleRowStyle { get { EnsureStyles(); return sampleRowStyle; } }
@@ -86,6 +88,7 @@ namespace Deucarian.Editor
         {
             initialized = false;
             windowStyle = null;
+            embeddedPageStyle = null;
             sidebarStyle = null;
             detailsStyle = null;
             sampleRowStyle = null;
@@ -126,7 +129,9 @@ namespace Deucarian.Editor
 
             Rect rect = EditorGUILayout.BeginVertical(DeucarianEditorStyles.SectionBox, options);
             DrawSurface(rect, PanelBackgroundColor, PanelBorderColor);
-            return new DeucarianEditorWorkbenchPanelScope(PanelSpacing);
+            // SectionBox owns the one canonical bottom spacing. Adding a second
+            // GUILayout.Space here doubles the gap between adjacent surfaces.
+            return new DeucarianEditorWorkbenchPanelScope(0f);
         }
 
         public static DeucarianEditorWorkbenchPanelScope BeginSurface(
@@ -179,11 +184,22 @@ namespace Deucarian.Editor
             return new DeucarianEditorWorkbenchPanelScope(0f);
         }
 
+        /// <summary>
+        /// Begins IMGUI content embedded inside a workbench shell. The shell already
+        /// owns page padding and wallpaper, so this scope deliberately adds no inset.
+        /// </summary>
+        public static DeucarianEditorWorkbenchPanelScope BeginEmbeddedPage(
+            params GUILayoutOption[] options)
+        {
+            EditorGUILayout.BeginVertical(EmbeddedPageStyle, options);
+            return new DeucarianEditorWorkbenchPanelScope(0f);
+        }
+
         public static Rect DrawLabeledField(
             string label,
             string tooltip = null,
             float labelWidth = 140f,
-            float height = 18f)
+            float height = DeucarianEditorLayoutMetrics.TextLineHeight)
         {
             Rect row = EditorGUILayout.GetControlRect(false, height);
             float safeLabelWidth = Mathf.Clamp(labelWidth, 0f, row.width);
@@ -317,12 +333,39 @@ namespace Deucarian.Editor
                     DeucarianEditorLayoutMetrics.PageTopPadding,
                     DeucarianEditorLayoutMetrics.PageBottomPadding)
             };
-            sidebarStyle = new GUIStyle { padding = new RectOffset(10, 10, 10, 10) };
-            detailsStyle = new GUIStyle { padding = new RectOffset(10, 10, 10, 10) };
+            embeddedPageStyle = new GUIStyle
+            {
+                padding = new RectOffset(0, 0, 0, 0),
+                margin = new RectOffset(0, 0, 0, 0)
+            };
+            sidebarStyle = new GUIStyle
+            {
+                padding = new RectOffset(
+                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
+            };
+            detailsStyle = new GUIStyle
+            {
+                padding = new RectOffset(
+                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
+            };
             sampleRowStyle = new GUIStyle
             {
-                padding = new RectOffset(10, 10, 8, 8),
-                margin = new RectOffset(0, 0, 2, 6)
+                padding = new RectOffset(
+                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
+                margin = new RectOffset(
+                    0,
+                    0,
+                    0,
+                    DeucarianEditorLayoutMetrics.SurfaceSpacing)
             };
 
             titleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderTitle);

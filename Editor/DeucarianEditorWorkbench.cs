@@ -11,14 +11,29 @@ namespace Deucarian.Editor
     public static class DeucarianEditorLayoutMetrics
     {
         public const int PageHorizontalPadding = 10;
-        public const int PageTopPadding = 8;
-        public const int PageBottomPadding = 10;
-        public const int IconTextHorizontalPadding = 8;
+        public const int PageVerticalPadding = 8;
+        public const int PageTopPadding = PageVerticalPadding;
+        public const int PageBottomPadding = PageVerticalPadding;
+        public const int SurfaceHorizontalPadding = 10;
+        public const int SurfaceVerticalPadding = 8;
+        public const int SurfaceSpacing = 8;
+        public const int FooterHorizontalPadding = 10;
+        public const int FooterVerticalPadding = 0;
+        public const int CommandControlHeight = 28;
+        public const int CommandControlHorizontalPadding = 8;
+        public const int TextLineHeight = 18;
+        public const int CommandBarSingleRowHeight = 46;
+        public const int CommandBarTwoRowHeight = 78;
+        public const int FooterHeight = 34;
+        public const int ControlHeight = CommandControlHeight;
+        public const int CommandBarHeight = CommandBarSingleRowHeight;
+        public const int CommandBarStackedHeight = CommandBarTwoRowHeight;
+        public const int IconTextHorizontalPadding = CommandControlHorizontalPadding;
         public const int IconTextVerticalPadding = 0;
         public const int IconTextGap = 8;
         public const int IconSize = 14;
-        public const int PackageHeaderHorizontalPadding = 12;
-        public const int PackageHeaderVerticalPadding = 10;
+        public const int PackageHeaderHorizontalPadding = SurfaceHorizontalPadding;
+        public const int PackageHeaderVerticalPadding = SurfaceVerticalPadding;
         public const int PackageHeaderIconSize = 24;
         public const int PackageHeaderIconTextGap = 10;
         public const int PackageHeaderBottomMargin = 8;
@@ -222,7 +237,8 @@ namespace Deucarian.Editor
         public const float IconTextGap = DeucarianEditorLayoutMetrics.IconTextGap;
         public const float HorizontalPadding = DeucarianEditorLayoutMetrics.IconTextHorizontalPadding;
         public const float VerticalPadding = DeucarianEditorLayoutMetrics.IconTextVerticalPadding;
-        public const float ImGuiLabelHeight = 18f;
+        public const float TextHeight = DeucarianEditorLayoutMetrics.TextLineHeight;
+        public const float ImGuiLabelHeight = TextHeight;
 
         public static Button Create(
             string iconId,
@@ -254,6 +270,9 @@ namespace Deucarian.Editor
             button.AddToClassList(RootClass);
             button.EnableInClassList(LeadingClass, leading);
             button.style.position = Position.Relative;
+            button.style.height = DeucarianEditorLayoutMetrics.CommandControlHeight;
+            button.style.minHeight = DeucarianEditorLayoutMetrics.CommandControlHeight;
+            button.style.maxHeight = DeucarianEditorLayoutMetrics.CommandControlHeight;
             button.style.paddingLeft = HorizontalPadding;
             button.style.paddingRight = HorizontalPadding;
             button.style.paddingTop = VerticalPadding;
@@ -274,6 +293,9 @@ namespace Deucarian.Editor
             content.style.flexDirection = FlexDirection.Row;
             content.style.alignItems = Align.Center;
             content.style.justifyContent = leading ? Justify.FlexStart : Justify.Center;
+            content.style.height = TextHeight;
+            content.style.minHeight = TextHeight;
+            content.style.maxHeight = TextHeight;
 
             var icon = new Image
             {
@@ -309,6 +331,9 @@ namespace Deucarian.Editor
             };
             label.AddToClassList(LabelClass);
             label.AddToClassList(DeucarianEditorWorkbenchToolbar.IconLabelClass);
+            label.style.height = TextHeight;
+            label.style.minHeight = TextHeight;
+            label.style.maxHeight = TextHeight;
 
             content.Add(icon);
             content.Add(gap);
@@ -395,6 +420,30 @@ namespace Deucarian.Editor
                     row.xMax - iconRect.xMax - IconTextGap - HorizontalPadding),
                 Mathf.Min(row.height, ImGuiLabelHeight));
         }
+    }
+
+    /// <summary>
+    /// Canonical three-lane command-bar composition. The leading and trailing lanes
+    /// own controls while the summary remains the flexible middle label.
+    /// </summary>
+    public sealed class DeucarianEditorCommandBarLanes
+    {
+        internal DeucarianEditorCommandBarLanes(
+            VisualElement root,
+            VisualElement leading,
+            Label summary,
+            VisualElement trailing)
+        {
+            Root = root;
+            Leading = leading;
+            Summary = summary;
+            Trailing = trailing;
+        }
+
+        public VisualElement Root { get; }
+        public VisualElement Leading { get; }
+        public Label Summary { get; }
+        public VisualElement Trailing { get; }
     }
 
     public static class DeucarianEditorWorkbenchToolbar
@@ -505,6 +554,9 @@ namespace Deucarian.Editor
         {
             var summary = new Label(text ?? string.Empty);
             summary.AddToClassList(SummaryClass);
+            summary.style.height = DeucarianEditorLayoutMetrics.TextLineHeight;
+            summary.style.minHeight = DeucarianEditorLayoutMetrics.TextLineHeight;
+            summary.style.maxHeight = DeucarianEditorLayoutMetrics.TextLineHeight;
             return summary;
         }
 
@@ -605,6 +657,12 @@ namespace Deucarian.Editor
         public const string StateClass = "deucarian-command-bar__state";
         public const string ReservedSlotClass = "deucarian-command-bar__reserved-slot";
         public const string SpacerClass = "deucarian-command-bar__spacer";
+        public const string LeadingLaneClass = "deucarian-command-bar__leading";
+        public const string SummaryLaneClass = "deucarian-command-bar__summary";
+        public const string TrailingLaneClass = "deucarian-command-bar__trailing";
+        public const string LeadingClass = LeadingLaneClass;
+        public const string SummaryClass = SummaryLaneClass;
+        public const string TrailingClass = TrailingLaneClass;
 
         public static VisualElement Create(
             DeucarianEditorWorkbenchToolbarLayout layout =
@@ -613,6 +671,39 @@ namespace Deucarian.Editor
             VisualElement commandBar = DeucarianEditorWorkbenchToolbar.CreateToolbar(layout);
             commandBar.AddToClassList(RootClass);
             return commandBar;
+        }
+
+        /// <summary>
+        /// Appends the canonical leading, flexible summary, and trailing lanes to an
+        /// existing command bar. Existing children are preserved; callers that want a
+        /// fresh composition should clear the command bar before calling this method.
+        /// </summary>
+        public static DeucarianEditorCommandBarLanes CreateLanes(VisualElement commandBar)
+        {
+            if (commandBar == null)
+            {
+                throw new ArgumentNullException(nameof(commandBar));
+            }
+
+            commandBar.AddToClassList(RootClass);
+
+            VisualElement leading = CreateNavigationGroup();
+            leading.AddToClassList(LeadingLaneClass);
+
+            Label summary = CreateSummary(string.Empty);
+            summary.AddToClassList(SummaryLaneClass);
+
+            VisualElement trailing = CreateActionGroup();
+            trailing.AddToClassList(TrailingLaneClass);
+
+            commandBar.Add(leading);
+            commandBar.Add(summary);
+            commandBar.Add(trailing);
+            return new DeucarianEditorCommandBarLanes(
+                commandBar,
+                leading,
+                summary,
+                trailing);
         }
 
         public static VisualElement CreateNavigationGroup()

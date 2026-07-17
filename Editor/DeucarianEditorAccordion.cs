@@ -244,7 +244,11 @@ namespace Deucarian.Editor
                 {
                     headerStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(12, 12, 8, 8),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 0, 2, 0)
                     };
                 }
@@ -261,7 +265,11 @@ namespace Deucarian.Editor
                 {
                     bodyStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(12, 12, 10, 12),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 0, 0, 0)
                     };
                 }
@@ -360,7 +368,7 @@ namespace Deucarian.Editor
             }
             else
             {
-                GUILayout.Space(DeucarianEditorSpacing.Tiny);
+                GUILayout.Space(DeucarianEditorLayoutMetrics.SurfaceSpacing);
             }
         }
     }

@@ -155,8 +155,16 @@ namespace Deucarian.Editor
             sectionTitle.normal.textColor = DeucarianEditorColors.TitleText;
 
             sectionBox = CopyStyle(() => EditorStyles.helpBox);
-            sectionBox.padding = new RectOffset(10, 10, 8, 8);
-            sectionBox.margin = new RectOffset(0, 0, 0, 8);
+            sectionBox.padding = new RectOffset(
+                DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                DeucarianEditorLayoutMetrics.SurfaceVerticalPadding);
+            sectionBox.margin = new RectOffset(
+                0,
+                0,
+                0,
+                DeucarianEditorLayoutMetrics.SurfaceSpacing);
             sectionBox.normal.background = TextureForColor("section", DeucarianEditorColors.SectionBackground);
 
             mutedLabel = CopyStyle(() => EditorStyles.label);
