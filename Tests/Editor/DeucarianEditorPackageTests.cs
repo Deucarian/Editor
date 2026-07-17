@@ -269,7 +269,7 @@ namespace Deucarian.Editor.Tests
         public void SelectAndPing_SelectsTargetAndIgnoresNull()
         {
             Texture2D target = new Texture2D(1, 1);
-            Object previousSelection = Selection.activeObject;
+            UnityEngine.Object previousSelection = Selection.activeObject;
 
             try
             {
@@ -284,7 +284,7 @@ namespace Deucarian.Editor.Tests
             finally
             {
                 Selection.activeObject = previousSelection;
-                Object.DestroyImmediate(target);
+                UnityEngine.Object.DestroyImmediate(target);
             }
         }
 
