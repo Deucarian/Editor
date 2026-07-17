@@ -12,4 +12,8 @@ Reusable UI Toolkit styles live in:
 
 - `Editor/Assets/Styles/DeucarianEditor.uss`
 
+Shared tintable editor icons live in `Editor/Assets/Icons/Lucide/`. Use the
+stable `DeucarianEditorIconIds` constants where available, or pass a safe
+vendored Lucide slug to `DeucarianEditorIcons.GetIcon`.
+
 Package-specific UXML and USS files should stay in the package that owns the window. Long-term shared logos, icons, and editor brand imagery belong in `com.deucarian.editor`.

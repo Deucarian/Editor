@@ -1,5 +1,7 @@
 # Deucarian Editor
 
+Current package version: `1.0.4`.
+
 ## What this is
 
 `com.deucarian.editor` is an editor-only Unity package for shared Deucarian editor tooling, branded editor chrome, fixed icons, layout helpers, and UX standards.
@@ -97,6 +99,40 @@ private void OnDisable()
 }
 ```
 
+Open a responsive shared dialog without coupling the Editor package to a consumer workflow:
+
+```csharp
+DeucarianEditorDialog.Show(
+    new DeucarianEditorDialogOptions(
+        "Confirm operation",
+        "Review the details before continuing.",
+        DeucarianEditorIconIds.Warning,
+        new[]
+        {
+            new DeucarianEditorDialogAction(
+                "continue",
+                "Continue",
+                DeucarianEditorIconIds.Play,
+                DeucarianEditorDialogActionStyle.Primary),
+            new DeucarianEditorDialogAction(
+                "cancel",
+                "Cancel",
+                DeucarianEditorIconIds.Clear)
+        })
+    {
+        Details = details,
+        DefaultActionId = "continue",
+        CancelActionId = "cancel"
+    },
+    result =>
+    {
+        if (result.ActionId == "continue")
+        {
+            ContinueOperation();
+        }
+    });
+```
+
 The workbench uses the established Installer layout modes: Narrow below 900 px,
 Compact from 900 through 1179 px, and Wide at 1180 px or above. The shared
 drawer/footer factories provide presentation only; operation models and package
@@ -110,7 +146,7 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 
 - `DeucarianEditorChrome`: fixed package headers, section headers, section boxes, inline help, and footer version text.
 - `DeucarianEditorFields.DrawAssetFieldWithSelectButton`: asset object field with the project selection action on the same row.
-- `DeucarianEditorIcons`: known Deucarian package icons and safe fallback content.
+- `DeucarianEditorIcons` and `DeucarianEditorIconIds`: safe dynamic access to the package-owned Lucide catalog, stable shared IDs, legacy package aliases, and the canonical Lucide package fallback.
 - `DeucarianEditorUIResources`: shared UI Toolkit USS, logo, hero, and package placeholder assets.
 - `DeucarianEditorTheme`, `DeucarianEditorSpacing`, and `DeucarianEditorTextures`: fixed Deucarian visual tokens.
 - `DeucarianEditorWindowChrome` and `DeucarianEditorAmbientGlass`: shared wallpaper, readability overlay, ambient glow, grain, vignette, and fixed-window chrome.
@@ -121,7 +157,9 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 - `DeucarianEditorWorkbench` and `DeucarianEditorWorkbenchOptions`: composable hybrid window shell exposing toolbar, content, optional drawer, and optional footer regions.
 - `DeucarianEditorResponsiveLayout`: legacy preview calculations plus the exact Wide/Compact/Narrow workbench resolver and idempotent UI Toolkit class application.
 - `DeucarianEditorWorkbenchToolbar` and `DeucarianEditorWorkbenchSurfaces`: domain-neutral toolbar, drawer, row, and footer factories backed by shared USS contracts.
-- `DeucarianEditorWorkbenchGUI`: shared 24 px IMGUI actions, surface colors, panel scopes, separators, key/value rows, and status rows.
+- `DeucarianEditorIconToolbar`: IMGUI icon-only actions backed exclusively by vendored Lucide IDs.
+- `DeucarianEditorWorkbenchGUI`: shared 24 px IMGUI actions, surface colors, panel scopes, separators, key/value rows, legacy marker rows, and Lucide status rows.
+- `DeucarianEditorDialog`: branded responsive callback-based utility dialogs with a Lucide icon, wrapped message/details content, icon-bearing actions, and deterministic Enter/Escape/window-close completion.
 - `DeucarianEditorCardScope`, `DeucarianEditorFoldoutScope`, and `DeucarianEditorWorkbenchPanelScope`: exception-safe layout scopes for composable drawing.
 
 ## Integrations

@@ -277,15 +277,24 @@ namespace Deucarian.Editor
             DeucarianEditorStatus status = DeucarianEditorStatus.Info)
         {
             string safeText = text ?? string.Empty;
-            Rect rowRect = GUILayoutUtility.GetRect(1f, StatusRowHeight, GUILayout.ExpandWidth(true));
-            Rect markerRect = new Rect(rowRect.x, rowRect.y + 1f, StatusMarkerSize, StatusMarkerSize);
-            Rect labelRect = new Rect(
-                markerRect.xMax + StatusMarkerGap,
-                rowRect.y,
-                Mathf.Max(0f, rowRect.width - StatusMarkerSize - StatusMarkerGap),
-                StatusRowHeight);
+            GetStatusRowRects(out Rect markerRect, out Rect labelRect);
 
             DrawColoredLabel(markerRect, new GUIContent(marker ?? string.Empty, safeText), MarkerStyle, DeucarianEditorStatusBadge.GetColor(status));
+            DrawColoredLabel(labelRect, new GUIContent(safeText, safeText), MiniLabelStyle, TextColor);
+        }
+
+        /// <summary>Draws a status row with a tintable package-owned Lucide icon.</summary>
+        public static void DrawStatusIconRow(
+            string iconId,
+            string text,
+            DeucarianEditorStatus status = DeucarianEditorStatus.Info)
+        {
+            string safeText = text ?? string.Empty;
+            GetStatusRowRects(out Rect iconRect, out Rect labelRect);
+            DeucarianEditorIcons.DrawIcon(
+                iconRect,
+                DeucarianEditorIcons.GetIcon(iconId),
+                DeucarianEditorStatusBadge.GetColor(status));
             DrawColoredLabel(labelRect, new GUIContent(safeText, safeText), MiniLabelStyle, TextColor);
         }
 
@@ -312,6 +321,17 @@ namespace Deucarian.Editor
             {
                 GUI.contentColor = previousColor;
             }
+        }
+
+        private static void GetStatusRowRects(out Rect markerRect, out Rect labelRect)
+        {
+            Rect rowRect = GUILayoutUtility.GetRect(1f, StatusRowHeight, GUILayout.ExpandWidth(true));
+            markerRect = new Rect(rowRect.x, rowRect.y + 1f, StatusMarkerSize, StatusMarkerSize);
+            labelRect = new Rect(
+                markerRect.xMax + StatusMarkerGap,
+                rowRect.y,
+                Mathf.Max(0f, rowRect.width - StatusMarkerSize - StatusMarkerGap),
+                StatusRowHeight);
         }
 
         private static void EnsureStyles()
