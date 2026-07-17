@@ -118,7 +118,12 @@ namespace Deucarian.Editor
             {
                 DrawHeaderBackground(headerRect, open, enabled);
 
-                GUILayout.Label(open ? "v" : ">", IndicatorStyle, GUILayout.Width(18f));
+                Rect indicatorRect = GUILayoutUtility.GetRect(18f, 18f, IndicatorStyle, GUILayout.Width(18f));
+                DeucarianEditorIcons.DrawIcon(
+                    indicatorRect,
+                    DeucarianEditorIcons.GetIcon(
+                        open ? DeucarianEditorIconIds.ChevronDown : DeucarianEditorIconIds.ChevronRight),
+                    DeucarianEditorTheme.Accent);
                 EditorGUILayout.BeginVertical();
                 try
                 {
@@ -239,7 +244,11 @@ namespace Deucarian.Editor
                 {
                     headerStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(12, 12, 8, 8),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 0, 2, 0)
                     };
                 }
@@ -256,7 +265,11 @@ namespace Deucarian.Editor
                 {
                     bodyStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(12, 12, 10, 12),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 0, 0, 0)
                     };
                 }
@@ -355,7 +368,7 @@ namespace Deucarian.Editor
             }
             else
             {
-                GUILayout.Space(DeucarianEditorSpacing.Tiny);
+                GUILayout.Space(DeucarianEditorLayoutMetrics.SurfaceSpacing);
             }
         }
     }

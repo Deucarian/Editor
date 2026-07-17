@@ -39,7 +39,7 @@ namespace Deucarian.Editor
                 {
                     if (hasValue)
                     {
-                        SelectAndPing(nextValue);
+                        DeucarianEditorSelection.SelectAndPing(nextValue);
                         if (onSelectClicked != null)
                         {
                             onSelectClicked(nextValue);
@@ -52,7 +52,7 @@ namespace Deucarian.Editor
                         {
                             NotifyValueChanged(nextValue, foundValue, onValueChanged);
                             nextValue = foundValue;
-                            SelectAndPing(nextValue);
+                            DeucarianEditorSelection.SelectAndPing(nextValue);
                         }
                     }
                 }
@@ -108,17 +108,6 @@ namespace Deucarian.Editor
             {
                 onValueChanged(nextValue);
             }
-        }
-
-        private static void SelectAndPing(Object asset)
-        {
-            if (asset == null)
-            {
-                return;
-            }
-
-            Selection.activeObject = asset;
-            EditorGUIUtility.PingObject(asset);
         }
     }
 }
