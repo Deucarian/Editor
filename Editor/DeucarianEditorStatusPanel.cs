@@ -59,10 +59,17 @@ namespace Deucarian.Editor
             {
                 if (messageStyle == null)
                 {
-                    messageStyle = new GUIStyle(EditorStyles.label)
+                    // WorkbenchGUI owns the headless-safe EditorStyles fallback. Reuse
+                    // it here so status surfaces can also be inspected by batchmode
+                    // validators before Unity has created an editor skin.
+                    messageStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.LabelStyle)
                     {
                         wordWrap = true,
-                        padding = new RectOffset(10, 10, 7, 7)
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
                     };
                     messageStyle.normal.textColor = DeucarianEditorTheme.Text;
                 }

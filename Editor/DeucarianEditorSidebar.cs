@@ -22,7 +22,11 @@ namespace Deucarian.Editor
                 {
                     sidebarStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(12, 12, 12, 12),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 10, 0, 0)
                     };
                     sidebarStyle.normal.background = DeucarianEditorTextures.Solid("sidebar", DeucarianEditorTheme.GlassPanel);

@@ -52,7 +52,7 @@
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 8px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .deucarian-package-header,
@@ -65,10 +65,10 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 8px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -156,10 +156,10 @@
 .deucarian-sidebar {
     width: 216px;
     min-width: 216px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     background-color: var(--deucarian-sidebar);
     border-right-width: 1px;
     border-right-color: var(--deucarian-border);
@@ -194,11 +194,11 @@
 }
 
 .deucarian-panel {
-    margin-bottom: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -233,12 +233,14 @@
     flex-direction: row;
     align-items: center;
     align-content: center;
-    min-height: 42px;
+    height: 46px;
+    min-height: 46px;
+    max-height: 46px;
     margin-bottom: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -354,10 +356,18 @@
 .deucarian-workbench-toolbar__summary,
 .dpi-view-toolbar__summary {
     margin-left: 8px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     color: var(--deucarian-muted);
     font-size: 11px;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     min-width: 0;
     flex-shrink: 1;
+    -unity-text-align: middle-left;
 }
 
 .deucarian-command-bar__action,
@@ -404,6 +414,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    height: 28px;
+    min-height: 28px;
+    max-height: 28px;
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 0;
@@ -416,7 +429,9 @@
     justify-content: center;
     flex-grow: 0;
     min-width: 0;
-    height: 100%;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
@@ -476,8 +491,9 @@
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
-    height: 100%;
-    min-height: 0;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     flex-shrink: 1;
     -unity-text-align: middle-center;
 }
@@ -552,9 +568,37 @@
 .deucarian-command-bar__actions,
 .deucarian-workbench-toolbar__group {
     min-width: 0;
+    height: 28px;
+    min-height: 28px;
+    max-height: 28px;
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
+}
+
+.deucarian-command-bar__leading,
+.deucarian-command-bar__trailing {
+    height: 28px;
+    min-height: 28px;
+    max-height: 28px;
+}
+
+.deucarian-command-bar__summary {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-text-align: middle-left;
 }
 
 .deucarian-command-bar__actions,
@@ -611,7 +655,7 @@
 
 .deucarian-workbench-toolbar__status-pill > .deucarian-icon-text-button__content {
     width: 100%;
-    height: 100%;
+    height: 18px;
 }
 
 .deucarian-workbench-toolbar--stable-action-lanes {
@@ -643,9 +687,9 @@
 .deucarian-responsive--narrow .dpi-view-toolbar,
 .dpi-responsive--narrow .deucarian-workbench-toolbar,
 .dpi-responsive--narrow .dpi-view-toolbar {
-    height: 86px;
-    min-height: 86px;
-    max-height: 86px;
+    height: 78px;
+    min-height: 78px;
+    max-height: 78px;
     flex-grow: 0;
     flex-shrink: 0;
     align-items: center;
@@ -670,13 +714,18 @@
 
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes,
 .dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes {
-    height: 74px;
-    min-height: 74px;
-    max-height: 74px;
+    height: 78px;
+    min-height: 78px;
+    max-height: 78px;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
     flex-wrap: nowrap;
+}
+
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-command-bar__summary,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-command-bar__summary {
+    display: none;
 }
 
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group,
@@ -692,9 +741,9 @@
 
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line,
 .dpi-responsive--narrow .deucarian-workbench-toolbar--compact-single-line {
-    height: 42px;
-    min-height: 42px;
-    max-height: 42px;
+    height: 46px;
+    min-height: 46px;
+    max-height: 46px;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
@@ -714,18 +763,31 @@
     flex-grow: 0;
 }
 
+.deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line .deucarian-command-bar__summary,
+.dpi-responsive--narrow .deucarian-workbench-toolbar--compact-single-line .deucarian-command-bar__summary {
+    width: auto;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 0;
+    flex-grow: 1;
+}
+
 /* Shared workbench drawer and footer. The dpi aliases preserve the released
    Package Installer contract while allowing consumers to migrate incrementally. */
 
 .deucarian-workbench-operation-surface,
 .dpi-operation-surface {
-    --deucarian-workbench-operation-inline-padding: 12px;
-    --deucarian-workbench-operation-block-padding: 6px;
+    --deucarian-workbench-operation-inline-padding: 10px;
+    --deucarian-workbench-operation-block-padding: 8px;
+    --deucarian-workbench-operation-footer-inline-padding: 10px;
+    --deucarian-workbench-operation-footer-block-padding: 0px;
     --deucarian-workbench-operation-row-gap: 6px;
     --deucarian-workbench-operation-control-gap: 8px;
     --deucarian-workbench-operation-footer-height: 34px;
-    --dpi-operation-inline-padding: 12px;
-    --dpi-operation-block-padding: 6px;
+    --dpi-operation-inline-padding: 10px;
+    --dpi-operation-block-padding: 8px;
+    --dpi-operation-footer-inline-padding: 10px;
+    --dpi-operation-footer-block-padding: 0px;
     --dpi-operation-row-gap: 6px;
     --dpi-operation-control-gap: 8px;
     --dpi-operation-footer-height: 34px;
@@ -974,10 +1036,10 @@
     min-height: var(--deucarian-workbench-operation-footer-height);
     max-height: var(--deucarian-workbench-operation-footer-height);
     margin-top: 0;
-    padding-left: var(--deucarian-workbench-operation-inline-padding);
-    padding-right: var(--deucarian-workbench-operation-inline-padding);
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-left: var(--deucarian-workbench-operation-footer-inline-padding);
+    padding-right: var(--deucarian-workbench-operation-footer-inline-padding);
+    padding-top: var(--deucarian-workbench-operation-footer-block-padding);
+    padding-bottom: var(--deucarian-workbench-operation-footer-block-padding);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
@@ -1009,7 +1071,9 @@
     align-items: center;
     justify-content: flex-start;
     width: auto;
-    height: 100%;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     flex-grow: 0;
     flex-shrink: 0;
 }
@@ -1063,8 +1127,9 @@
 
 .deucarian-workbench-operation-footer__status-label,
 .dpi-operation-footer__status-label {
-    height: 100%;
-    min-height: 0;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
@@ -1085,6 +1150,9 @@
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 0;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     margin-left: 0;
     margin-right: var(--deucarian-workbench-operation-control-gap);
     color: var(--deucarian-muted);
@@ -1162,6 +1230,9 @@
 .deucarian-workbench-operation-footer__version,
 .dpi-operation-footer__version {
     flex-shrink: 0;
+    height: 18px;
+    min-height: 18px;
+    max-height: 18px;
     color: var(--deucarian-text);
     font-size: 11px;
     -unity-text-align: middle-right;
@@ -1170,7 +1241,7 @@
 }
 
 .deucarian-section {
-    margin-bottom: 14px;
+    margin-bottom: 8px;
 }
 
 .deucarian-section__title {
@@ -1183,11 +1254,11 @@
 .deucarian-card {
     min-height: 112px;
     margin-right: 10px;
-    margin-bottom: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;

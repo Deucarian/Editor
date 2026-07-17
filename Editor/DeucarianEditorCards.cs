@@ -126,7 +126,11 @@ namespace Deucarian.Editor
                 {
                     cardStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(14, 14, 12, 12),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 0, 0, 0)
                     };
                 }
@@ -143,7 +147,11 @@ namespace Deucarian.Editor
                 {
                     headerCardStyle = new GUIStyle(CardStyle)
                     {
-                        padding = new RectOffset(18, 18, 14, 14)
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
                     };
                 }
 
@@ -159,8 +167,16 @@ namespace Deucarian.Editor
                 {
                     inlineCardStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(10, 10, 8, 8),
-                        margin = new RectOffset(0, 0, 4, 8)
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
+                        margin = new RectOffset(
+                            0,
+                            0,
+                            0,
+                            DeucarianEditorLayoutMetrics.SurfaceSpacing)
                     };
                 }
 
