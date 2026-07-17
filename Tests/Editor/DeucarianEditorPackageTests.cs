@@ -419,6 +419,18 @@ namespace Deucarian.Editor.Tests
         public void WorkbenchToolbarFactories_ApplySharedContractClasses()
         {
             VisualElement toolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar();
+            VisualElement commandBar = DeucarianEditorCommandBar.Create(
+                DeucarianEditorWorkbenchToolbarLayout.StableActionLanes);
+            VisualElement commandNavigation = DeucarianEditorCommandBar.CreateNavigationGroup();
+            VisualElement commandActions = DeucarianEditorCommandBar.CreateActionGroup();
+            Button commandToggle = DeucarianEditorCommandBar.CreateToggle("Theme", null, true);
+            Button commandAction = DeucarianEditorCommandBar.CreateAction(
+                DeucarianEditorIconIds.Refresh,
+                "Refresh",
+                null);
+            VisualElement commandState = DeucarianEditorCommandBar.CreateState(
+                DeucarianEditorIconIds.Check,
+                "Active");
             VisualElement stableToolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar(
                 DeucarianEditorWorkbenchToolbarLayout.StableActionLanes);
             VisualElement compactToolbar = DeucarianEditorWorkbenchToolbar.CreateToolbar(
@@ -436,6 +448,14 @@ namespace Deucarian.Editor.Tests
             VisualElement spacer = DeucarianEditorWorkbenchToolbar.CreateSpacer();
 
             Assert.IsTrue(toolbar.ClassListContains(DeucarianEditorWorkbenchToolbar.ToolbarClass));
+            Assert.IsTrue(commandBar.ClassListContains(DeucarianEditorCommandBar.RootClass));
+            Assert.IsTrue(commandNavigation.ClassListContains(
+                DeucarianEditorCommandBar.NavigationGroupClass));
+            Assert.IsTrue(commandActions.ClassListContains(
+                DeucarianEditorCommandBar.ActionGroupClass));
+            Assert.IsTrue(commandToggle.ClassListContains(DeucarianEditorCommandBar.ToggleClass));
+            Assert.IsTrue(commandAction.ClassListContains(DeucarianEditorCommandBar.ActionClass));
+            Assert.IsTrue(commandState.ClassListContains(DeucarianEditorCommandBar.StateClass));
             Assert.IsTrue(stableToolbar.ClassListContains(
                 DeucarianEditorWorkbenchToolbar.StableActionLanesClass));
             Assert.IsTrue(compactToolbar.ClassListContains(
@@ -446,6 +466,18 @@ namespace Deucarian.Editor.Tests
             Assert.IsTrue(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleActiveClass));
             Assert.IsTrue(iconAction.ClassListContains(DeucarianEditorWorkbenchToolbar.IconActionClass));
             Assert.IsTrue(iconAction.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.AreEqual("Refresh", standard.text);
+            Assert.AreEqual("Stable", toggle.text);
+            Assert.AreEqual(string.Empty, commandAction.text);
+            Assert.AreEqual(
+                "Refresh",
+                commandAction.Q<Label>(
+                    className: DeucarianEditorIconTextButton.LabelClass).text);
+            Assert.AreEqual(string.Empty, commandToggle.text);
+            Assert.AreEqual(
+                "Theme",
+                commandToggle.Q<Label>(
+                    className: DeucarianEditorIconTextButton.LabelClass).text);
             Assert.NotNull(iconAction.Q<VisualElement>(
                 className: DeucarianEditorIconTextButton.ContentClass));
             Assert.AreEqual(
@@ -456,6 +488,25 @@ namespace Deucarian.Editor.Tests
                 DeucarianEditorWorkbenchToolbar.IconLabelClass);
             Assert.NotNull(iconAction.Q<Image>(className: DeucarianEditorWorkbenchToolbar.IconClass));
             Assert.NotNull(iconAction.Q<Image>(className: DeucarianEditorIconTextButton.IconClass));
+            VisualElement iconContent = iconAction.Q<VisualElement>(
+                className: DeucarianEditorIconTextButton.ContentClass);
+            VisualElement iconGap = iconAction.Q<VisualElement>(
+                className: DeucarianEditorIconTextButton.GapClass);
+            Assert.NotNull(iconGap);
+            Assert.AreEqual(3, iconContent.childCount);
+            Assert.AreSame(iconGap, iconContent.ElementAt(1));
+            Assert.AreEqual(8f, iconGap.style.width.value.value);
+            Assert.AreEqual(8f, iconAction.style.paddingLeft.value.value);
+            Assert.AreEqual(8f, iconAction.style.paddingRight.value.value);
+            Assert.AreEqual(0f, iconAction.style.flexShrink.value);
+            Assert.AreEqual(PickingMode.Ignore, iconContent.pickingMode);
+            Assert.AreEqual(
+                PickingMode.Ignore,
+                iconContent.Q<Image>(className: DeucarianEditorIconTextButton.IconClass).pickingMode);
+            Assert.AreEqual(PickingMode.Ignore, iconGap.pickingMode);
+            Assert.AreEqual(
+                PickingMode.Ignore,
+                iconContent.Q<Label>(className: DeucarianEditorIconTextButton.LabelClass).pickingMode);
             Assert.AreEqual(
                 "Refresh",
                 iconAction.Q<Label>(className: DeucarianEditorWorkbenchToolbar.IconLabelClass).text);
@@ -465,6 +516,17 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual("Reload", iconAction.tooltip);
             Assert.IsTrue(summary.ClassListContains(DeucarianEditorWorkbenchToolbar.SummaryClass));
             Assert.IsTrue(spacer.ClassListContains(DeucarianEditorWorkbenchToolbar.SpacerClass));
+            Assert.IsFalse(standard.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.IsFalse(toggle.ClassListContains(DeucarianEditorIconTextButton.RootClass));
+            Assert.IsNull(standard.Q<VisualElement>(
+                className: DeucarianEditorIconTextButton.GapClass));
+            Assert.NotNull(commandState.Q<VisualElement>(
+                className: DeucarianEditorIconTextButton.ContentClass));
+            Assert.NotNull(commandState.Q<VisualElement>(
+                className: DeucarianEditorIconTextButton.GapClass));
+            DeucarianEditorCommandBar.SetMinimumWidth(commandAction, 160f);
+            Assert.AreEqual(160f, commandAction.style.minWidth.value.value);
+            Assert.AreEqual(0f, commandAction.style.flexShrink.value);
 
             DeucarianEditorWorkbenchToolbar.SetToggleActive(toggle, false);
             Assert.IsFalse(toggle.ClassListContains(DeucarianEditorWorkbenchToolbar.ToggleActiveClass));
@@ -506,6 +568,10 @@ namespace Deucarian.Editor.Tests
                 "i", "Idle", "Nothing running", "Details", null, DeucarianEditorPackageConstants.Version);
             Assert.AreEqual(5, footer.Root.childCount);
             Assert.AreSame(footer.Actions, footer.Action.parent);
+            Assert.NotNull(footer.StatusContent);
+            Assert.NotNull(footer.StatusGap);
+            Assert.IsTrue(footer.StatusContent.ClassListContains(
+                DeucarianEditorIconTextButton.ContentClass));
             Assert.IsTrue(footer.Action.ClassListContains(DeucarianEditorWorkbenchSurfaces.FooterActionClass));
             Button secondary = DeucarianEditorWorkbenchSurfaces.AddFooterAction(
                 footer,
@@ -550,6 +616,7 @@ namespace Deucarian.Editor.Tests
                 reset.Q<Label>(className: DeucarianEditorIconTextButton.LabelClass).text);
             Assert.AreEqual(DeucarianEditorSettingsActions.ResetButtonWidth, reset.style.width.value.value);
             Assert.AreEqual(DeucarianEditorSettingsActions.ResetButtonHeight, reset.style.height.value.value);
+            Assert.NotNull(reset.Q<VisualElement>(className: DeucarianEditorIconTextButton.GapClass));
         }
 
         [Test]
@@ -586,12 +653,25 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(
                 DeucarianEditorIconTextButton.IconTextGap,
                 DeucarianEditorWorkbenchGUI.CompactIconTextGap);
+            Assert.NotNull(typeof(DeucarianEditorWorkbenchGUI).GetMethod(
+                nameof(DeucarianEditorWorkbenchGUI.DrawCompactIconAction),
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(GUILayoutOption[])
+                }));
             DeucarianEditorIconTextButton.CalculateImGuiContentRects(
                 new Rect(0f, 0f, 164f, 28f),
                 out Rect compactIconRect,
                 out Rect compactTextRect);
             Assert.AreEqual(new Rect(8f, 7f, 14f, 14f), compactIconRect);
-            Assert.AreEqual(new Rect(30f, 0f, 126f, 28f), compactTextRect);
+            Assert.AreEqual(new Rect(30f, 5f, 126f, 18f), compactTextRect);
+            Assert.AreEqual(14f, compactIconRect.center.y);
+            Assert.AreEqual(14f, compactTextRect.center.y);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.LabelStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.BoldLabelStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.SectionTitleStyle.normal.textColor);
@@ -690,10 +770,32 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(8f, DeucarianEditorIconTextButton.IconTextGap);
             Assert.AreEqual(14f, DeucarianEditorIconTextButton.IconSize);
 
-            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-icon-text-button");
-            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-workbench-toolbar__action--icon");
-            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-workbench-operation-drawer__action");
-            AssertIconTextRuleUsesSharedPadding(uss, ".deucarian-workbench-operation-footer__action,");
+            string rootRule = GetStyleRule(uss, ".deucarian-icon-text-button");
+            StringAssert.Contains("padding-left: 8px;", rootRule);
+            StringAssert.Contains("padding-right: 8px;", rootRule);
+            StringAssert.Contains("padding-top: 0;", rootRule);
+            StringAssert.Contains("padding-bottom: 0;", rootRule);
+            StringAssert.Contains("flex-shrink: 0;", rootRule);
+            AssertButtonSurfaceRuleHasNoIndependentPadding(
+                uss,
+                ".deucarian-workbench-toolbar__action--icon");
+            AssertButtonSurfaceRuleHasNoIndependentPadding(
+                uss,
+                ".deucarian-workbench-operation-drawer__action");
+            AssertButtonSurfaceRuleHasNoIndependentPadding(
+                uss,
+                ".deucarian-workbench-operation-footer__action,");
+            string contentRule = GetStyleRule(uss, ".deucarian-icon-text-button__content");
+            StringAssert.DoesNotContain("position: absolute;", contentRule);
+            StringAssert.DoesNotContain(
+                ".deucarian-icon-text-button > .deucarian-icon-text-button__content",
+                uss);
+            string gapRule = GetStyleRule(uss, ".deucarian-icon-text-button__gap");
+            StringAssert.Contains("width: 8px;", gapRule);
+            StringAssert.Contains("min-width: 8px;", gapRule);
+            StringAssert.Contains("max-width: 8px;", gapRule);
+            StringAssert.Contains("align-content: center;", uss);
+            StringAssert.Contains("height: 28px;", uss);
             StringAssert.DoesNotContain("padding-left: 6px;", uss);
             StringAssert.DoesNotContain("padding-right: 6px;", uss);
         }
@@ -725,12 +827,14 @@ namespace Deucarian.Editor.Tests
             StringAssert.DoesNotContain("min-height: 90px;", uss);
         }
 
-        private static void AssertIconTextRuleUsesSharedPadding(string uss, string selector)
+        private static void AssertButtonSurfaceRuleHasNoIndependentPadding(
+            string uss,
+            string selector)
         {
             string rule = GetStyleRule(uss, selector);
 
-            StringAssert.Contains("padding-left: 8px;", rule, selector);
-            StringAssert.Contains("padding-right: 8px;", rule, selector);
+            StringAssert.Contains("padding-left: 0;", rule, selector);
+            StringAssert.Contains("padding-right: 0;", rule, selector);
             StringAssert.Contains("padding-top: 0;", rule, selector);
             StringAssert.Contains("padding-bottom: 0;", rule, selector);
         }

@@ -208,6 +208,23 @@ namespace Deucarian.Editor
             bool enabled = true,
             params GUILayoutOption[] options)
         {
+            return DrawCompactIconAction(
+                iconId,
+                text,
+                tooltip,
+                enabled,
+                false,
+                options);
+        }
+
+        public static bool DrawCompactIconAction(
+            string iconId,
+            string text,
+            string tooltip,
+            bool enabled,
+            bool primary,
+            params GUILayoutOption[] options)
+        {
             Rect row = GUILayoutUtility.GetRect(
                 1f,
                 CompactIconActionHeight,
@@ -219,7 +236,7 @@ namespace Deucarian.Editor
                 bool clicked = GUI.Button(
                     row,
                     new GUIContent(string.Empty, tooltip ?? text ?? string.Empty),
-                    SecondaryButtonStyle);
+                    primary ? PrimaryButtonStyle : SecondaryButtonStyle);
                 DeucarianEditorIconTextButton.CalculateImGuiContentRects(
                     row,
                     out Rect iconRect,
