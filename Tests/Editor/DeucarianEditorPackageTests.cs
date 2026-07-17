@@ -54,7 +54,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("1.0.2", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("1.0.3", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -263,6 +263,29 @@ namespace Deucarian.Editor.Tests
             Assert.NotNull(typeof(DeucarianEditorFieldRow).GetMethod("TextField"));
             Assert.NotNull(typeof(DeucarianEditorObjectFieldRow).GetMethod("Draw"));
             Assert.NotNull(typeof(DeucarianEditorMiniToolbar).GetMethod("Button"));
+        }
+
+        [Test]
+        public void SelectAndPing_SelectsTargetAndIgnoresNull()
+        {
+            Texture2D target = new Texture2D(1, 1);
+            Object previousSelection = Selection.activeObject;
+
+            try
+            {
+                DeucarianEditorSelection.SelectAndPing(target);
+
+                Assert.AreSame(target, Selection.activeObject);
+
+                DeucarianEditorSelection.SelectAndPing(null);
+
+                Assert.AreSame(target, Selection.activeObject);
+            }
+            finally
+            {
+                Selection.activeObject = previousSelection;
+                Object.DestroyImmediate(target);
+            }
         }
 
         [Test]
