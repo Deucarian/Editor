@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4 - 2026-07-17
+
+- Expanded the package-owned Lucide 1.22.0 catalog with generic action, status, navigation, package, graph, platform, and workflow glyphs, each backed by its exact upstream SVG and a matching 32 px white PNG.
+- Added safe dynamic Lucide lookup, canonical package fallback behavior, direct icon-ID package lookup, and complete Lucide mappings for the legacy package aliases.
+- Added stable shared icon constants, Lucide status rows, and a branded responsive callback-based editor dialog with wrapped details, icon actions, and deterministic Enter, Escape, and window-close completion.
+
 ## 1.0.3 - 2026-07-17
 
 - Added reusable selection-and-ping editor helpers and an isolated editor-shell example.

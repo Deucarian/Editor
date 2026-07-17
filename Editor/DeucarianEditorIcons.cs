@@ -5,74 +5,38 @@ using UnityEngine;
 
 namespace Deucarian.Editor
 {
+    /// <summary>Loads the package-owned Lucide catalog and legacy package icon aliases.</summary>
     public static class DeucarianEditorIcons
     {
         private const string LucideIconRoot = DeucarianEditorUIResources.IconsPath + "/Lucide";
 
-        private static readonly HashSet<string> KnownIconIds =
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, string> LegacyPackageIconAliases =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                DeucarianEditorIconIds.Warning,
-                DeucarianEditorIconIds.Undo,
-                DeucarianEditorIconIds.Check,
-                DeucarianEditorIconIds.Wrench,
-                DeucarianEditorIconIds.CreateFolder,
-                DeucarianEditorIconIds.CreatePackage,
-                DeucarianEditorIconIds.OpenFolder,
-                DeucarianEditorIconIds.Palette,
-                DeucarianEditorIconIds.History,
-                DeucarianEditorIconIds.Refresh,
-                DeucarianEditorIconIds.Monitor,
-                DeucarianEditorIconIds.Copy,
-                DeucarianEditorIconIds.Info,
-                DeucarianEditorIconIds.Reset,
-                DeucarianEditorIconIds.Logging,
-                DeucarianEditorIconIds.ChevronDown,
-                DeucarianEditorIconIds.ChevronRight
+                { "package-installer", DeucarianEditorIconIds.CreatePackage },
+                { "theming", DeucarianEditorIconIds.Palette },
+                { "diagnostics", DeucarianEditorIconIds.Info },
+                { "logging", DeucarianEditorIconIds.Logging },
+                { "object-loading", DeucarianEditorIconIds.OpenFolder },
+                { "api-helper", "braces" },
+                { "session", "key-round" },
+                { "selection", "mouse-pointer-click" },
+                { "generic-ui-items", "component" },
+                { "editor", DeucarianEditorIconIds.Wrench }
             };
 
-        private static readonly Dictionary<string, IconDefinition> PackageIcons =
-            new Dictionary<string, IconDefinition>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "package-installer", new IconDefinition("Package Installer", DeucarianEditorIconIds.CreatePackage, "d_Package Manager", "Package Manager") },
-                { "theming", new IconDefinition("Theming", DeucarianEditorIconIds.Palette, "d_SceneViewFx", "SceneViewFx") },
-                { "diagnostics", new IconDefinition("Diagnostics", DeucarianEditorIconIds.Info, "d_console.infoicon", "console.infoicon") },
-                { "logging", new IconDefinition("Logging", DeucarianEditorIconIds.Logging, "d_UnityEditor.ConsoleWindow", "UnityEditor.ConsoleWindow") },
-                { "object-loading", new IconDefinition("Object Loading", DeucarianEditorIconIds.OpenFolder, "d_Prefab Icon", "Prefab Icon") },
-                { "api-helper", new IconDefinition("API Helper", null) },
-                { "session", new IconDefinition("Session", null) },
-                { "selection", new IconDefinition("Selection", null) },
-                { "generic-ui-items", new IconDefinition("Generic UI Items", null) },
-                { "editor", new IconDefinition("Editor", DeucarianEditorIconIds.Wrench, "d_UnityEditor.InspectorWindow", "UnityEditor.InspectorWindow") }
-            };
-
-        private static readonly Dictionary<string, Texture2D> FallbackIcons =
-            new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, Texture2D> SharedIcons =
             new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>Loads a curated shared icon, returning the existing fallback when the ID is unknown or missing.</summary>
+        /// <summary>
+        /// Loads a vendored Lucide icon. Unsafe, unknown, and missing IDs resolve to the
+        /// canonical Lucide package icon; Unity built-in icon names are never consulted.
+        /// </summary>
         public static Texture2D GetIcon(string iconId)
         {
-            string normalizedId = string.IsNullOrWhiteSpace(iconId) ? string.Empty : iconId.Trim();
-            Texture2D cached;
-            if (SharedIcons.TryGetValue(normalizedId, out cached) && cached != null)
-            {
-                return cached;
-            }
-
-            if (KnownIconIds.Contains(normalizedId))
-            {
-                Texture2D icon = DeucarianEditorUIResources.LoadTexture(
-                    LucideIconRoot + "/" + normalizedId + ".png");
-                if (icon != null)
-                {
-                    SharedIcons[normalizedId] = icon;
-                    return icon;
-                }
-            }
-
-            return GetFallbackIcon(normalizedId);
+            return TryGetVendoredIcon(iconId, out Texture2D icon)
+                ? icon
+                : GetCanonicalPackageIcon();
         }
 
         /// <summary>Creates IMGUI content using a shared icon and visible text.</summary>
@@ -81,9 +45,10 @@ namespace Deucarian.Editor
             return new GUIContent(text ?? string.Empty, GetIcon(iconId), tooltip ?? string.Empty);
         }
 
+        /// <summary>Returns true only for a safe slug whose PNG is actually vendored by this package.</summary>
         public static bool IsKnownIconId(string iconId)
         {
-            return !string.IsNullOrWhiteSpace(iconId) && KnownIconIds.Contains(iconId.Trim());
+            return TryGetVendoredIcon(iconId, out _);
         }
 
         /// <summary>Draws a shared white glyph tinted for the current editor skin.</summary>
@@ -100,52 +65,31 @@ namespace Deucarian.Editor
             GUI.color = previousColor;
         }
 
+        /// <summary>
+        /// Resolves a direct Lucide ID first, then the legacy package-key aliases retained
+        /// for source compatibility. Unknown values use the canonical package glyph.
+        /// </summary>
         public static Texture2D GetPackageIcon(string packageKey)
         {
-            IconDefinition definition;
-            if (!string.IsNullOrWhiteSpace(packageKey) && PackageIcons.TryGetValue(packageKey.Trim(), out definition))
+            if (TryGetVendoredIcon(packageKey, out Texture2D directIcon))
             {
-                if (!string.IsNullOrWhiteSpace(definition.AssetIconId))
-                {
-                    Texture2D sharedIcon = GetIcon(definition.AssetIconId);
-                    if (sharedIcon != null)
-                    {
-                        return sharedIcon;
-                    }
-                }
-
-                Texture2D icon = GetBuiltInIcon(definition.IconNames);
-                if (icon != null)
-                {
-                    return icon;
-                }
-
-                return GetFallbackIcon(definition.Label);
+                return directIcon;
             }
 
-            return GetFallbackIcon(packageKey);
+            if (!string.IsNullOrWhiteSpace(packageKey) &&
+                LegacyPackageIconAliases.TryGetValue(packageKey.Trim(), out string iconId) &&
+                TryGetVendoredIcon(iconId, out Texture2D aliasIcon))
+            {
+                return aliasIcon;
+            }
+
+            return GetCanonicalPackageIcon();
         }
 
+        /// <summary>Returns the canonical Lucide package glyph for unknown legacy content.</summary>
         public static Texture2D GetFallbackIcon(string label)
         {
-            string fallbackKey = string.IsNullOrWhiteSpace(label) ? "package" : label.Trim();
-
-            Texture2D cached;
-            if (FallbackIcons.TryGetValue(fallbackKey, out cached) && cached != null)
-            {
-                return cached;
-            }
-
-            Texture2D builtIn = GetBuiltInIcon("d_Package Manager", "Package Manager", "d_Folder Icon", "Folder Icon");
-            if (builtIn != null)
-            {
-                FallbackIcons[fallbackKey] = builtIn;
-                return builtIn;
-            }
-
-            Texture2D generated = CreateBadgeTexture(fallbackKey);
-            FallbackIcons[fallbackKey] = generated;
-            return generated;
+            return GetCanonicalPackageIcon();
         }
 
         public static GUIContent GetPackageContent(string packageKey, string title, string tooltip = null)
@@ -155,94 +99,91 @@ namespace Deucarian.Editor
 
         public static bool IsKnownPackageKey(string packageKey)
         {
-            return !string.IsNullOrWhiteSpace(packageKey) && PackageIcons.ContainsKey(packageKey.Trim());
+            return TryGetVendoredIcon(packageKey, out _) ||
+                   (!string.IsNullOrWhiteSpace(packageKey) &&
+                    LegacyPackageIconAliases.ContainsKey(packageKey.Trim()));
         }
 
-        private static Texture2D GetBuiltInIcon(params string[] iconNames)
+        private static bool TryGetVendoredIcon(string iconId, out Texture2D icon)
         {
-            if (iconNames == null)
+            icon = null;
+
+            if (!TryNormalizeIconId(iconId, out string normalizedId))
             {
-                return null;
+                return false;
             }
 
-            for (int i = 0; i < iconNames.Length; i++)
+            if (SharedIcons.TryGetValue(normalizedId, out Texture2D cached) && cached != null)
             {
-                string iconName = iconNames[i];
-                if (string.IsNullOrWhiteSpace(iconName))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    GUIContent content = EditorGUIUtility.IconContent(iconName);
-                    Texture2D texture = content != null ? content.image as Texture2D : null;
-                    if (texture != null)
-                    {
-                        return texture;
-                    }
-                }
-                catch
-                {
-                    // Built-in icon names differ between Unity versions. Missing icons should never break a window.
-                }
+                icon = cached;
+                return true;
             }
 
+            Texture2D loaded = DeucarianEditorUIResources.LoadTexture(GetLucideAssetPath(normalizedId));
+            if (loaded == null)
+            {
+                return false;
+            }
+
+            SharedIcons[normalizedId] = loaded;
+            icon = loaded;
+            return true;
+        }
+
+        private static Texture2D GetCanonicalPackageIcon()
+        {
+            if (TryGetVendoredIcon(DeucarianEditorIconIds.Package, out Texture2D packageIcon))
+            {
+                return packageIcon;
+            }
+
+            // The package icon is a required package asset. Returning null here makes a
+            // damaged package visible without silently changing to a Unity built-in glyph.
             return null;
         }
 
-        private static Texture2D CreateBadgeTexture(string label)
+        private static string GetLucideAssetPath(string normalizedId)
         {
-            const int size = 32;
-            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
-            {
-                hideFlags = HideFlags.HideAndDontSave,
-                name = "Deucarian Editor Icon " + label
-            };
+            return LucideIconRoot + "/" + normalizedId + ".png";
+        }
 
-            Color32 background = ToColor32(DeucarianEditorColors.Slate);
-            Color32 accent = ToColor32(DeucarianEditorColors.Teal);
-            Color32 border = ToColor32(DeucarianEditorColors.Border);
-            Color32[] pixels = new Color32[size * size];
-
-            for (int y = 0; y < size; y++)
+        private static bool TryNormalizeIconId(string iconId, out string normalizedId)
+        {
+            normalizedId = string.Empty;
+            if (string.IsNullOrWhiteSpace(iconId))
             {
-                for (int x = 0; x < size; x++)
+                return false;
+            }
+
+            string candidate = iconId.Trim();
+            if (candidate.Length == 0 || candidate.Length > 96 || candidate[0] == '-' || candidate[candidate.Length - 1] == '-')
+            {
+                return false;
+            }
+
+            bool previousWasHyphen = false;
+            for (int index = 0; index < candidate.Length; index++)
+            {
+                char character = candidate[index];
+                bool alphaNumeric = character >= 'a' && character <= 'z' ||
+                                    character >= '0' && character <= '9';
+                if (alphaNumeric)
                 {
-                    bool isBorder = x == 0 || y == 0 || x == size - 1 || y == size - 1;
-                    bool isAccent = y >= size - 7 || x < 6;
-                    pixels[y * size + x] = isBorder ? border : isAccent ? accent : background;
+                    previousWasHyphen = false;
+                    continue;
                 }
+
+                if (character != '-' || previousWasHyphen)
+                {
+                    return false;
+                }
+
+                previousWasHyphen = true;
             }
 
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            return texture;
+            normalizedId = candidate;
+            return true;
         }
 
-        private static Color32 ToColor32(Color color)
-        {
-            return new Color32(
-                (byte)Mathf.RoundToInt(Mathf.Clamp01(color.r) * 255f),
-                (byte)Mathf.RoundToInt(Mathf.Clamp01(color.g) * 255f),
-                (byte)Mathf.RoundToInt(Mathf.Clamp01(color.b) * 255f),
-                (byte)Mathf.RoundToInt(Mathf.Clamp01(color.a) * 255f));
-        }
-
-        private sealed class IconDefinition
-        {
-            public IconDefinition(string label, string assetIconId, params string[] iconNames)
-            {
-                Label = label;
-                AssetIconId = assetIconId;
-                IconNames = iconNames ?? Array.Empty<string>();
-            }
-
-            public string Label { get; private set; }
-
-            public string AssetIconId { get; private set; }
-
-            public string[] IconNames { get; private set; }
-        }
     }
 }

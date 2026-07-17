@@ -230,13 +230,10 @@ namespace Deucarian.Editor
 
         public static GUIContent BuildContent(string iconName, string tooltip)
         {
-            GUIContent content = null;
-            if (!string.IsNullOrWhiteSpace(iconName))
-                content = EditorGUIUtility.IconContent(iconName);
-            if (content == null)
-                content = new GUIContent(string.Empty);
-            content.tooltip = tooltip ?? string.Empty;
-            return content;
+            return DeucarianEditorIcons.GetIconContent(
+                iconName,
+                string.Empty,
+                tooltip ?? string.Empty);
         }
     }
 
