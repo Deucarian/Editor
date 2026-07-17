@@ -1,6 +1,7 @@
 {
   "packageId": "com.deucarian.editor",
   "displayName": "Deucarian Editor",
+  "samplePolicy": "compiled-example",
   "ownedCapabilities": [
     "editor-shell"
   ],
@@ -8,9 +9,12 @@
   "editorAssemblies": [
     "Deucarian.Editor"
   ],
-  "sampleAssemblies": [],
+  "sampleAssemblies": [
+    "Deucarian.Editor.EditorShellExample"
+  ],
   "testAssemblies": [
-    "Deucarian.Editor.Tests"
+    "Deucarian.Editor.Tests",
+    "Deucarian.Editor.EditorShellExample.Tests"
   ],
   "requiredDependencies": [],
   "optionalVersionDefinedDependencies": [],

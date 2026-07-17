@@ -118,22 +118,7 @@ namespace Deucarian.Editor
 
         public static VisualElement CreateHeader(string title, string subtitle)
         {
-            VisualElement header = new VisualElement();
-            header.AddToClassList("deucarian-panel");
-            header.AddToClassList("deucarian-panel--header");
-
-            Label titleLabel = new Label(title ?? string.Empty);
-            titleLabel.AddToClassList("deucarian-header__title");
-            header.Add(titleLabel);
-
-            if (!string.IsNullOrWhiteSpace(subtitle))
-            {
-                Label subtitleLabel = new Label(subtitle);
-                subtitleLabel.AddToClassList("deucarian-header__subtitle");
-                header.Add(subtitleLabel);
-            }
-
-            return header;
+            return DeucarianEditorPackageHeader.Create(null, title, subtitle);
         }
 
         public static VisualElement CreatePanel(params string[] additionalClasses)

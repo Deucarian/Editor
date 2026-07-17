@@ -31,8 +31,7 @@ namespace Deucarian.Editor
             bool clicked = Button("Select", target != null, GUILayout.Width(56f), GUILayout.Height(22f));
             if (clicked && target != null)
             {
-                Selection.activeObject = target;
-                EditorGUIUtility.PingObject(target);
+                DeucarianEditorSelection.SelectAndPing(target);
             }
 
             return clicked;

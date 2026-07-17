@@ -426,7 +426,11 @@ namespace Deucarian.Editor
                 {
                     cardStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(10, 10, 8, 8),
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
                         margin = new RectOffset(0, 0, 0, 0)
                     };
                 }
@@ -443,7 +447,11 @@ namespace Deucarian.Editor
                 {
                     selectedCardStyle = new GUIStyle(CardStyle)
                     {
-                        padding = new RectOffset(12, 12, 10, 10)
+                        padding = new RectOffset(
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
+                            DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
                     };
                 }
 
