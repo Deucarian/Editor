@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - 2026-07-17
+
+- Added reusable selection-and-ping editor helpers and an isolated editor-shell example.
+- Qualified Unity object references in the selection helper test for Unity 6000 compiler compatibility.
+
 ## 1.0.2 - 2026-07-15
 
 - Preserved the released Package Installer IMGUI status-row color composition while retaining exception-safe restoration of `GUI.contentColor` in the shared workbench helper.
