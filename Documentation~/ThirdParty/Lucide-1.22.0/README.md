@@ -1,6 +1,6 @@
 # Lucide icon subset
 
-This package vendors a small subset of Lucide 1.22.0 for Deucarian editor chrome.
+This package vendors the package-owned Lucide 1.22.0 catalog used by Deucarian editor chrome.
 
 - Source: https://github.com/lucide-icons/lucide/releases/tag/1.22.0
 - License: ISC, with Feather-derived icons retaining their MIT terms as described in `LICENSE`.
