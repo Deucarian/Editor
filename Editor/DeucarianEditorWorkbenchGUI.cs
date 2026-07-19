@@ -56,12 +56,16 @@ namespace Deucarian.Editor
         public static Color SeparatorColor => DeucarianEditorVisualShell.SubtleBorder;
         public static Color TextColor => DeucarianEditorVisualShell.Text;
         public static Color MutedTextColor => DeucarianEditorVisualShell.MutedText;
-        public static Color InteractiveTextColor => EditorGUIUtility.isProSkin
-            ? TextColor
-            : new Color(31f / 255f, 43f / 255f, 50f / 255f, 1f);
-        public static Color RowBackgroundColor => new Color(32f / 255f, 47f / 255f, 56f / 255f, 0.46f);
-        public static Color RowHoverColor => new Color(32f / 255f, 47f / 255f, 56f / 255f, 0.62f);
-        public static Color RowSelectedColor => new Color(35f / 255f, 62f / 255f, 66f / 255f, 0.58f);
+        public static Color InteractiveTextColor => TextColor;
+        public static Color RowBackgroundColor => DeucarianEditorTheme.IsDark
+            ? new Color(48f / 255f, 46f / 255f, 42f / 255f, 0.46f)
+            : new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.56f);
+        public static Color RowHoverColor => DeucarianEditorTheme.IsDark
+            ? new Color(62f / 255f, 65f / 255f, 60f / 255f, 0.66f)
+            : new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.16f);
+        public static Color RowSelectedColor => DeucarianEditorTheme.IsDark
+            ? new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.52f)
+            : new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.25f);
 
         public static GUIStyle WindowStyle { get { EnsureStyles(); return windowStyle; } }
         public static GUIStyle EmbeddedPageStyle { get { EnsureStyles(); return embeddedPageStyle; } }
@@ -389,70 +393,84 @@ namespace Deucarian.Editor
             };
 
             titleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderTitle);
+            DeucarianEditorTypography.ApplyDisplay(titleStyle);
             titleStyle.fontSize = 15;
             titleStyle.normal.textColor = TextColor;
             titleStyle.wordWrap = true;
 
             subtitleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderSubtitle);
+            DeucarianEditorTypography.ApplyBody(subtitleStyle);
             subtitleStyle.normal.textColor = MutedTextColor;
             sectionTitleStyle = CopyStyle(() => DeucarianEditorStyles.SectionTitle);
+            DeucarianEditorTypography.ApplyStrong(sectionTitleStyle);
             sectionTitleStyle.normal.textColor = TextColor;
 
             labelStyle = CopyStyle(() => EditorStyles.label);
+            DeucarianEditorTypography.ApplyBody(labelStyle);
             labelStyle.normal.textColor = TextColor;
 
             boldLabelStyle = CopyStyle(() => EditorStyles.boldLabel);
+            DeucarianEditorTypography.ApplyStrong(boldLabelStyle);
             boldLabelStyle.normal.textColor = TextColor;
 
             wordWrappedMiniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
+            DeucarianEditorTypography.ApplyBody(wordWrappedMiniLabelStyle);
             wordWrappedMiniLabelStyle.normal.textColor = MutedTextColor;
             wordWrappedMiniLabelStyle.wordWrap = true;
 
             miniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
+            DeucarianEditorTypography.ApplyBody(miniLabelStyle);
             miniLabelStyle.normal.textColor = TextColor;
             miniLabelStyle.wordWrap = true;
             miniLabelStyle.clipping = TextClipping.Overflow;
 
             mutedMiniLabelStyle = CopyStyle(() => DeucarianEditorStyles.MutedLabel);
+            DeucarianEditorTypography.ApplyBody(mutedMiniLabelStyle);
             mutedMiniLabelStyle.fontSize = GetWordWrappedMiniLabelFontSize();
             mutedMiniLabelStyle.wordWrap = true;
             mutedMiniLabelStyle.clipping = TextClipping.Overflow;
 
             rowTitleStyle = CopyStyle(() => EditorStyles.miniBoldLabel);
+            DeucarianEditorTypography.ApplyStrong(rowTitleStyle);
             rowTitleStyle.normal.textColor = TextColor;
             rowTitleStyle.wordWrap = true;
             rowTitleStyle.clipping = TextClipping.Clip;
 
             rowSubLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
+            DeucarianEditorTypography.ApplyBody(rowSubLabelStyle);
             rowSubLabelStyle.normal.textColor = MutedTextColor;
             rowSubLabelStyle.wordWrap = true;
             rowSubLabelStyle.clipping = TextClipping.Clip;
 
             rowStatusStyle = CopyStyle(() => EditorStyles.miniLabel);
+            DeucarianEditorTypography.ApplyBody(rowStatusStyle);
             rowStatusStyle.normal.textColor = TextColor;
             rowStatusStyle.alignment = TextAnchor.MiddleLeft;
             rowStatusStyle.clipping = TextClipping.Clip;
 
             markerStyle = CopyStyle(() => EditorStyles.miniBoldLabel);
+            DeucarianEditorTypography.ApplyStrong(markerStyle);
             markerStyle.alignment = TextAnchor.MiddleCenter;
             markerStyle.fontSize = 10;
             markerStyle.normal.textColor = TextColor;
 
             foldoutStyle = CopyStyle(() => EditorStyles.foldout);
+            DeucarianEditorTypography.ApplyStrong(foldoutStyle);
             foldoutStyle.normal.textColor = TextColor;
             foldoutStyle.onNormal.textColor = TextColor;
             foldoutStyle.hover.textColor = TextColor;
             foldoutStyle.onHover.textColor = TextColor;
-            foldoutStyle.fontStyle = FontStyle.Bold;
 
             primaryButtonStyle = CopyStyle(() => EditorStyles.miniButton);
-            primaryButtonStyle.fontStyle = FontStyle.Bold;
+            DeucarianEditorTypography.ApplyStrong(primaryButtonStyle);
             primaryButtonStyle.fixedHeight = ButtonHeight;
 
             secondaryButtonStyle = CopyStyle(() => DeucarianEditorStyles.ToolbarButton);
+            DeucarianEditorTypography.ApplyStrong(secondaryButtonStyle);
             secondaryButtonStyle.fixedHeight = ButtonHeight;
 
             compactIconActionLabelStyle = CopyStyle(() => EditorStyles.label);
+            DeucarianEditorTypography.ApplyStrong(compactIconActionLabelStyle);
             compactIconActionLabelStyle.alignment = TextAnchor.MiddleLeft;
             compactIconActionLabelStyle.padding = new RectOffset(0, 0, 0, 0);
             compactIconActionLabelStyle.margin = new RectOffset(0, 0, 0, 0);
