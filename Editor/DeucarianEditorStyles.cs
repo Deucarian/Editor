@@ -136,20 +136,21 @@ namespace Deucarian.Editor
 
             packageHeaderTitle = CopyStyle(() => EditorStyles.boldLabel);
             packageHeaderTitle.fontSize = 18;
-            packageHeaderTitle.fontStyle = FontStyle.Bold;
+            DeucarianEditorTypography.ApplyDisplay(packageHeaderTitle);
             packageHeaderTitle.wordWrap = true;
             packageHeaderTitle.alignment = TextAnchor.MiddleLeft;
             packageHeaderTitle.normal.textColor = DeucarianEditorColors.TitleText;
 
             packageHeaderSubtitle = CopyStyle(() => EditorStyles.label);
             packageHeaderSubtitle.fontSize = 11;
+            DeucarianEditorTypography.ApplyBody(packageHeaderSubtitle);
             packageHeaderSubtitle.wordWrap = true;
             packageHeaderSubtitle.alignment = TextAnchor.MiddleLeft;
             packageHeaderSubtitle.normal.textColor = DeucarianEditorColors.MutedText;
 
             sectionTitle = CopyStyle(() => EditorStyles.boldLabel);
             sectionTitle.fontSize = 12;
-            sectionTitle.fontStyle = FontStyle.Bold;
+            DeucarianEditorTypography.ApplyStrong(sectionTitle);
             sectionTitle.wordWrap = true;
             sectionTitle.margin = new RectOffset(0, 0, 8, 4);
             sectionTitle.normal.textColor = DeucarianEditorColors.TitleText;
@@ -168,10 +169,12 @@ namespace Deucarian.Editor
             sectionBox.normal.background = TextureForColor("section", DeucarianEditorColors.SectionBackground);
 
             mutedLabel = CopyStyle(() => EditorStyles.label);
+            DeucarianEditorTypography.ApplyBody(mutedLabel);
             mutedLabel.wordWrap = true;
             mutedLabel.normal.textColor = DeucarianEditorColors.MutedText;
 
             statusBadge = CopyStyle(() => EditorStyles.miniBoldLabel);
+            DeucarianEditorTypography.ApplyStrong(statusBadge);
             statusBadge.alignment = TextAnchor.MiddleCenter;
             statusBadge.padding = new RectOffset(7, 7, 2, 3);
             statusBadge.fixedHeight = 18;
@@ -179,6 +182,7 @@ namespace Deucarian.Editor
             statusBadge.normal.textColor = DeucarianEditorColors.BadgeText;
 
             toolbarButton = CopyStyle(() => EditorStyles.toolbarButton);
+            DeucarianEditorTypography.ApplyStrong(toolbarButton);
             toolbarButton.alignment = TextAnchor.MiddleCenter;
             toolbarButton.padding = new RectOffset(
                 DeucarianEditorLayoutMetrics.IconTextHorizontalPadding,
@@ -187,6 +191,7 @@ namespace Deucarian.Editor
                 DeucarianEditorLayoutMetrics.IconTextVerticalPadding);
 
             footerVersionText = CopyStyle(() => EditorStyles.miniLabel);
+            DeucarianEditorTypography.ApplyBody(footerVersionText);
             footerVersionText.alignment = TextAnchor.MiddleRight;
             footerVersionText.wordWrap = true;
             footerVersionText.margin = new RectOffset(0, 0, 6, 0);

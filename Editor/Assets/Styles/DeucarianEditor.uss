@@ -1,31 +1,110 @@
 .deucarian-editor {
-    --deucarian-bg: #11161a;
-    --deucarian-panel: rgba(23, 32, 39, 0.72);
-    --deucarian-panel-soft: rgba(32, 47, 56, 0.62);
-    --deucarian-panel-header: rgba(35, 52, 61, 0.68);
-    --deucarian-sidebar: rgba(23, 32, 39, 0.72);
-    --deucarian-border: rgba(90, 111, 160, 0.35);
-    --deucarian-border-active: rgba(59, 166, 154, 0.55);
-    --deucarian-text: #e7edf0;
-    --deucarian-muted: #9aa8b1;
-    --deucarian-teal: #3ba69a;
-    --deucarian-blue: #5a6fa0;
+    --deucarian-bg: #1b1a18;
+    --deucarian-panel: rgba(37, 36, 33, 0.88);
+    --deucarian-panel-soft: rgba(48, 46, 42, 0.82);
+    --deucarian-panel-header: rgba(42, 41, 38, 0.92);
+    --deucarian-sidebar: rgba(37, 36, 33, 0.88);
+    --deucarian-border: rgba(98, 186, 182, 0.24);
+    --deucarian-border-active: rgba(98, 186, 182, 0.62);
+    --deucarian-text: #f2efe7;
+    --deucarian-muted: #aaa69e;
+    --deucarian-teal: #62bab6;
+    --deucarian-blue: #0f626a;
+    --deucarian-window-overlay: rgba(27, 26, 24, 0.18);
+    --deucarian-control: rgba(48, 46, 42, 0.68);
+    --deucarian-control-hover: rgba(62, 65, 60, 0.78);
+    --deucarian-control-active: rgba(15, 98, 106, 0.52);
     --deucarian-green: #5fbf86;
     --deucarian-amber: #d99d48;
     --deucarian-red: #d36a68;
+    --deucarian-grove: #8fa991;
+    --deucarian-cobalt: #7995d5;
+    --deucarian-tideline: #62bab6;
+    --deucarian-oxblood: #d37a72;
+    --deucarian-mineral: #aaa69e;
+    --deucarian-brass: #d1a35a;
+    --deucarian-ember: #d68855;
+    --deucarian-graph-canvas: #191917;
+    --deucarian-graph-canvas-inset: #141615;
+    --deucarian-graph-surface: #2b2a27;
+    --deucarian-graph-surface-raised: #34332f;
+    --deucarian-graph-surface-hover: #303d3a;
+    --deucarian-graph-surface-selected: #2b4644;
+    --deucarian-graph-surface-related: #2d3734;
+    --deucarian-graph-highlight: rgba(242, 239, 231, 0.055);
+    --deucarian-graph-border: rgba(170, 166, 158, 0.28);
+    --deucarian-graph-border-hover: rgba(98, 186, 182, 0.62);
+    --deucarian-graph-border-selected: rgba(98, 186, 182, 0.92);
+    --deucarian-graph-edge: rgba(170, 166, 158, 0.42);
+    --deucarian-graph-edge-emphasis: rgba(98, 186, 182, 0.84);
+    --deucarian-graph-edge-underlay: rgba(27, 26, 24, 0.78);
+    --deucarian-graph-installed: #62bab6;
+    --deucarian-graph-available: #aaa69e;
+    --deucarian-graph-update: #d1a35a;
+    --deucarian-graph-warning: #d68855;
+    --deucarian-graph-missing: #d37a72;
+    --deucarian-graph-checking: #7995d5;
+    --deucarian-graph-unknown: rgba(170, 166, 158, 0.78);
+    -unity-font: url("../Fonts/DINish-Regular.otf");
     background-color: var(--deucarian-bg);
     color: var(--deucarian-text);
 }
 
+.deucarian-editor.deucarian-theme--light {
+    --deucarian-bg: #f8f6f1;
+    --deucarian-panel: rgba(255, 255, 255, 0.90);
+    --deucarian-panel-soft: rgba(242, 239, 231, 0.88);
+    --deucarian-panel-header: rgba(255, 255, 255, 0.94);
+    --deucarian-sidebar: rgba(255, 255, 255, 0.86);
+    --deucarian-border: rgba(27, 26, 24, 0.14);
+    --deucarian-border-active: rgba(15, 98, 106, 0.58);
+    --deucarian-text: #1b1a18;
+    --deucarian-muted: #79766f;
+    --deucarian-teal: #0f626a;
+    --deucarian-blue: #0f626a;
+    --deucarian-window-overlay: rgba(255, 255, 255, 0.10);
+    --deucarian-control: rgba(242, 239, 231, 0.76);
+    --deucarian-control-hover: rgba(98, 186, 182, 0.16);
+    --deucarian-control-active: rgba(98, 186, 182, 0.25);
+    --deucarian-grove: #355545;
+    --deucarian-cobalt: #234b91;
+    --deucarian-tideline: #0f626a;
+    --deucarian-oxblood: #8d2d2b;
+    --deucarian-mineral: #5d5a55;
+    --deucarian-brass: #8a642d;
+    --deucarian-ember: #a44b31;
+    --deucarian-graph-canvas: #f4f2eb;
+    --deucarian-graph-canvas-inset: #edeae1;
+    --deucarian-graph-surface: #ffffff;
+    --deucarian-graph-surface-raised: #faf8f2;
+    --deucarian-graph-surface-hover: #ebf7f5;
+    --deucarian-graph-surface-selected: #daefec;
+    --deucarian-graph-surface-related: #e9f4f2;
+    --deucarian-graph-highlight: rgba(255, 255, 255, 0.58);
+    --deucarian-graph-border: rgba(27, 26, 24, 0.16);
+    --deucarian-graph-border-hover: rgba(15, 98, 106, 0.48);
+    --deucarian-graph-border-selected: rgba(15, 98, 106, 0.76);
+    --deucarian-graph-edge: rgba(93, 90, 85, 0.34);
+    --deucarian-graph-edge-emphasis: rgba(15, 98, 106, 0.72);
+    --deucarian-graph-edge-underlay: rgba(93, 90, 85, 0.20);
+    --deucarian-graph-installed: #0f626a;
+    --deucarian-graph-available: #5d5a55;
+    --deucarian-graph-update: #8a642d;
+    --deucarian-graph-warning: #a44b31;
+    --deucarian-graph-missing: #8d2d2b;
+    --deucarian-graph-checking: #234b91;
+    --deucarian-graph-unknown: rgba(93, 90, 85, 0.78);
+}
+
 .deucarian-window-shell-host {
     flex-grow: 1;
-    background-color: #0d1218;
+    background-color: var(--deucarian-bg);
 }
 
 .deucarian-window-shell {
     flex-grow: 1;
     position: relative;
-    background-color: #0d1218;
+    background-color: var(--deucarian-bg);
 }
 
 .deucarian-window-background {
@@ -34,7 +113,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: #0d1218;
+    background-color: var(--deucarian-bg);
 }
 
 .deucarian-window-overlay {
@@ -43,7 +122,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(1, 4, 8, 0.24);
+    background-color: var(--deucarian-window-overlay);
 }
 
 .deucarian-window-content {
@@ -79,8 +158,8 @@
     border-bottom-width: 1px;
     border-left-color: var(--deucarian-border);
     border-right-color: var(--deucarian-border);
-    border-top-color: rgba(126, 172, 202, 0.32);
-    border-bottom-color: rgba(59, 166, 154, 0.22);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border-active);
     background-color: var(--deucarian-panel-header);
 }
 
@@ -101,6 +180,17 @@
     padding-bottom: 0;
     flex-grow: 0;
     flex-shrink: 0;
+}
+
+.deucarian-package-header__icon--brand {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    max-width: 42px;
+    max-height: 42px;
+    margin-right: 12px;
+    -unity-background-image-tint-color: white;
 }
 
 .deucarian-package-header__text {
@@ -136,7 +226,8 @@
 .deucarian-header__title {
     min-height: 22px;
     font-size: 18px;
-    -unity-font-style: bold;
+    -unity-font: url("../Fonts/DINish-Light.otf");
+    -unity-font-style: normal;
     color: var(--deucarian-text);
 }
 
@@ -149,7 +240,7 @@
 
 .deucarian-window {
     flex-grow: 1;
-    background-color: rgba(13, 18, 24, 0.22);
+    background-color: var(--deucarian-window-overlay);
     color: var(--deucarian-text);
 }
 
@@ -187,7 +278,7 @@
 }
 
 .deucarian-sidebar__button--active {
-    background-color: rgba(35, 62, 66, 0.58);
+    background-color: var(--deucarian-control-active);
     color: var(--deucarian-text);
     border-left-width: 3px;
     border-left-color: var(--deucarian-teal);
@@ -268,21 +359,21 @@
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
-    background-color: rgba(32, 47, 56, 0.44);
-    border-left-color: rgba(90, 111, 160, 0.25);
-    border-right-color: rgba(90, 111, 160, 0.25);
-    border-top-color: rgba(90, 111, 160, 0.25);
-    border-bottom-color: rgba(90, 111, 160, 0.25);
+    background-color: var(--deucarian-control);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
     color: var(--deucarian-muted);
 }
 
 .deucarian-toggle-button:hover {
-    background-color: rgba(32, 47, 56, 0.68);
+    background-color: var(--deucarian-control-hover);
     color: var(--deucarian-text);
 }
 
 .deucarian-toggle-button--active {
-    background-color: rgba(39, 96, 101, 0.52);
+    background-color: var(--deucarian-control-active);
     border-left-color: var(--deucarian-border-active);
     border-right-color: var(--deucarian-border-active);
     border-top-color: var(--deucarian-border-active);
@@ -346,11 +437,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(90, 111, 160, 0.24);
-    border-right-color: rgba(90, 111, 160, 0.20);
-    border-top-color: rgba(128, 160, 192, 0.26);
-    border-bottom-color: rgba(59, 166, 154, 0.14);
-    background-color: rgba(12, 22, 31, 0.48);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-panel-header);
 }
 
 .deucarian-workbench-toolbar__summary,
@@ -390,11 +481,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(90, 111, 160, 0.30);
-    border-right-color: rgba(90, 111, 160, 0.24);
-    border-top-color: rgba(126, 172, 202, 0.26);
-    border-bottom-color: rgba(59, 166, 154, 0.18);
-    background-color: rgba(22, 38, 48, 0.52);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-control);
     color: var(--deucarian-text);
 }
 
@@ -508,22 +599,22 @@
 
 .deucarian-workbench-toolbar__action--standard:hover,
 .dpi-view-toolbar__graph-action:hover {
-    border-left-color: rgba(59, 209, 191, 0.48);
-    border-right-color: rgba(59, 209, 191, 0.38);
-    border-top-color: rgba(126, 172, 202, 0.38);
-    border-bottom-color: rgba(59, 209, 191, 0.34);
-    background-color: rgba(28, 56, 64, 0.66);
-    color: rgba(230, 244, 246, 0.96);
+    border-left-color: var(--deucarian-border-active);
+    border-right-color: var(--deucarian-border-active);
+    border-top-color: var(--deucarian-border-active);
+    border-bottom-color: var(--deucarian-border-active);
+    background-color: var(--deucarian-control-hover);
+    color: var(--deucarian-text);
 }
 
 .deucarian-workbench-toolbar__action--standard:active,
 .dpi-view-toolbar__graph-action:active {
-    border-left-color: rgba(59, 209, 191, 0.72);
-    border-right-color: rgba(59, 209, 191, 0.58);
-    border-top-color: rgba(126, 172, 202, 0.52);
-    border-bottom-color: rgba(59, 209, 191, 0.52);
-    background-color: rgba(19, 43, 52, 0.78);
-    color: rgba(238, 250, 251, 1.00);
+    border-left-color: var(--deucarian-border-active);
+    border-right-color: var(--deucarian-border-active);
+    border-top-color: var(--deucarian-border-active);
+    border-bottom-color: var(--deucarian-border-active);
+    background-color: var(--deucarian-control-active);
+    color: var(--deucarian-text);
 }
 
 .deucarian-workbench-toolbar__action--emphasized,
@@ -531,15 +622,15 @@
 .dpi-view-toolbar__channel-button {
     min-width: 124px;
     margin-right: 2px;
-    border-left-color: rgba(59, 166, 154, 0.42);
-    border-right-color: rgba(59, 166, 154, 0.32);
-    border-top-color: rgba(126, 172, 202, 0.30);
-    border-bottom-color: rgba(59, 166, 154, 0.26);
-    background-color: rgba(25, 53, 57, 0.54);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-control);
 }
 
 .deucarian-workbench-toolbar__toggle--active {
-    background-color: rgba(39, 96, 101, 0.52);
+    background-color: var(--deucarian-control-active);
     border-left-color: var(--deucarian-border-active);
     border-right-color: var(--deucarian-border-active);
     border-top-color: var(--deucarian-border-active);
@@ -551,11 +642,11 @@
 .deucarian-workbench-toolbar__action--emphasized:hover,
 .deucarian-workbench-toolbar__toggle:hover,
 .dpi-view-toolbar__channel-button:hover {
-    border-left-color: rgba(59, 209, 191, 0.58);
-    border-right-color: rgba(59, 209, 191, 0.44);
-    border-top-color: rgba(126, 172, 202, 0.42);
-    border-bottom-color: rgba(59, 209, 191, 0.38);
-    background-color: rgba(31, 70, 73, 0.68);
+    border-left-color: var(--deucarian-border-active);
+    border-right-color: var(--deucarian-border-active);
+    border-top-color: var(--deucarian-border-active);
+    border-bottom-color: var(--deucarian-border-active);
+    background-color: var(--deucarian-control-hover);
 }
 
 .deucarian-command-bar__spacer,
@@ -645,11 +736,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(59, 166, 154, 0.48);
-    border-right-color: rgba(59, 166, 154, 0.40);
-    border-top-color: rgba(126, 172, 202, 0.32);
-    border-bottom-color: rgba(59, 166, 154, 0.34);
-    background-color: rgba(25, 53, 57, 0.54);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-control);
     color: var(--deucarian-text);
 }
 
@@ -827,11 +918,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(59, 166, 154, 0.30);
-    border-right-color: rgba(59, 166, 154, 0.30);
-    border-top-color: rgba(90, 111, 160, 0.34);
-    border-bottom-color: rgba(59, 166, 154, 0.24);
-    background-color: rgba(10, 20, 30, 0.96);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-panel-header);
 }
 
 .deucarian-workbench-operation-drawer--collapsed,
@@ -927,11 +1018,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(90, 111, 160, 0.28);
-    border-right-color: rgba(90, 111, 160, 0.24);
-    border-top-color: rgba(126, 172, 202, 0.22);
-    border-bottom-color: rgba(59, 166, 154, 0.16);
-    background-color: rgba(22, 38, 48, 0.48);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-control);
     color: var(--deucarian-text);
 }
 
@@ -940,7 +1031,7 @@
     border-right-color: var(--deucarian-border-active);
     border-top-color: var(--deucarian-border-active);
     border-bottom-color: var(--deucarian-border-active);
-    background-color: rgba(28, 56, 64, 0.66);
+    background-color: var(--deucarian-control-hover);
 }
 
 .deucarian-workbench-operation-drawer__action .deucarian-icon-text-button__label {
@@ -1048,11 +1139,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(90, 111, 160, 0.30);
-    border-right-color: rgba(90, 111, 160, 0.30);
-    border-top-color: rgba(90, 111, 160, 0.30);
-    border-bottom-color: rgba(90, 111, 160, 0.30);
-    background-color: rgba(12, 22, 31, 0.68);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-panel-header);
     overflow: hidden;
 }
 
@@ -1200,11 +1291,11 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(90, 111, 160, 0.38);
-    border-right-color: rgba(90, 111, 160, 0.38);
-    border-top-color: rgba(90, 111, 160, 0.38);
-    border-bottom-color: rgba(90, 111, 160, 0.38);
-    background-color: rgba(32, 47, 56, 0.60);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
+    background-color: var(--deucarian-control);
     color: var(--deucarian-text);
     font-size: 11px;
 }
@@ -1215,7 +1306,7 @@
     border-right-color: var(--deucarian-border-active);
     border-top-color: var(--deucarian-border-active);
     border-bottom-color: var(--deucarian-border-active);
-    background-color: rgba(35, 62, 66, 0.66);
+    background-color: var(--deucarian-control-hover);
 }
 
 .deucarian-workbench-operation-footer__action:active,
@@ -1224,7 +1315,7 @@
     border-right-color: rgba(59, 209, 191, 0.76);
     border-top-color: rgba(59, 209, 191, 0.76);
     border-bottom-color: rgba(59, 209, 191, 0.76);
-    background-color: rgba(25, 50, 56, 0.78);
+    background-color: var(--deucarian-control-active);
 }
 
 .deucarian-workbench-operation-footer__version,
@@ -1315,7 +1406,7 @@
 }
 
 .deucarian-button--primary {
-    background-color: #326e83;
+    background-color: var(--deucarian-blue);
     color: var(--deucarian-text);
     -unity-font-style: bold;
 }
@@ -1341,7 +1432,7 @@
 }
 
 .deucarian-readability-overlay {
-    background-color: rgba(2, 8, 14, 0.24);
+    background-color: var(--deucarian-window-overlay);
 }
 
 .deucarian-wallpaper-safe-shell {
@@ -1354,7 +1445,7 @@
     right: 0;
     top: 0;
     height: 86px;
-    background-color: rgba(4, 10, 17, 0.58);
+    background-color: rgba(27, 26, 24, 0.46);
 }
 
 .deucarian-ambient-lighting-layer,
@@ -1433,11 +1524,11 @@
     padding-right: 18px;
     padding-top: 18px;
     padding-bottom: 14px;
-    background-color: rgba(18, 30, 39, 0.94);
-    border-left-color: rgba(90, 111, 160, 0.48);
-    border-right-color: rgba(90, 111, 160, 0.48);
-    border-top-color: rgba(59, 166, 154, 0.52);
-    border-bottom-color: rgba(90, 111, 160, 0.48);
+    background-color: var(--deucarian-panel-header);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border-active);
+    border-bottom-color: var(--deucarian-border);
 }
 
 .deucarian-dialog__body {
@@ -1497,15 +1588,15 @@
     padding-right: 9px;
     padding-top: 8px;
     padding-bottom: 8px;
-    background-color: rgba(7, 15, 23, 0.72);
+    background-color: var(--deucarian-panel-soft);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(90, 111, 160, 0.30);
-    border-right-color: rgba(90, 111, 160, 0.30);
-    border-top-color: rgba(90, 111, 160, 0.30);
-    border-bottom-color: rgba(90, 111, 160, 0.30);
+    border-left-color: var(--deucarian-border);
+    border-right-color: var(--deucarian-border);
+    border-top-color: var(--deucarian-border);
+    border-bottom-color: var(--deucarian-border);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
@@ -1540,7 +1631,7 @@
     border-right-color: rgba(92, 201, 194, 0.62);
     border-top-color: rgba(92, 201, 194, 0.62);
     border-bottom-color: rgba(92, 201, 194, 0.62);
-    background-color: #326e83;
+    background-color: var(--deucarian-blue);
     color: var(--deucarian-text);
     -unity-font-style: bold;
 }
@@ -1550,7 +1641,23 @@
     border-right-color: rgba(122, 231, 222, 0.76);
     border-top-color: rgba(122, 231, 222, 0.76);
     border-bottom-color: rgba(122, 231, 222, 0.76);
-    background-color: #3e8198;
+    background-color: var(--deucarian-teal);
+}
+
+.deucarian-editor.deucarian-theme--light .deucarian-wallpaper-top-safe-fade {
+    background-color: rgba(255, 255, 255, 0.52);
+}
+
+.deucarian-editor.deucarian-theme--light .deucarian-grain-layer {
+    opacity: 0.10;
+}
+
+.deucarian-editor.deucarian-theme--light .deucarian-vignette-layer {
+    opacity: 0.42;
+}
+
+.deucarian-editor.deucarian-theme--light .deucarian-glass-sheen {
+    background-color: rgba(255, 255, 255, 0.54);
 }
 
 .deucarian-dialog__action--destructive {
@@ -1607,4 +1714,14 @@
     margin-left: 0;
     margin-top: 4px;
     margin-bottom: 4px;
+}
+
+.deucarian-section-title,
+.deucarian-icon-text-button__label,
+.deucarian-workbench-toolbar__icon-label,
+.deucarian-toggle-button,
+.deucarian-workbench-toolbar__action,
+.deucarian-dialog__action {
+    -unity-font: url("../Fonts/DINish-SemiBold.otf");
+    -unity-font-style: normal;
 }

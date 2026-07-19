@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.5 - 2026-07-19
+
+- Added the approved Tideline light/dark mark, logo, and quiet wallpaper assets as package-owned editor resources.
+- Added DINish Light, Regular, and SemiBold under the SIL Open Font License 1.1 with shared display, body, and strong typography roles.
+- Reworked the shared UI Toolkit and IMGUI shell around semantic light/dark Tideline colors and introduced full-color brand-header helpers without changing the existing package-header APIs.
+- Added the complete Grove, Cobalt, Tideline, Oxblood, and Mineral territory palette plus shared graph surfaces, interaction states, edges, and package-status roles for downstream editor tools.
+
 ## 1.0.4 - 2026-07-17
 
 - Expanded the package-owned Lucide 1.22.0 catalog with generic action, status, navigation, package, graph, platform, and workflow glyphs, each backed by its exact upstream SVG and a matching 32 px white PNG.

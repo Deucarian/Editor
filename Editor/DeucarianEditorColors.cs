@@ -5,61 +5,84 @@ namespace Deucarian.Editor
 {
     public static class DeucarianEditorColors
     {
+        public static bool IsDark
+        {
+            get { return EditorGUIUtility.isProSkin; }
+        }
+
+        public static Color Salt
+        {
+            get { return FromRgb(242, 239, 231); }
+        }
+
+        public static Color SeaGlass
+        {
+            get { return FromRgb(98, 186, 182); }
+        }
+
+        public static Color DeepTeal
+        {
+            get { return FromRgb(15, 98, 106); }
+        }
+
+        public static Color MineralInk
+        {
+            get { return FromRgb(27, 26, 24); }
+        }
+
         public static Color Teal
         {
-            get { return FromRgb(72, 145, 139); }
+            get { return SeaGlass; }
         }
 
         public static Color Blue
         {
-            get { return FromRgb(76, 121, 165); }
+            get { return DeepTeal; }
         }
 
         public static Color Slate
         {
-            get { return FromRgb(73, 82, 92); }
+            get { return IsDark ? FromRgb(86, 84, 79) : FromRgb(103, 100, 94); }
         }
 
         public static Color Silver
         {
-            get { return FromRgb(174, 184, 193); }
+            get { return IsDark ? FromRgb(188, 184, 176) : FromRgb(121, 118, 111); }
         }
 
         public static Color HeaderBackground
         {
-            // Branded IMGUI pages keep the same dark shell in both Unity skins.
-            // Their text colors therefore need to follow the shell, not the host skin.
-            get { return FromRgb(38, 47, 53); }
+            get { return IsDark ? FromRgb(42, 41, 38) : FromRgb(255, 255, 255); }
         }
 
         public static Color SectionBackground
         {
-            get { return FromRgb(45, 52, 58); }
+            get { return IsDark ? FromRgb(48, 46, 42) : FromRgb(242, 239, 231); }
         }
 
         public static Color Border
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(58, 72, 80) : FromRgb(190, 201, 208); }
+            get { return IsDark ? FromRgb(74, 82, 79) : FromRgb(205, 201, 192); }
         }
 
         public static Color TitleText
         {
-            get { return FromRgb(232, 237, 240); }
+            get { return IsDark ? Salt : MineralInk; }
         }
 
         public static Color BodyText
         {
-            get { return FromRgb(207, 216, 222); }
+            get { return IsDark ? FromRgb(225, 221, 212) : FromRgb(47, 46, 43); }
         }
 
         public static Color MutedText
         {
-            get { return FromRgb(155, 166, 174); }
+            get { return IsDark ? FromRgb(170, 166, 158) : FromRgb(121, 118, 111); }
         }
 
         public static Color BadgeText
         {
-            get { return EditorGUIUtility.isProSkin ? FromRgb(235, 240, 243) : FromRgb(255, 255, 255); }
+            get { return Salt; }
         }
 
         public static Color GetStatusColor(DeucarianEditorStatus status)

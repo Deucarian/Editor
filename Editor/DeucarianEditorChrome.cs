@@ -11,7 +11,9 @@ namespace Deucarian.Editor
     public static class DeucarianEditorPackageHeader
     {
         public const string RootClass = "deucarian-package-header";
+        public const string BrandRootClass = "deucarian-package-header--brand";
         public const string IconClass = "deucarian-package-header__icon";
+        public const string BrandIconClass = "deucarian-package-header__icon--brand";
         public const string TextClass = "deucarian-package-header__text";
         public const string TitleClass = "deucarian-package-header__title";
         public const string SubtitleClass = "deucarian-package-header__subtitle";
@@ -23,17 +25,47 @@ namespace Deucarian.Editor
 
         public static VisualElement Create(string packageKey, string title, string subtitle)
         {
+            return CreateCore(
+                DeucarianEditorIcons.GetPackageIcon(packageKey),
+                title,
+                subtitle,
+                false);
+        }
+
+        public static VisualElement CreateBrand(string title, string subtitle)
+        {
+            return CreateCore(
+                DeucarianEditorUIResources.LoadBrandMark(),
+                title,
+                subtitle,
+                true);
+        }
+
+        private static VisualElement CreateCore(
+            Texture2D iconTexture,
+            string title,
+            string subtitle,
+            bool preserveIconColor)
+        {
             var header = new VisualElement { name = "deucarian-package-header" };
             header.AddToClassList(RootClass);
+            if (preserveIconColor)
+            {
+                header.AddToClassList(BrandRootClass);
+            }
 
             var icon = new Image
             {
-                image = DeucarianEditorIcons.GetPackageIcon(packageKey),
+                image = iconTexture,
                 scaleMode = ScaleMode.ScaleToFit,
-                tintColor = DeucarianEditorTheme.Text,
+                tintColor = preserveIconColor ? Color.white : DeucarianEditorTheme.Text,
                 pickingMode = PickingMode.Ignore
             };
             icon.AddToClassList(IconClass);
+            if (preserveIconColor)
+            {
+                icon.AddToClassList(BrandIconClass);
+            }
 
             var text = new VisualElement { pickingMode = PickingMode.Ignore };
             text.AddToClassList(TextClass);
@@ -74,6 +106,26 @@ namespace Deucarian.Editor
             Texture2D icon,
             float iconSize)
         {
+            DrawPackageHeaderCore(title, subtitle, icon, iconSize, false);
+        }
+
+        public static void DrawBrandHeader(string title, string subtitle)
+        {
+            DrawPackageHeaderCore(
+                title,
+                subtitle,
+                DeucarianEditorUIResources.LoadBrandMark(),
+                42f,
+                true);
+        }
+
+        private static void DrawPackageHeaderCore(
+            string title,
+            string subtitle,
+            Texture2D icon,
+            float iconSize,
+            bool preserveIconColor)
+        {
             Rect headerRect = EditorGUILayout.BeginVertical(DeucarianEditorStyles.PackageHeaderBox);
             DeucarianEditorWorkbenchGUI.DrawSurface(
                 headerRect,
@@ -89,7 +141,14 @@ namespace Deucarian.Editor
                     safeIconSize,
                     GUILayout.Width(safeIconSize),
                     GUILayout.Height(safeIconSize));
-                DeucarianEditorIcons.DrawIcon(iconRect, icon, DeucarianEditorColors.TitleText);
+                if (preserveIconColor)
+                {
+                    GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit, true);
+                }
+                else
+                {
+                    DeucarianEditorIcons.DrawIcon(iconRect, icon, DeucarianEditorColors.TitleText);
+                }
                 GUILayout.Space(DeucarianEditorPackageHeader.IconTextGap);
             }
 

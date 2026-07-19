@@ -137,8 +137,10 @@ namespace Deucarian.Editor
         {
             return tealGlowTexture ?? (tealGlowTexture = CreateRadialTexture(
                 128,
-                new Color(0.10f, 0.78f, 0.72f, 0.28f),
-                new Color(0.02f, 0.06f, 0.08f, 0.00f),
+                DeucarianEditorTheme.IsDark
+                    ? new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.18f)
+                    : new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.12f),
+                Color.clear,
                 1.45f));
         }
 
@@ -146,8 +148,10 @@ namespace Deucarian.Editor
         {
             return blueGlowTexture ?? (blueGlowTexture = CreateRadialTexture(
                 128,
-                new Color(0.16f, 0.46f, 0.88f, 0.24f),
-                new Color(0.01f, 0.04f, 0.08f, 0.00f),
+                DeucarianEditorTheme.IsDark
+                    ? new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.16f)
+                    : new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.09f),
+                Color.clear,
                 1.55f));
         }
 
@@ -155,8 +159,10 @@ namespace Deucarian.Editor
         {
             return indigoGlowTexture ?? (indigoGlowTexture = CreateRadialTexture(
                 128,
-                new Color(0.30f, 0.25f, 0.78f, 0.16f),
-                new Color(0.02f, 0.02f, 0.08f, 0.00f),
+                DeucarianEditorTheme.IsDark
+                    ? new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.08f)
+                    : new Color(1f, 1f, 1f, 0.16f),
+                Color.clear,
                 1.65f));
         }
 
@@ -184,7 +190,10 @@ namespace Deucarian.Editor
                     hash ^= hash >> 13;
                     hash *= 1274126177u;
                     float alpha = ((hash & 0xFFu) / 255f) * 0.045f;
-                    texture.SetPixel(x, y, new Color(0.72f, 0.86f, 0.92f, alpha));
+                    Color grain = DeucarianEditorTheme.IsDark
+                        ? DeucarianEditorColors.Salt
+                        : DeucarianEditorColors.MineralInk;
+                    texture.SetPixel(x, y, new Color(grain.r, grain.g, grain.b, alpha * 0.55f));
                 }
             }
 
@@ -249,7 +258,10 @@ namespace Deucarian.Editor
                     float rightBias = Mathf.InverseLerp(size * 0.42f, size, x) * 0.045f;
                     float bottomBias = Mathf.InverseLerp(size * 0.48f, size, y) * 0.055f;
                     float alpha = Mathf.Clamp01(edge * 0.24f + rightBias + bottomBias);
-                    texture.SetPixel(x, y, new Color(0.00f, 0.02f, 0.04f, alpha));
+                    Color vignette = DeucarianEditorTheme.IsDark
+                        ? DeucarianEditorColors.MineralInk
+                        : DeucarianEditorColors.Salt;
+                    texture.SetPixel(x, y, new Color(vignette.r, vignette.g, vignette.b, alpha * 0.62f));
                 }
             }
 

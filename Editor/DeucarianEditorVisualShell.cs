@@ -8,55 +8,54 @@ namespace Deucarian.Editor
     {
         public const float SurfaceRadius = 8f;
 
-        private const float BackgroundImageAlpha = 0.58f;
-        private const string BackgroundAssetFileName = "DeucarianInstallerBackground.png";
+        private const string LegacyBackgroundAssetFileName = "DeucarianInstallerBackground.png";
 
-        private static bool backgroundLoadAttempted;
+        private static bool? cachedBackgroundDark;
         private static Texture2D backgroundTexture;
 
         public static Color DeepBackground
         {
-            get { return new Color(0.012f, 0.020f, 0.035f, 1f); }
+            get { return DeucarianEditorTheme.IsDark ? DeucarianEditorColors.MineralInk : new Color(248f / 255f, 246f / 255f, 241f / 255f, 1f); }
         }
 
         public static Color MainPanel
         {
-            get { return new Color(23f / 255f, 32f / 255f, 39f / 255f, 0.72f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(37f / 255f, 36f / 255f, 33f / 255f, 0.88f) : new Color(1f, 1f, 1f, 0.90f); }
         }
 
         public static Color NestedSurface
         {
-            get { return new Color(32f / 255f, 47f / 255f, 56f / 255f, 0.62f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(48f / 255f, 46f / 255f, 42f / 255f, 0.82f) : new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.88f); }
         }
 
         public static Color HeaderPanel
         {
-            get { return new Color(35f / 255f, 52f / 255f, 61f / 255f, 0.68f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(42f / 255f, 41f / 255f, 38f / 255f, 0.92f) : new Color(1f, 1f, 1f, 0.94f); }
         }
 
         public static Color Border
         {
-            get { return new Color(90f / 255f, 111f / 255f, 160f / 255f, 0.35f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.24f) : new Color(27f / 255f, 26f / 255f, 24f / 255f, 0.14f); }
         }
 
         public static Color SubtleBorder
         {
-            get { return new Color(90f / 255f, 111f / 255f, 160f / 255f, 0.24f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.12f) : new Color(27f / 255f, 26f / 255f, 24f / 255f, 0.09f); }
         }
 
         public static Color InteractiveBorder
         {
-            get { return new Color(59f / 255f, 166f / 255f, 154f / 255f, 0.55f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.62f) : new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.58f); }
         }
 
         public static Color Text
         {
-            get { return new Color(0.88f, 0.93f, 0.96f, 1f); }
+            get { return DeucarianEditorTheme.IsDark ? DeucarianEditorColors.Salt : DeucarianEditorColors.MineralInk; }
         }
 
         public static Color MutedText
         {
-            get { return new Color(0.58f, 0.68f, 0.75f, 1f); }
+            get { return DeucarianEditorTheme.IsDark ? new Color(170f / 255f, 166f / 255f, 158f / 255f, 1f) : new Color(121f / 255f, 118f / 255f, 111f / 255f, 1f); }
         }
 
         public static VisualElement CreateWindowShell(VisualElement root, Texture2D background = null)
@@ -70,6 +69,8 @@ namespace Deucarian.Editor
             DeucarianEditorUIResources.TryAddSharedStyleSheet(root);
             root.AddToClassList("deucarian-editor");
             root.AddToClassList("deucarian-window-shell-host");
+            root.EnableInClassList(DeucarianEditorTheme.DarkClass, DeucarianEditorTheme.IsDark);
+            root.EnableInClassList(DeucarianEditorTheme.LightClass, !DeucarianEditorTheme.IsDark);
 
             VisualElement shell = new VisualElement { name = "deucarian-window-shell" };
             shell.AddToClassList("deucarian-window-shell");
@@ -118,7 +119,7 @@ namespace Deucarian.Editor
 
         public static VisualElement CreateHeader(string title, string subtitle)
         {
-            return DeucarianEditorPackageHeader.Create(null, title, subtitle);
+            return DeucarianEditorPackageHeader.CreateBrand(title, subtitle);
         }
 
         public static VisualElement CreatePanel(params string[] additionalClasses)
@@ -149,12 +150,20 @@ namespace Deucarian.Editor
 
         public static Texture2D GetDefaultBackgroundTexture()
         {
-            if (backgroundLoadAttempted)
+            bool isDark = DeucarianEditorTheme.IsDark;
+            if (cachedBackgroundDark.HasValue && cachedBackgroundDark.Value == isDark)
             {
                 return backgroundTexture;
             }
 
-            backgroundLoadAttempted = true;
+            cachedBackgroundDark = isDark;
+            backgroundTexture = DeucarianEditorUIResources.LoadBrandBackground();
+
+            if (backgroundTexture != null)
+            {
+                return backgroundTexture;
+            }
+
             backgroundTexture = DeucarianEditorUIResources.LoadInstallerBackground();
 
             if (backgroundTexture != null)
@@ -169,7 +178,7 @@ namespace Deucarian.Editor
                 string path = AssetDatabase.GUIDToAssetPath(guid);
 
                 if (!string.IsNullOrWhiteSpace(path) &&
-                    path.EndsWith("/" + BackgroundAssetFileName, System.StringComparison.OrdinalIgnoreCase))
+                    path.EndsWith("/" + LegacyBackgroundAssetFileName, System.StringComparison.OrdinalIgnoreCase))
                 {
                     backgroundTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
 
@@ -207,11 +216,13 @@ namespace Deucarian.Editor
             }
 
             Color previousColor = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, BackgroundImageAlpha);
+            GUI.color = new Color(1f, 1f, 1f, DeucarianEditorTheme.IsDark ? 0.52f : 0.48f);
             GUI.DrawTexture(rect, resolvedBackground, ScaleMode.ScaleAndCrop, true);
             GUI.color = previousColor;
 
-            EditorGUI.DrawRect(rect, new Color(0.005f, 0.014f, 0.030f, 0.24f));
+            EditorGUI.DrawRect(rect, DeucarianEditorTheme.IsDark
+                ? new Color(27f / 255f, 26f / 255f, 24f / 255f, 0.18f)
+                : new Color(1f, 1f, 1f, 0.10f));
         }
 
         public static void DrawFrostedSurface(Rect rect, Color backgroundColor, Color borderColor)
@@ -248,7 +259,9 @@ namespace Deucarian.Editor
                     alignedRect.y + 2f,
                     alignedRect.width,
                     alignedRect.height);
-                DrawRoundedFill(shadowRect, radius, new Color(0f, 0f, 0f, 0.14f));
+                DrawRoundedFill(shadowRect, radius, DeucarianEditorTheme.IsDark
+                    ? new Color(0f, 0f, 0f, 0.14f)
+                    : new Color(54f / 255f, 50f / 255f, 43f / 255f, 0.10f));
             }
 
             DrawRoundedFill(alignedRect, radius, borderColor);
@@ -265,7 +278,9 @@ namespace Deucarian.Editor
                 DrawRoundedFill(
                     new Rect(innerRect.x + radius, innerRect.y, innerRect.width - radius * 2f, 1f),
                     0f,
-                    new Color(0.75f, 0.94f, 1f, 0.08f));
+                    DeucarianEditorTheme.IsDark
+                        ? new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.08f)
+                        : new Color(1f, 1f, 1f, 0.72f));
             }
         }
 
