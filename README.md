@@ -1,12 +1,12 @@
 # Deucarian Editor
 
-Current package version: `1.0.4`.
+Current package version: `1.0.5`.
 
 ## What this is
 
 `com.deucarian.editor` is an editor-only Unity package for shared Deucarian editor tooling, branded editor chrome, fixed icons, layout helpers, and UX standards.
 
-This package is not runtime theming. It is not user-customizable. Deucarian editor windows use fixed package-owned brand colors and resources so every Deucarian package presents the same clean, technical, readable editor experience.
+This package is not runtime theming. It is not user-customizable. Deucarian editor windows use package-owned Tideline light/dark colors, DINish interface typography, and brand resources so every Deucarian package presents the same quiet, readable editor experience. The editor treatment follows the active Unity skin.
 
 Runtime theme assets from `com.deucarian.theming` must never control Deucarian editor windows.
 
@@ -56,10 +56,9 @@ public sealed class ExampleManagerWindow : EditorWindow
 
     private void OnGUI()
     {
-        DeucarianEditorChrome.DrawPackageHeader(
-            "Example",
-            "Example Deucarian manager window.",
-            DeucarianEditorIcons.GetPackageIcon("editor"));
+    DeucarianEditorChrome.DrawBrandHeader(
+        "Example",
+        "Example Deucarian manager window.");
 
         DeucarianEditorChrome.DrawSectionHeader("Assets");
 
@@ -149,6 +148,7 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 - `DeucarianEditorIcons` and `DeucarianEditorIconIds`: safe dynamic access to the package-owned Lucide catalog, stable shared IDs, legacy package aliases, and the canonical Lucide package fallback.
 - `DeucarianEditorUIResources`: shared UI Toolkit USS, logo, hero, and package placeholder assets.
 - `DeucarianEditorTheme`, `DeucarianEditorSpacing`, and `DeucarianEditorTextures`: fixed Deucarian visual tokens.
+- `DeucarianEditorPalette` and `DeucarianEditorGraphTheme`: the five brand territories and semantic light/dark graph roles for canvases, surfaces, borders, edges, interaction states, and statuses.
 - `DeucarianEditorWindowChrome` and `DeucarianEditorAmbientGlass`: shared wallpaper, readability overlay, ambient glow, grain, vignette, and fixed-window chrome.
 - `DeucarianEditorCards`, `DeucarianEditorSidebar`, `DeucarianEditorButtons`, and `DeucarianEditorStatusPanel`: shared IMGUI frosted-glass cards, sidebars, buttons, validation/status cards, and bottom status bars.
 - `DeucarianEditorStatusBadge`: fixed-color GUILayout and fixed-rect status badges for info, success, warning, error, and disabled states.

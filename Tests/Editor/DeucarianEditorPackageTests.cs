@@ -54,7 +54,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("1.0.4", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("1.0.5", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -136,6 +136,21 @@ namespace Deucarian.Editor.Tests
                 "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianInstallerBackground.png",
                 DeucarianEditorUIResources.InstallerBackgroundPath);
             Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Logos/DeucarianMarkDark.png",
+                DeucarianEditorUIResources.BrandMarkDarkPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Logos/DeucarianMarkLight.png",
+                DeucarianEditorUIResources.BrandMarkLightPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianBackgroundDark.png",
+                DeucarianEditorUIResources.BackgroundDarkPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianBackgroundLight.png",
+                DeucarianEditorUIResources.BackgroundLightPath);
+            Assert.AreEqual(
+                "Packages/com.deucarian.editor/Editor/Assets/Fonts/DINish-Regular.otf",
+                DeucarianEditorUIResources.BodyFontPath);
+            Assert.AreEqual(
                 "Packages/com.deucarian.editor/Editor/Assets/Images/DeucarianPackageInstallerPlaceholderHero.png",
                 DeucarianEditorUIResources.PackageInstallerPlaceholderHeroPath);
             Assert.AreEqual(
@@ -143,14 +158,17 @@ namespace Deucarian.Editor.Tests
                 DeucarianEditorUIResources.PackagePlaceholderIconPath);
             Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("LoadAsset"));
             Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("TryAddSharedStyleSheet"));
+            Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("LoadBrandMark"));
+            Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("LoadBrandBackground"));
+            Assert.NotNull(typeof(DeucarianEditorUIResources).GetMethod("LoadBodyFont"));
         }
 
         [Test]
         public void VisualShellHelpers_AreAvailable()
         {
-            Assert.AreEqual(0.72f, DeucarianEditorVisualShell.MainPanel.a, 0.001f);
-            Assert.AreEqual(0.62f, DeucarianEditorVisualShell.NestedSurface.a, 0.001f);
-            Assert.AreEqual(0.68f, DeucarianEditorVisualShell.HeaderPanel.a, 0.001f);
+            Assert.Greater(DeucarianEditorVisualShell.MainPanel.a, 0.8f);
+            Assert.Greater(DeucarianEditorVisualShell.NestedSurface.a, 0.8f);
+            Assert.Greater(DeucarianEditorVisualShell.HeaderPanel.a, 0.8f);
             Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("CreateWindowShell"));
             Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("DrawFrostedSurface"));
             Assert.NotNull(typeof(DeucarianEditorVisualShell).GetMethod("DrawInsetSurface"));
@@ -439,6 +457,66 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.PackageHeaderBottomMargin,
                 DeucarianEditorStyles.PackageHeaderBox.margin.bottom);
+        }
+
+        [Test]
+        public void BrandHeaderFactory_PreservesTheFullColorMarkContract()
+        {
+            VisualElement header = DeucarianEditorPackageHeader.CreateBrand(
+                "Deucarian Package Installer",
+                "Manage the project package catalog.");
+
+            Assert.IsTrue(header.ClassListContains(DeucarianEditorPackageHeader.RootClass));
+            Assert.IsTrue(header.ClassListContains(DeucarianEditorPackageHeader.BrandRootClass));
+            Assert.NotNull(header.Q<Image>(className: DeucarianEditorPackageHeader.BrandIconClass));
+            Assert.NotNull(typeof(DeucarianEditorChrome).GetMethod("DrawBrandHeader"));
+            Assert.AreEqual(
+                DeucarianEditorTheme.IsDark ? DeucarianEditorTheme.DarkClass : DeucarianEditorTheme.LightClass,
+                DeucarianEditorTheme.CurrentClass);
+        }
+
+        [Test]
+        public void SemanticPalette_OwnsBrandTerritoriesAndGraphRoles()
+        {
+            CollectionAssert.AllItemsAreUnique(new[]
+            {
+                DeucarianEditorPalette.Grove,
+                DeucarianEditorPalette.Cobalt,
+                DeucarianEditorPalette.Tideline,
+                DeucarianEditorPalette.Oxblood,
+                DeucarianEditorPalette.Mineral
+            });
+
+            Assert.AreEqual(
+                DeucarianEditorPalette.Tideline,
+                DeucarianEditorPalette.ResolveTerritory(DeucarianEditorTerritory.Tideline));
+            Assert.AreEqual(
+                DeucarianEditorGraphTheme.Installed,
+                DeucarianEditorGraphTheme.ResolveStatus(DeucarianEditorGraphStatus.Installed));
+            Assert.AreEqual(
+                DeucarianEditorGraphTheme.Missing,
+                DeucarianEditorGraphTheme.ResolveStatus(DeucarianEditorGraphStatus.Missing));
+            Assert.AreNotEqual(DeucarianEditorGraphTheme.Canvas, DeucarianEditorGraphTheme.Surface);
+            Assert.AreNotEqual(DeucarianEditorGraphTheme.Available, DeucarianEditorGraphTheme.Update);
+
+            string stylesheet = ReadSharedStyleSheet();
+            foreach (string role in new[]
+                     {
+                         "--deucarian-grove",
+                         "--deucarian-cobalt",
+                         "--deucarian-tideline",
+                         "--deucarian-oxblood",
+                         "--deucarian-mineral",
+                         "--deucarian-graph-canvas",
+                         "--deucarian-graph-surface",
+                         "--deucarian-graph-installed",
+                         "--deucarian-graph-available",
+                         "--deucarian-graph-update",
+                         "--deucarian-graph-missing"
+                     })
+            {
+                Assert.That(stylesheet, Does.Contain(role));
+            }
         }
 
         [Test]
@@ -843,7 +921,10 @@ namespace Deucarian.Editor.Tests
             DeucarianEditorWorkbenchGUI.ClearCache();
 
             Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
-            Assert.AreEqual(FontStyle.Bold, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
+            Assert.AreEqual(FontStyle.Normal, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
+            Assert.AreSame(
+                DeucarianEditorTypography.Strong,
+                DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.font);
             Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.PageHorizontalPadding,
@@ -914,9 +995,18 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.BoldLabelStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.SectionTitleStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.MutedTextColor, DeucarianEditorWorkbenchGUI.WordWrappedMiniLabelStyle.normal.textColor);
-            Assert.AreEqual(0.46f, DeucarianEditorWorkbenchGUI.RowBackgroundColor.a, 0.001f);
-            Assert.AreEqual(0.62f, DeucarianEditorWorkbenchGUI.RowHoverColor.a, 0.001f);
-            Assert.AreEqual(0.58f, DeucarianEditorWorkbenchGUI.RowSelectedColor.a, 0.001f);
+            Assert.AreEqual(
+                DeucarianEditorTheme.IsDark ? 0.46f : 0.56f,
+                DeucarianEditorWorkbenchGUI.RowBackgroundColor.a,
+                0.001f);
+            Assert.AreEqual(
+                DeucarianEditorTheme.IsDark ? 0.66f : 0.16f,
+                DeucarianEditorWorkbenchGUI.RowHoverColor.a,
+                0.001f);
+            Assert.AreEqual(
+                DeucarianEditorTheme.IsDark ? 0.52f : 0.25f,
+                DeucarianEditorWorkbenchGUI.RowSelectedColor.a,
+                0.001f);
         }
 
         [Test]
