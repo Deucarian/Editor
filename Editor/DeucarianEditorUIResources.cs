@@ -9,12 +9,22 @@ namespace Deucarian.Editor
         public const string AssetRoot = "Packages/com.deucarian.editor/Editor/Assets";
         public const string IconsPath = AssetRoot + "/Icons";
         public const string LogosPath = AssetRoot + "/Logos";
+        public const string FontsPath = AssetRoot + "/Fonts";
         public const string StylesPath = AssetRoot + "/Styles";
         public const string ImagesPath = AssetRoot + "/Images";
 
         public const string SharedStyleSheetPath = StylesPath + "/DeucarianEditor.uss";
         public const string PlaceholderLogoPath = LogosPath + "/DeucarianPlaceholderLogo.png";
         public const string InstallerBackgroundPath = ImagesPath + "/DeucarianInstallerBackground.png";
+        public const string BrandMarkDarkPath = LogosPath + "/DeucarianMarkDark.png";
+        public const string BrandMarkLightPath = LogosPath + "/DeucarianMarkLight.png";
+        public const string BrandLogoDarkPath = LogosPath + "/DeucarianLogoDark.png";
+        public const string BrandLogoLightPath = LogosPath + "/DeucarianLogoLight.png";
+        public const string BackgroundDarkPath = ImagesPath + "/DeucarianBackgroundDark.png";
+        public const string BackgroundLightPath = ImagesPath + "/DeucarianBackgroundLight.png";
+        public const string DisplayFontPath = FontsPath + "/DINish-Light.otf";
+        public const string BodyFontPath = FontsPath + "/DINish-Regular.otf";
+        public const string StrongFontPath = FontsPath + "/DINish-SemiBold.otf";
         public const string PackageInstallerPlaceholderHeroPath = ImagesPath + "/DeucarianPackageInstallerPlaceholderHero.png";
         public const string PackagePlaceholderIconPath = IconsPath + "/DeucarianPackagePlaceholderIcon.png";
 
@@ -31,6 +41,36 @@ namespace Deucarian.Editor
         public static Texture2D LoadInstallerBackground()
         {
             return LoadTexture(InstallerBackgroundPath);
+        }
+
+        public static Texture2D LoadBrandMark()
+        {
+            return LoadTexture(EditorGUIUtility.isProSkin ? BrandMarkDarkPath : BrandMarkLightPath);
+        }
+
+        public static Texture2D LoadBrandLogo()
+        {
+            return LoadTexture(EditorGUIUtility.isProSkin ? BrandLogoDarkPath : BrandLogoLightPath);
+        }
+
+        public static Texture2D LoadBrandBackground()
+        {
+            return LoadTexture(EditorGUIUtility.isProSkin ? BackgroundDarkPath : BackgroundLightPath);
+        }
+
+        public static Font LoadDisplayFont()
+        {
+            return LoadAsset<Font>(DisplayFontPath);
+        }
+
+        public static Font LoadBodyFont()
+        {
+            return LoadAsset<Font>(BodyFontPath);
+        }
+
+        public static Font LoadStrongFont()
+        {
+            return LoadAsset<Font>(StrongFontPath);
         }
 
         public static Texture2D LoadPackageInstallerPlaceholderHero()
