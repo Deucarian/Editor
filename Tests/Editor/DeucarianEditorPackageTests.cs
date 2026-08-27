@@ -476,6 +476,19 @@ namespace Deucarian.Editor.Tests
         }
 
         [Test]
+        public void InstalledPackageVersion_IsResolvedFromPackageMetadata()
+        {
+            Assert.That(
+                DeucarianEditorChrome.ResolveInstalledPackageVersion(
+                    "com.deucarian.editor"),
+                Is.Not.EqualTo("unknown"));
+            Assert.AreEqual(
+                "unknown",
+                DeucarianEditorChrome.ResolveInstalledPackageVersion(
+                    "com.deucarian.not-installed"));
+        }
+
+        [Test]
         public void SemanticPalette_OwnsBrandTerritoriesAndGraphRoles()
         {
             CollectionAssert.AllItemsAreUnique(new[]

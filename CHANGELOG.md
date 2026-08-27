@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 - 2026-08-26
+
+- Added package-contributed project checks with stable issue codes and an
+  actionable Project Setup UI.
+- Added shared Play Mode, build preprocessing, and command-line CI gates.
+- Added package-metadata footer resolution so editor workflows no longer need
+  hardcoded installed versions.
+
 ## 1.0.5 - 2026-07-19
 
 - Added the approved Tideline light/dark mark, logo, and quiet wallpaper assets as package-owned editor resources.

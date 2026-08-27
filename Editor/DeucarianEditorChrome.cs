@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using PackageManagerPackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Deucarian.Editor
 {
@@ -209,6 +210,40 @@ namespace Deucarian.Editor
         public static void EndSection()
         {
             EditorGUILayout.EndVertical();
+        }
+
+        public static void DrawFooterVersion(string packageName)
+        {
+            DrawFooterVersion(
+                packageName,
+                ResolveInstalledPackageVersion(packageName));
+        }
+
+        public static string ResolveInstalledPackageVersion(string packageName)
+        {
+            if (string.IsNullOrWhiteSpace(packageName))
+            {
+                return "unknown";
+            }
+
+            PackageManagerPackageInfo[] packages =
+                PackageManagerPackageInfo.GetAllRegisteredPackages();
+            for (int index = 0; index < packages.Length; index++)
+            {
+                PackageManagerPackageInfo package = packages[index];
+                if (package != null &&
+                    string.Equals(
+                        package.name,
+                        packageName.Trim(),
+                        System.StringComparison.Ordinal))
+                {
+                    return string.IsNullOrWhiteSpace(package.version)
+                        ? "unknown"
+                        : package.version.Trim();
+                }
+            }
+
+            return "unknown";
         }
 
         public static void DrawFooterVersion(string packageName, string version)
