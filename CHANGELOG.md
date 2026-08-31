@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 - 2026-08-31
+
+- Replaced the Project Setup surface with the responsive Deucarian Control Center workbench.
+- Added explicit card, section, and stable tool registries with deterministic ordering, search, bounded snapshots, and failure isolation.
+- Added governed Control Center and Advanced menu entries, conditional areas, readiness focus, and a one-release obsolete API redirect.
+- Renamed Project Settings and validation guidance to Deucarian Control Center and added registry, search, menu, window, and lifecycle tests.
+
 ## 1.1.0 - 2026-08-26
 
 - Added package-contributed project checks with stable issue codes and an
