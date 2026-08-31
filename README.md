@@ -1,6 +1,6 @@
 # Deucarian Editor
 
-Current package version: `1.1.0`.
+Current package version: `1.2.0`.
 
 ## What this is
 
@@ -43,7 +43,7 @@ Requires Unity 2021.3 or newer.
 
 ## 60-second quick start
 
-Create an editor window under `Tools/Deucarian/<PackageName>/...` and draw the shared header plus package fields:
+Create a package-owned standalone editor window and draw the shared header plus package fields:
 
 ```csharp
 using Deucarian.Editor;
@@ -137,11 +137,19 @@ Compact from 900 through 1179 px, and Wide at 1180 px or above. The shared
 drawer/footer factories provide presentation only; operation models and package
 behavior remain in the consuming package.
 
+## Deucarian Control Center
+
+Open `Tools/Deucarian/Control Center...` to review project readiness, search installed capabilities, and deep-link to the standalone workflows owned by each package. Packages contribute sanitized cards, sections, and tools through `DeucarianControlCenterRegistry` and `DeucarianToolRegistry`; the shell does not copy domain state or workflow logic.
+
+Use `DeucarianControlCenterWindow.Open(area)` or a stable tool ID for cross-package navigation. `DeucarianProjectSetupWindow` remains as an obsolete source-compatible redirect for the 1.2 migration release.
+
 ## Samples
 
 This package only includes editor helpers. See `Samples~/README.md` for notes on adding lightweight example content when a package-specific sample is needed.
 
 ## Public API map
+
+- `DeucarianControlCenterWindow`, `DeucarianControlCenterRegistry`, and `DeucarianToolRegistry`: the responsive ecosystem shell, explicit status contributions, stable navigation IDs, search, and deep links.
 
 - `DeucarianEditorChrome`: fixed package headers, section headers, section boxes, inline help, and footer version text.
 - `DeucarianEditorFields.DrawAssetFieldWithSelectButton`: asset object field with the project selection action on the same row.
@@ -168,7 +176,7 @@ Works with:
 
 - Deucarian editor windows and inspectors in other packages,
 - package-owned UI Toolkit files that need shared resources,
-- tools under `Tools/Deucarian/<PackageName>/...`.
+- tools registered under stable IDs for Control Center discovery.
 
 Does not own:
 
@@ -223,21 +231,14 @@ If an asset is already visible in an `ObjectField`, do not create a separate act
 
 ### Menus
 
-Packages with meaningful tooling should expose editor menu entries under:
+Everyday navigation is deliberately small and task-oriented:
 
-```text
-Tools/Deucarian/<PackageName>/...
-```
+- `Tools/Deucarian/Control Center...` opens the ecosystem overview.
+- Mature package workflows remain standalone and register a stable tool ID.
+- Only approved high-frequency entries belong directly under `Tools/Deucarian`.
+- Developer and migration discovery belongs under `Tools/Deucarian/Advanced`.
 
-Examples:
-
-- `Tools/Deucarian/Theming/Open Theme Manager`
-- `Tools/Deucarian/Logging/Open Logging Settings`
-- `Tools/Deucarian/Object Loading/Open Manager`
-
-Do not create menus for packages without meaningful tooling.
-
-The Package Installer uses the same shared tooling root: `Tools/Deucarian/Package Installer`.
+Do not integrate packages through literal menu strings or mirror Package Registry taxonomy in menus. Use `DeucarianToolRegistry.TryOpen`, a stable tool ID, or an explicit public open API. Menu aliases are compatibility conveniences, not cross-package contracts.
 
 ### Actions sections
 
@@ -249,7 +250,7 @@ Do not use actions sections for selecting assets already visible in object field
 
 - If runtime code needs this package, stop and check the ownership boundary; Editor is editor-only.
 - If a package wants custom runtime colors, use the runtime theming owner instead of editor shell tokens.
-- If a package-specific tool needs a menu, keep it under `Tools/Deucarian/<PackageName>/...`.
+- Register package-specific tools with a stable `DeucarianToolRegistry` ID and contribute them to Control Center; add a global menu entry only when `menu-policy.json` explicitly approves it.
 - If a UI Toolkit asset is package-specific, keep it in the owning package rather than moving it here.
 
 ## Validation
