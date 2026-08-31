@@ -1,57 +1,74 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Deucarian.Editor.Samples
 {
-    /// <summary>
-    /// Opens a minimal package tool built from the shared Deucarian editor shell.
-    /// </summary>
+    /// <summary>Minimal package tool built from the shared editor shell.</summary>
     public sealed class EditorShellExampleWindow : EditorWindow
     {
-        [MenuItem("Tools/Deucarian/Samples/Editor Shell Example")]
-        private static void Open()
+        public static void Open()
         {
-            EditorShellExampleWindow window = GetWindow<EditorShellExampleWindow>();
+            EditorShellExampleWindow window =
+                GetWindow<EditorShellExampleWindow>();
             window.titleContent = new GUIContent("Editor Shell Example");
             window.minSize = new Vector2(420f, 260f);
             window.Show();
         }
 
-        /// <summary>
-        /// Composes the example when Unity creates the window UI.
-        /// </summary>
         public void CreateGUI()
         {
             rootVisualElement.Add(EditorShellExampleView.Create());
         }
     }
 
-    /// <summary>
-    /// Builds the sample view separately so packages can follow the same testable composition pattern.
-    /// </summary>
+    /// <summary>Builds the sample view as a testable composition.</summary>
     public static class EditorShellExampleView
     {
-        /// <summary>
-        /// Creates a complete shell with a shared package header and one content panel.
-        /// </summary>
         public static VisualElement Create()
         {
-            VisualElement root = new VisualElement { name = "editor-shell-example" };
-            VisualElement content = DeucarianEditorVisualShell.CreateWindowShell(root);
+            VisualElement root = new VisualElement
+            {
+                name = "editor-shell-example"
+            };
+            VisualElement content =
+                DeucarianEditorVisualShell.CreateWindowShell(root);
             content.Add(DeucarianEditorVisualShell.CreateHeader(
                 "Editor Shell Example",
                 "Shared chrome with package-owned content"));
 
-            VisualElement panel = DeucarianEditorVisualShell.CreatePanel();
+            VisualElement panel =
+                DeucarianEditorVisualShell.CreatePanel();
             panel.name = "editor-shell-example-panel";
-            panel.Add(new Label("Ready to add package-specific controls.")
+            panel.Add(new Label(
+                "Ready to add package-specific controls.")
             {
                 name = "editor-shell-example-status"
             });
             content.Add(panel);
-
             return root;
+        }
+    }
+
+    [InitializeOnLoad]
+    internal static class EditorShellExampleRegistration
+    {
+        private static readonly IDisposable Registration;
+
+        static EditorShellExampleRegistration()
+        {
+            Registration = DeucarianToolRegistry.Register(
+                new DeucarianToolDescriptor(
+                    "deucarian.samples.editor-shell-example",
+                    "Editor Shell Example",
+                    "Open the imported shared editor-shell sample.",
+                    DeucarianControlCenterArea.Developer,
+                    EditorShellExampleWindow.Open,
+                    "com.deucarian.editor",
+                    DeucarianEditorIconIds.Sample,
+                    new[] { "sample", "shell", "example" },
+                    1000));
         }
     }
 }

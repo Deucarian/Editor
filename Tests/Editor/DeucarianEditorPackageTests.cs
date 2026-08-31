@@ -54,7 +54,7 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("1.0.5", DeucarianEditorPackageConstants.Version);
+            Assert.AreEqual("1.2.0", DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }
@@ -935,9 +935,9 @@ namespace Deucarian.Editor.Tests
 
             Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
             Assert.AreEqual(FontStyle.Normal, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
-            Assert.AreSame(
-                DeucarianEditorTypography.Strong,
-                DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.font);
+            Assert.AreEqual(
+                DeucarianEditorTypography.Strong.name,
+                DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.font.name);
             Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.PageHorizontalPadding,

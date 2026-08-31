@@ -214,9 +214,9 @@ namespace Deucarian.Editor
             }
 
             EditorApplication.isPlaying = false;
-            DeucarianProjectSetupWindow.Open(issue.Code);
+            DeucarianControlCenterWindow.OpenProjectIssue(issue.Code);
             string message = issue.ToString() +
-                " Open Tools/Deucarian/Project Setup.";
+                " Open Tools/Deucarian/Control Center...";
             if (!string.Equals(lastMessage, message, StringComparison.Ordinal))
             {
                 Console.Error.WriteLine(message);
@@ -235,7 +235,8 @@ namespace Deucarian.Editor
             if (DeucarianProjectValidationRegistry.TryGetFirstBlocking(
                     out DeucarianProjectIssue issue))
             {
-                throw new BuildFailedException(issue.ToString());
+                throw new BuildFailedException(issue.ToString() +
+                    " Open Tools/Deucarian/Control Center...");
             }
         }
     }
@@ -264,10 +265,10 @@ namespace Deucarian.Editor
             if (blocked)
             {
                 throw new InvalidOperationException(
-                    "Deucarian project validation failed.");
+                    "Deucarian Control Center project validation failed.");
             }
 
-            Console.WriteLine("Deucarian project validation passed.");
+            Console.WriteLine("Deucarian Control Center project validation passed.");
         }
     }
 }
