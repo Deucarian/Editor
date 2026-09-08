@@ -26,10 +26,10 @@ namespace Deucarian.Editor
                     return overrideMode.Value;
                 }
 
-                string stored = EditorPrefs.GetString(PreferenceKey, DeucarianEditorAmbientMotionMode.On.ToString());
+                string stored = DeucarianEditorProjectPreferences.GetString(PreferenceKey, DeucarianEditorAmbientMotionMode.Off.ToString());
                 return Enum.TryParse(stored, out DeucarianEditorAmbientMotionMode mode)
                     ? mode
-                    : DeucarianEditorAmbientMotionMode.On;
+                    : DeucarianEditorAmbientMotionMode.Off;
             }
         }
 
@@ -53,6 +53,14 @@ namespace Deucarian.Editor
         {
             overrideMode = mode;
         }
+
+        public static void SetMode(DeucarianEditorAmbientMotionMode mode)
+        {
+            DeucarianEditorProjectPreferences.SetString(PreferenceKey, mode.ToString());
+            Changed?.Invoke();
+        }
+
+        internal static event Action Changed;
     }
 
     public static class DeucarianEditorAmbientGlass
@@ -280,8 +288,18 @@ namespace Deucarian.Editor
         public DeucarianEditorAmbientLayer()
         {
             pickingMode = PickingMode.Ignore;
-            RegisterCallback<AttachToPanelEvent>(_ => StartAnimation());
-            RegisterCallback<DetachFromPanelEvent>(_ => PauseAnimation());
+            RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                DeucarianEditorAppearance.Changed += RefreshAnimation;
+                DeucarianEditorAmbientMotionSettings.Changed += RefreshAnimation;
+                RefreshAnimation();
+            });
+            RegisterCallback<DetachFromPanelEvent>(_ =>
+            {
+                DeucarianEditorAppearance.Changed -= RefreshAnimation;
+                DeucarianEditorAmbientMotionSettings.Changed -= RefreshAnimation;
+                PauseAnimation();
+            });
         }
 
         public void AddGlow(string glowName, string className, Texture2D texture)
@@ -303,7 +321,8 @@ namespace Deucarian.Editor
 
         private void StartAnimation()
         {
-            if (DeucarianEditorAmbientMotionSettings.CurrentMode == DeucarianEditorAmbientMotionMode.Off)
+            if (!DeucarianEditorAppearance.DecorativeBackgrounds ||
+                DeucarianEditorAmbientMotionSettings.CurrentMode == DeucarianEditorAmbientMotionMode.Off)
             {
                 ApplyStaticFrame(0f);
                 return;
@@ -321,6 +340,12 @@ namespace Deucarian.Editor
         private void PauseAnimation()
         {
             animationItem?.Pause();
+        }
+
+        private void RefreshAnimation()
+        {
+            PauseAnimation();
+            StartAnimation();
         }
 
         private void UpdateAnimation()
@@ -392,6 +417,7 @@ namespace Deucarian.Editor
         public static void Play(VisualElement sheen)
         {
             if (sheen == null ||
+                !DeucarianEditorAppearance.DecorativeBackgrounds ||
                 sheen.panel == null ||
                 DeucarianEditorAmbientMotionSettings.CurrentMode != DeucarianEditorAmbientMotionMode.On)
             {

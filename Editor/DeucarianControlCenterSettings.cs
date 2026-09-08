@@ -23,6 +23,17 @@ namespace Deucarian.Editor
 
         private static void Draw()
         {
+            EditorGUILayout.LabelField("Editor appearance", EditorStyles.boldLabel);
+            DeucarianEditorAppearance.DecorativeBackgrounds = EditorGUILayout.Toggle(
+                "Decorative backgrounds", DeucarianEditorAppearance.DecorativeBackgrounds);
+            using (new EditorGUI.DisabledScope(!DeucarianEditorAppearance.DecorativeBackgrounds))
+            {
+                var previous = DeucarianEditorAmbientMotionSettings.CurrentMode;
+                var next = (DeucarianEditorAmbientMotionMode)EditorGUILayout.EnumPopup("Background motion", previous);
+                if (next != previous) DeucarianEditorAmbientMotionSettings.SetMode(next);
+            }
+            EditorGUILayout.LabelField("Applies to Deucarian tools in this project.", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space();
             IReadOnlyList<DeucarianProjectIssue> issues =
                 DeucarianProjectValidationRegistry.Evaluate();
             int blockers = 0;

@@ -2,11 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
     public static class DeucarianEditorSearchField
     {
+        public static TextField Create(string placeholder, Action<string> changed, string value = "")
+        {
+            var field = new DeucarianEditorSearchInput(placeholder);
+            field.SetValueWithoutNotify(value ?? "");
+            field.RegisterValueChangedCallback(evt => changed?.Invoke(evt.newValue));
+            return field;
+        }
+
         public static string Draw(string value, string placeholder = "Search", params GUILayoutOption[] options)
         {
             value = value ?? string.Empty;
@@ -17,6 +26,12 @@ namespace Deucarian.Editor
                     value,
                     SearchStyle,
                     options);
+                if (string.IsNullOrEmpty(next) && Event.current.type == EventType.Repaint)
+                {
+                    Rect rect = GUILayoutUtility.GetLastRect();
+                    rect.xMin += 18f;
+                    GUI.Label(rect, placeholder ?? "Search", EditorStyles.miniLabel);
+                }
                 if (GUILayout.Button(new GUIContent("x", "Clear search"), SearchCancelStyle, GUILayout.Width(22f), GUILayout.Height(20f)))
                     next = string.Empty;
                 return next;
@@ -55,6 +70,38 @@ namespace Deucarian.Editor
 
                 return searchCancelStyle;
             }
+        }
+    }
+
+    internal sealed class DeucarianEditorSearchInput : TextField
+    {
+        private readonly VisualElement hint;
+        internal DeucarianEditorSearchInput(string placeholder)
+        {
+            tooltip = placeholder;
+            hint = new VisualElement { pickingMode = PickingMode.Ignore };
+            hint.style.position = Position.Absolute;
+            hint.style.left = 8f;
+            hint.style.right = 5f;
+            hint.style.top = 0;
+            hint.style.bottom = 0;
+            hint.style.flexDirection = FlexDirection.Row;
+            hint.style.alignItems = Align.Center;
+            var icon = new Image { image = DeucarianEditorIcons.GetIcon("search"), pickingMode = PickingMode.Ignore, tintColor = DeucarianEditorTheme.MutedText };
+            icon.style.width = 14f;
+            icon.style.height = 14f;
+            icon.style.marginRight = 5f;
+            var label = new Label(placeholder) { name = "deucarian-search-placeholder", pickingMode = PickingMode.Ignore };
+            label.style.color = DeucarianEditorTheme.MutedText;
+            label.style.fontSize = 11f;
+            hint.Add(icon);
+            hint.Add(label);
+            Add(hint);
+        }
+        public override void SetValueWithoutNotify(string newValue)
+        {
+            base.SetValueWithoutNotify(newValue);
+            if (hint != null) hint.style.display = string.IsNullOrEmpty(newValue) ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 

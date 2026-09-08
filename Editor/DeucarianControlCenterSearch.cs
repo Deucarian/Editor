@@ -94,6 +94,7 @@ namespace Deucarian.Editor
 
             foreach (DeucarianToolDescriptor tool in snapshot.Tools)
             {
+                if (tool.Id == DeucarianToolIds.ControlCenter) continue;
                 AddIfMatch(
                     results,
                     terms,
