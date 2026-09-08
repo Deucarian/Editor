@@ -64,10 +64,10 @@ namespace Deucarian.Editor
 
         public static string DrawReadonlyTextField(string label, string value)
         {
-            using (new EditorGUI.DisabledScope(true))
-            {
-                return EditorGUILayout.TextField(label ?? string.Empty, value ?? string.Empty);
-            }
+            Rect field = EditorGUILayout.GetControlRect();
+            field = EditorGUI.PrefixLabel(field, new GUIContent(label ?? string.Empty));
+            EditorGUI.SelectableLabel(field, value ?? string.Empty, EditorStyles.textField);
+            return value ?? string.Empty;
         }
 
         public static string DrawCopyableTextField(string label, string value, string buttonLabel = "Copy")

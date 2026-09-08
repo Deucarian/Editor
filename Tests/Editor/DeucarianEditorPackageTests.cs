@@ -54,7 +54,9 @@ namespace Deucarian.Editor.Tests
         {
             Assert.AreEqual("com.deucarian.editor", DeucarianEditorPackageConstants.PackageName);
             Assert.AreEqual("Deucarian Editor", DeucarianEditorPackageConstants.DisplayName);
-            Assert.AreEqual("1.2.0", DeucarianEditorPackageConstants.Version);
+            PackageInfo package = PackageInfo.FindForAssembly(typeof(DeucarianEditorPackageConstants).Assembly);
+            Assert.NotNull(package, "The editor assembly must resolve to its installed package.");
+            Assert.AreEqual(package.version, DeucarianEditorPackageConstants.Version);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.MenuRoot);
             Assert.AreEqual("Tools/Deucarian", DeucarianEditorPackageConstants.PackageToolMenuRoot);
         }

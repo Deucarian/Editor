@@ -71,11 +71,7 @@ namespace Deucarian.Editor
             }
             catch (Exception exception)
             {
-                EditorUtility.DisplayDialog(
-                    "Control Center action failed",
-                    "'" + title + "' failed safely (" +
-                    exception.GetType().Name + ").",
-                    "OK");
+                DeucarianEditorActionErrors.Show(title + " could not complete", exception);
                 return;
             }
 
@@ -85,11 +81,7 @@ namespace Deucarian.Editor
             }
             catch (Exception exception)
             {
-                EditorUtility.DisplayDialog(
-                    "Control Center refresh failed",
-                    "The action completed, but status refresh failed safely (" +
-                    exception.GetType().Name + ").",
-                    "OK");
+                DeucarianEditorActionErrors.Show("Status refresh failed", exception, actionCompleted: true);
             }
         }
 

@@ -35,7 +35,11 @@ namespace Deucarian.Editor
 
         public static Color Border
         {
-            get { return DeucarianEditorTheme.IsDark ? new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.24f) : new Color(27f / 255f, 26f / 255f, 24f / 255f, 0.14f); }
+            get
+            {
+                if (!DeucarianEditorAppearance.DecorativeBackgrounds) return SubtleBorder;
+                return DeucarianEditorTheme.IsDark ? new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.24f) : new Color(27f / 255f, 26f / 255f, 24f / 255f, 0.14f);
+            }
         }
 
         public static Color SubtleBorder
@@ -69,6 +73,7 @@ namespace Deucarian.Editor
             DeucarianEditorUIResources.TryAddSharedStyleSheet(root);
             root.AddToClassList("deucarian-editor");
             root.AddToClassList("deucarian-window-shell-host");
+            DeucarianEditorAppearance.Bind(root);
             root.EnableInClassList(DeucarianEditorTheme.DarkClass, DeucarianEditorTheme.IsDark);
             root.EnableInClassList(DeucarianEditorTheme.LightClass, !DeucarianEditorTheme.IsDark);
 
@@ -208,6 +213,8 @@ namespace Deucarian.Editor
 
             EditorGUI.DrawRect(rect, fallbackColor);
 
+            if (!DeucarianEditorAppearance.DecorativeBackgrounds) return;
+
             Texture2D resolvedBackground = background != null ? background : GetDefaultBackgroundTexture();
 
             if (resolvedBackground == null)
@@ -251,8 +258,9 @@ namespace Deucarian.Editor
 
             Rect alignedRect = AlignToPixels(rect);
             radius = Mathf.Min(radius, Mathf.Min(alignedRect.width, alignedRect.height) * 0.5f);
+            if (!DeucarianEditorAppearance.DecorativeBackgrounds) backgroundColor.a = 1f;
 
-            if (drawShadow)
+            if (drawShadow && DeucarianEditorAppearance.DecorativeBackgrounds)
             {
                 Rect shadowRect = new Rect(
                     alignedRect.x + 1f,
@@ -273,7 +281,7 @@ namespace Deucarian.Editor
                 Mathf.Max(0f, alignedRect.height - 2f));
             DrawRoundedFill(innerRect, Mathf.Max(0f, radius - 1f), backgroundColor);
 
-            if (innerRect.width > 8f && innerRect.height > 2f)
+            if (DeucarianEditorAppearance.DecorativeBackgrounds && innerRect.width > 8f && innerRect.height > 2f)
             {
                 DrawRoundedFill(
                     new Rect(innerRect.x + radius, innerRect.y, innerRect.width - radius * 2f, 1f),

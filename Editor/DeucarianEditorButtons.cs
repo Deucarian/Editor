@@ -19,7 +19,8 @@ namespace Deucarian.Editor
                     primaryButton.normal.background = DeucarianEditorTextures.Solid("button-primary", new Color(0.08f, 0.43f, 0.45f, 0.96f));
                     primaryButton.hover.background = DeucarianEditorTextures.Solid("button-primary-hover", new Color(0.10f, 0.55f, 0.58f, 0.98f));
                     primaryButton.active.background = DeucarianEditorTextures.Solid("button-primary-active", new Color(0.05f, 0.34f, 0.37f, 1f));
-                    primaryButton.focused.background = primaryButton.normal.background;
+                    primaryButton.focused.background = DeucarianEditorTextures.Solid("button-primary-focused", new Color(0.16f, 0.62f, 0.65f, 1f));
+                    primaryButton.focused.textColor = Color.white;
                     primaryButton.onNormal.background = primaryButton.normal.background;
                     primaryButton.onHover.background = primaryButton.hover.background;
                     primaryButton.onActive.background = primaryButton.active.background;
@@ -39,7 +40,8 @@ namespace Deucarian.Editor
                     secondaryButton.normal.background = DeucarianEditorTextures.Solid("button-secondary", new Color(0.08f, 0.20f, 0.25f, 0.88f));
                     secondaryButton.hover.background = DeucarianEditorTextures.Solid("button-secondary-hover", new Color(0.10f, 0.31f, 0.36f, 0.94f));
                     secondaryButton.active.background = DeucarianEditorTextures.Solid("button-secondary-active", new Color(0.05f, 0.16f, 0.21f, 1f));
-                    secondaryButton.focused.background = secondaryButton.normal.background;
+                    secondaryButton.focused.background = DeucarianEditorTextures.Solid("button-secondary-focused", new Color(0.16f, 0.40f, 0.46f, 1f));
+                    secondaryButton.focused.textColor = Color.white;
                     secondaryButton.onNormal.background = secondaryButton.normal.background;
                     secondaryButton.onHover.background = secondaryButton.hover.background;
                     secondaryButton.onActive.background = secondaryButton.active.background;

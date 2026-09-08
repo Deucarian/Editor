@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 - Unreleased
+
+- Add project-scoped preferences, calm editor appearance, searchable recent/favorite tools, stable refresh navigation, accessible action states and a composable task-layout sample.
+
 ## 1.2.0 - 2026-08-31
 
 - Replaced the Project Setup surface with the responsive Deucarian Control Center workbench.

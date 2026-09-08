@@ -1,6 +1,6 @@
 # Deucarian Editor
 
-Current package version: `1.2.0`.
+Current package version: `1.3.0`.
 
 ## What this is
 
