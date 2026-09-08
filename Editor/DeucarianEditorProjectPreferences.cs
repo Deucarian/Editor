@@ -10,12 +10,12 @@ namespace Deucarian.Editor
     /// <summary>Project-local editor preferences. Never stores scene connections or live runtime objects.</summary>
     public static class DeucarianEditorProjectPreferences
     {
-        private static string projectPrefix;
+        private static readonly string ProjectPrefix = PrefixFor(Application.dataPath);
 
         public static string Key(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("A preference name is required.", nameof(name));
-            return (projectPrefix ?? (projectPrefix = PrefixFor(Application.dataPath))) + name;
+            return ProjectPrefix + name;
         }
 
         public static string GetString(string name, string fallback = "") => EditorPrefs.GetString(Key(name), fallback);
