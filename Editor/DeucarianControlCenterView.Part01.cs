@@ -30,8 +30,18 @@ namespace Deucarian.Editor
             string focusedTargetId,
             string query)
         {
-            Root.Clear();
+            bool samePage = content != null && renderedArea == selectedArea && renderedQuery == query;
+            Vector2 scrollOffset = samePage ? content.scrollOffset : Vector2.zero;
+            string focusedName = samePage ? (Root.focusController?.focusedElement as VisualElement)?.name : null;
+            renderedArea = selectedArea;
+            renderedQuery = query;
+            int revision = ++renderRevision;
             cardHosts.Clear();
+            searchResults.Clear();
+            searchButtons.Clear();
+            selectedSearchResult = -1;
+            if (layout == null)
+            {
             layout = new VisualElement { name = "control-center-layout" };
             layout.style.flexGrow = 1f;
             layout.style.paddingTop = 8f;
@@ -40,9 +50,7 @@ namespace Deucarian.Editor
             layout.style.paddingRight = 8f;
             Root.Add(layout);
 
-            sidebar = CreateSidebar(snapshot, selectedArea);
-            layout.Add(sidebar);
-            var content = new ScrollView(ScrollViewMode.Vertical)
+            content = new ScrollView(ScrollViewMode.Vertical)
             {
                 name = "control-center-content"
             };
@@ -50,6 +58,11 @@ namespace Deucarian.Editor
             content.style.paddingLeft = 10f;
             content.style.paddingRight = 6f;
             layout.Add(content);
+            }
+            sidebar?.RemoveFromHierarchy();
+            sidebar = CreateSidebar(snapshot, selectedArea);
+            layout.Insert(0, sidebar);
+            content.Clear();
 
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -65,6 +78,18 @@ namespace Deucarian.Editor
             }
 
             SetLayoutMode(layoutMode);
+            content.scrollOffset = scrollOffset;
+            Root.schedule.Execute(() =>
+            {
+                if (revision != renderRevision) return;
+                content.scrollOffset = scrollOffset;
+                if (!string.IsNullOrEmpty(focusedName)) Root.Q<VisualElement>(focusedName)?.Focus();
+                if (!samePage && !string.IsNullOrEmpty(focusedTargetId))
+                {
+                    var target = content.Q<VisualElement>("control-center-card-" + focusedTargetId);
+                    if (target != null) content.ScrollTo(target);
+                }
+            });
         }
 
         internal void SetLayoutMode(DeucarianEditorLayoutMode mode)
@@ -85,15 +110,25 @@ namespace Deucarian.Editor
             sidebar.style.minWidth = sidebarWidth;
             sidebar.style.marginBottom = narrow ? 8f : 0f;
             sidebar.style.marginRight = narrow ? 0f : 8f;
+            sidebar.style.flexDirection = narrow ? FlexDirection.Row : FlexDirection.Column;
+            sidebar.style.flexWrap = narrow ? Wrap.Wrap : Wrap.NoWrap;
+            foreach (VisualElement item in sidebar.Children()) item.style.marginRight = narrow ? 4 : 0;
             foreach (VisualElement host in cardHosts)
             {
                 host.style.flexDirection =
                     narrow ? FlexDirection.Column : FlexDirection.Row;
+                foreach (VisualElement card in host.Children())
+                {
+                    card.style.flexBasis = narrow ? new StyleLength(StyleKeyword.Auto) : new StyleLength(300f);
+                    card.style.flexGrow = narrow ? 0f : 1f;
+                    card.style.minWidth = narrow ? 0f : 250f;
+                }
             }
         }
 
         public void Dispose()
         {
+            renderRevision++;
             Root.Clear();
             cardHosts.Clear();
         }
@@ -123,11 +158,16 @@ namespace Deucarian.Editor
                 button.style.unityTextAlign = TextAnchor.MiddleLeft;
                 button.style.height = 30f;
                 button.style.marginBottom = 3f;
+                button.style.borderLeftWidth = 3f;
+                button.style.borderLeftColor = Color.clear;
                 if (area == selectedArea)
                 {
                     button.style.backgroundColor =
                         DeucarianEditorTheme.GlassPanelStrong;
                     button.style.color = DeucarianEditorTheme.Text;
+                    button.style.borderLeftColor = DeucarianEditorTheme.Accent;
+                    button.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    button.tooltip = "Current section";
                 }
 
                 result.Add(button);
@@ -172,7 +212,8 @@ namespace Deucarian.Editor
                 }
             }
 
-            RenderTools(content, snapshot.Tools, area);
+            if (area == DeucarianControlCenterArea.Developer || area == DeucarianControlCenterArea.Overview)
+                RenderTools(content, snapshot.Tools, area);
         }
 
         private void RenderTools(
@@ -183,7 +224,9 @@ namespace Deucarian.Editor
             var matching = new List<DeucarianToolDescriptor>();
             foreach (DeucarianToolDescriptor tool in tools)
             {
-                if (tool.Area == area)
+                if (tool.Id != DeucarianToolIds.ControlCenter &&
+                    (area == DeucarianControlCenterArea.Developer || DeucarianToolHistory.IsFavorite(tool.Id) ||
+                        DeucarianToolHistory.RecentIndex(tool.Id) >= 0 && DeucarianToolHistory.RecentIndex(tool.Id) < 3))
                 {
                     matching.Add(tool);
                 }
@@ -194,9 +237,19 @@ namespace Deucarian.Editor
                 return;
             }
 
+            matching.Sort((left, right) =>
+            {
+                int favorite = DeucarianToolHistory.IsFavorite(right.Id).CompareTo(DeucarianToolHistory.IsFavorite(left.Id));
+                if (favorite != 0) return favorite;
+                int leftIndex = DeucarianToolHistory.RecentIndex(left.Id);
+                int rightIndex = DeucarianToolHistory.RecentIndex(right.Id);
+                int recent = (leftIndex < 0 ? int.MaxValue : leftIndex).CompareTo(rightIndex < 0 ? int.MaxValue : rightIndex);
+                return recent != 0 ? recent : string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
+            });
+
             AddSectionHeading(
                 content,
-                "Tools",
+                area == DeucarianControlCenterArea.Overview ? "Your tools" : "Tools",
                 "Open the owning package's full workflow.");
             foreach (DeucarianToolDescriptor tool in matching)
             {
@@ -224,6 +277,13 @@ namespace Deucarian.Editor
                 };
                 button.style.marginTop = 6f;
                 row.Add(button);
+                bool favorite = DeucarianToolHistory.IsFavorite(tool.Id);
+                var pin = new Button(() =>
+                {
+                    DeucarianToolHistory.SetFavorite(captured.Id, !DeucarianToolHistory.IsFavorite(captured.Id));
+                    refresh();
+                }) { text = favorite ? "Unpin" : "Pin", tooltip = "Keep this tool on the overview for this project." };
+                row.Add(pin);
                 content.Add(row);
             }
         }
@@ -241,6 +301,7 @@ namespace Deucarian.Editor
                 results.Count + " result(s) for '" + query + "'.");
             foreach (DeucarianControlCenterSearchResult result in results)
             {
+                searchResults.Add(result);
                 DeucarianControlCenterSearchResult captured = result;
                 var row = new Button(() => OpenSearchResult(captured))
                 {
@@ -259,6 +320,7 @@ namespace Deucarian.Editor
                 }
 
                 content.Add(row);
+                searchButtons.Add(row);
             }
 
             if (results.Count == 0)
@@ -266,6 +328,23 @@ namespace Deucarian.Editor
                 content.Add(CreateMutedLabel(
                     "No cards, tools, actions, or areas match this search."));
             }
+        }
+
+        internal void MoveSearchSelection(int direction)
+        {
+            if (searchButtons.Count == 0) return;
+            if (selectedSearchResult >= 0) searchButtons[selectedSearchResult].style.borderLeftWidth = 0;
+            selectedSearchResult = selectedSearchResult < 0 ? (direction > 0 ? 0 : searchButtons.Count - 1)
+                : (selectedSearchResult + direction + searchButtons.Count) % searchButtons.Count;
+            var selected = searchButtons[selectedSearchResult];
+            selected.style.borderLeftWidth = 3;
+            selected.style.borderLeftColor = DeucarianEditorTheme.Accent;
+            content.ScrollTo(selected);
+        }
+
+        internal void OpenSelectedSearchResult()
+        {
+            if (searchResults.Count > 0) OpenSearchResult(searchResults[Math.Max(0, selectedSearchResult)]);
         }
 
         private void OpenSearchResult(

@@ -96,6 +96,32 @@
     --deucarian-graph-unknown: rgba(93, 90, 85, 0.78);
 }
 
+.deucarian-editor.deucarian-quiet {
+    --deucarian-panel: #252421;
+    --deucarian-panel-soft: #302e2a;
+    --deucarian-panel-header: #2a2926;
+    --deucarian-sidebar: #252421;
+    --deucarian-border: rgba(242, 239, 231, 0.12);
+}
+
+.deucarian-editor.deucarian-quiet.deucarian-theme--light {
+    --deucarian-panel: #ffffff;
+    --deucarian-panel-soft: #f2efe7;
+    --deucarian-panel-header: #ffffff;
+    --deucarian-sidebar: #ffffff;
+    --deucarian-border: rgba(27, 26, 24, 0.12);
+}
+
+.deucarian-quiet .deucarian-window-background,
+.deucarian-quiet .deucarian-window-overlay,
+.deucarian-quiet .deucarian-ambient-lighting-layer,
+.deucarian-quiet .deucarian-grain-layer,
+.deucarian-quiet .deucarian-vignette-layer,
+.deucarian-quiet .deucarian-wallpaper-top-safe-fade,
+.deucarian-quiet .deucarian-glass-sheen {
+    display: none;
+}
+
 .deucarian-window-shell-host {
     flex-grow: 1;
     background-color: var(--deucarian-bg);
