@@ -71,7 +71,11 @@ namespace Deucarian.Editor
         public string IconKey { get; }
         public IReadOnlyList<string> SearchTerms { get; }
         public int Order { get; }
-        public void Open() => open();
+        public void Open()
+        {
+            open();
+            DeucarianToolHistory.RecordOpened(Id);
+        }
     }
 
     public static class DeucarianToolRegistry

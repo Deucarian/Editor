@@ -21,10 +21,10 @@ namespace Deucarian.Editor
         private IVisualElementScheduledItem periodicRefresh;
         private TextField searchField;
         private Label summary;
-        private DeucarianControlCenterArea selectedArea =
+        [SerializeField] private DeucarianControlCenterArea selectedArea =
             DeucarianControlCenterArea.Overview;
         private string focusedTargetId;
-        private string searchQuery = string.Empty;
+        [SerializeField] private string searchQuery = string.Empty;
         private bool refreshQueued;
         private bool subscribed;
 
@@ -66,7 +66,7 @@ namespace Deucarian.Editor
             window.selectedArea = area;
             window.focusedTargetId = null;
             window.SetSearch(string.Empty);
-            window.minSize = new Vector2(560f, 400f);
+            window.minSize = new Vector2(420f, 360f);
             window.Show();
             window.Focus();
             window.Render();
@@ -106,21 +106,19 @@ namespace Deucarian.Editor
 
             DeucarianEditorCommandBarLanes lanes =
                 DeucarianEditorCommandBar.CreateLanes(workbench.Toolbar);
-            searchField = new TextField
+            searchField = DeucarianEditorSearchField.Create("Search tools · Ctrl/Cmd+K", value =>
             {
-                name = "control-center-search",
-                tooltip = "Search areas, status, tools, and actions."
-            };
-            searchField.style.minWidth = 170f;
-            searchField.style.flexGrow = 1f;
-            searchField.SetValueWithoutNotify(searchQuery);
-            searchField.RegisterValueChangedCallback(evt =>
-            {
-                searchQuery = evt.newValue ?? string.Empty;
+                searchQuery = value ?? string.Empty;
                 Render();
-            });
+            }, searchQuery);
+            searchField.name = "control-center-search";
+            searchField.tooltip = "Search tools and project checks. Ctrl/Cmd+K to search; arrows to choose; Enter to open.";
+            searchField.style.minWidth = 200f;
+            searchField.style.flexGrow = 1f;
+            lanes.Leading.style.flexGrow = 1f;
             lanes.Leading.Add(searchField);
             summary = lanes.Summary;
+            summary.RemoveFromHierarchy();
             Button refresh = DeucarianEditorCommandBar.CreateAction(
                 DeucarianEditorIconIds.Refresh,
                 "Refresh",
@@ -136,6 +134,7 @@ namespace Deucarian.Editor
             ConfigureFooter();
             rootVisualElement.RegisterCallback<GeometryChangedEvent>(
                 OnGeometryChanged);
+            rootVisualElement.RegisterCallback<KeyDownEvent>(OnSearchKeyDown);
             periodicRefresh = rootVisualElement.schedule
                 .Execute(() => Refresh(false))
                 .Every(SnapshotIntervalMilliseconds);
@@ -145,11 +144,15 @@ namespace Deucarian.Editor
 
         private void OnEnable()
         {
+            selectedArea = (DeucarianControlCenterArea)DeucarianEditorProjectPreferences.GetInt("control-center.area", (int)selectedArea);
+            searchQuery = DeucarianEditorProjectPreferences.GetString("control-center.search", searchQuery);
             Subscribe();
         }
 
         private void OnDisable()
         {
+            DeucarianEditorProjectPreferences.SetInt("control-center.area", (int)selectedArea);
+            DeucarianEditorProjectPreferences.SetString("control-center.search", searchQuery);
             Unsubscribe();
             DisposeVisualTree();
         }
@@ -273,11 +276,14 @@ namespace Deucarian.Editor
                 return;
             }
 
-            var label = new Label(
-                "Status is captured on demand and at a bounded 15-second interval.");
+            var label = new Label("Project status · refreshes automatically");
             label.style.color = DeucarianEditorTheme.MutedText;
             label.style.marginLeft = 10f;
+            label.style.flexGrow = 1f;
+            label.style.whiteSpace = WhiteSpace.Normal;
+            workbench.Footer.style.flexWrap = Wrap.Wrap;
             workbench.Footer.Add(label);
+            workbench.Footer.Add(summary);
         }
 
         private void OnGeometryChanged(GeometryChangedEvent evt)
@@ -294,10 +300,30 @@ namespace Deucarian.Editor
             periodicRefresh = null;
             rootVisualElement?.UnregisterCallback<GeometryChangedEvent>(
                 OnGeometryChanged);
+            rootVisualElement?.UnregisterCallback<KeyDownEvent>(OnSearchKeyDown);
             view?.Dispose();
             view = null;
             workbench?.Dispose();
             workbench = null;
+        }
+
+        private void OnSearchKeyDown(KeyDownEvent evt)
+        {
+            if ((evt.ctrlKey || evt.commandKey) && (evt.keyCode == KeyCode.K || evt.keyCode == KeyCode.F))
+            {
+                searchField?.Focus();
+                searchField?.SelectAll();
+            }
+            else if (string.IsNullOrWhiteSpace(searchQuery)) return;
+            else if (!(rootVisualElement.focusController?.focusedElement is VisualElement focused) ||
+                (focused != searchField && !searchField.Contains(focused))) return;
+            else if (evt.keyCode == KeyCode.DownArrow) view?.MoveSearchSelection(1);
+            else if (evt.keyCode == KeyCode.UpArrow) view?.MoveSearchSelection(-1);
+            else if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter) view?.OpenSelectedSearchResult();
+            else if (evt.keyCode == KeyCode.Escape) SetSearch(string.Empty);
+            else return;
+            evt.StopPropagation();
+            evt.PreventDefault();
         }
     }
 }
