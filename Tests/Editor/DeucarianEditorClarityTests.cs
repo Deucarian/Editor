@@ -10,6 +10,15 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorClarityTests
     {
         [Test]
+        public void SearchDoesNotOfferToOpenTheControlCenterFromInsideItself()
+        {
+            var snapshot = DeucarianControlCenterSnapshotBuilder.Capture();
+            foreach (var result in DeucarianControlCenterSearch.Search(snapshot, "Control Center"))
+                Assert.That(result.Kind != DeucarianControlCenterSearchResultKind.Tool ||
+                    result.TargetId != DeucarianToolIds.ControlCenter, Is.True);
+        }
+
+        [Test]
         public void RefreshPreservesTheScrollableSurface()
         {
             using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))

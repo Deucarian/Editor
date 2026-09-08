@@ -141,7 +141,7 @@ namespace Deucarian.Editor
             {
                 name = "control-center-sidebar"
             };
-            StylePanel(result);
+            DeucarianControlCenterVisuals.StylePanel(result);
             result.style.paddingTop = 6f;
             result.style.paddingBottom = 6f;
             result.style.paddingLeft = 6f;
@@ -182,7 +182,7 @@ namespace Deucarian.Editor
             DeucarianControlCenterArea area,
             string focusedTargetId)
         {
-            AddPageHeading(
+            DeucarianControlCenterVisuals.AddPageHeading(
                 content,
                 DeucarianControlCenterAreaIds.GetDisplayName(area),
                 GetAreaDescription(area));
@@ -192,7 +192,7 @@ namespace Deucarian.Editor
             {
                 if (card.Area == area)
                 {
-                    cards.Add(CreateCard(card, focusedTargetId));
+                    cards.Add(DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
                 }
             }
 
@@ -203,12 +203,12 @@ namespace Deucarian.Editor
                     continue;
                 }
 
-                AddSectionHeading(content, section.Title, section.Description);
+                DeucarianControlCenterVisuals.AddSectionHeading(content, section.Title, section.Description);
                 VisualElement sectionCards = CreateCardHost();
                 content.Add(sectionCards);
                 foreach (DeucarianControlCenterCard card in section.Cards)
                 {
-                    sectionCards.Add(CreateCard(card, focusedTargetId));
+                    sectionCards.Add(DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
                 }
             }
 
@@ -247,7 +247,7 @@ namespace Deucarian.Editor
                 return recent != 0 ? recent : string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
             });
 
-            AddSectionHeading(
+            DeucarianControlCenterVisuals.AddSectionHeading(
                 content,
                 area == DeucarianControlCenterArea.Overview ? "Your tools" : "Tools",
                 "Open the owning package's full workflow.");
@@ -258,16 +258,16 @@ namespace Deucarian.Editor
                 {
                     name = "control-center-tool-" + tool.Id
                 };
-                StylePanel(row);
+                DeucarianControlCenterVisuals.StylePanel(row);
                 row.style.marginBottom = 6f;
                 row.style.paddingLeft = 10f;
                 row.style.paddingRight = 8f;
                 row.style.paddingTop = 8f;
                 row.style.paddingBottom = 8f;
-                row.Add(CreateLabel(tool.DisplayName, true));
+                row.Add(DeucarianControlCenterVisuals.CreateLabel(tool.DisplayName, true));
                 if (tool.Description.Length > 0)
                 {
-                    row.Add(CreateMutedLabel(tool.Description));
+                    row.Add(DeucarianControlCenterVisuals.CreateMutedLabel(tool.Description));
                 }
 
                 var button = new Button(
@@ -295,7 +295,7 @@ namespace Deucarian.Editor
         {
             IReadOnlyList<DeucarianControlCenterSearchResult> results =
                 DeucarianControlCenterSearch.Search(snapshot, query);
-            AddPageHeading(
+            DeucarianControlCenterVisuals.AddPageHeading(
                 content,
                 "Search",
                 results.Count + " result(s) for '" + query + "'.");
@@ -313,10 +313,10 @@ namespace Deucarian.Editor
                 row.style.paddingTop = 8f;
                 row.style.paddingBottom = 8f;
                 row.style.unityTextAlign = TextAnchor.MiddleLeft;
-                row.Add(CreateLabel(result.Title, true));
+                row.Add(DeucarianControlCenterVisuals.CreateLabel(result.Title, true));
                 if (result.Description.Length > 0)
                 {
-                    row.Add(CreateMutedLabel(result.Description));
+                    row.Add(DeucarianControlCenterVisuals.CreateMutedLabel(result.Description));
                 }
 
                 content.Add(row);
@@ -325,7 +325,7 @@ namespace Deucarian.Editor
 
             if (results.Count == 0)
             {
-                content.Add(CreateMutedLabel(
+                content.Add(DeucarianControlCenterVisuals.CreateMutedLabel(
                     "No cards, tools, actions, or areas match this search."));
             }
         }
@@ -362,80 +362,9 @@ namespace Deucarian.Editor
             }
         }
 
-        private VisualElement CreateCard(
-            DeucarianControlCenterCard card,
-            string focusedTargetId)
+        private void ExecuteCardAction(DeucarianControlCenterAction action)
         {
-            var result = new VisualElement
-            {
-                name = "control-center-card-" + card.Id
-            };
-            StylePanel(result);
-            result.style.flexGrow = 1f;
-            result.style.flexBasis = 300f;
-            result.style.minWidth = 250f;
-            result.style.marginRight = 6f;
-            result.style.marginBottom = 6f;
-            result.style.paddingLeft = 12f;
-            result.style.paddingRight = 12f;
-            result.style.paddingTop = 10f;
-            result.style.paddingBottom = 10f;
-            if (string.Equals(card.Id, focusedTargetId, StringComparison.Ordinal))
-            {
-                SetBorderColor(result, DeucarianEditorTheme.Accent);
-                result.style.borderLeftWidth = 3f;
-            }
-
-            VisualElement heading = new VisualElement();
-            heading.style.flexDirection = FlexDirection.Row;
-            heading.style.justifyContent = Justify.SpaceBetween;
-            heading.Add(CreateLabel(card.Title, true));
-            if (card.StatusText.Length > 0)
-            {
-                Label badge = CreateLabel(card.StatusText, false);
-                badge.style.color = GetStatusColor(card.Status);
-                heading.Add(badge);
-            }
-
-            result.Add(heading);
-            if (card.Description.Length > 0)
-            {
-                result.Add(CreateMutedLabel(card.Description));
-            }
-
-            foreach (string detail in card.Details)
-            {
-                result.Add(CreateMutedLabel("• " + detail));
-            }
-
-            if (card.Actions.Count > 0)
-            {
-                var actions = new VisualElement();
-                actions.style.flexDirection = FlexDirection.Row;
-                actions.style.flexWrap = Wrap.Wrap;
-                actions.style.marginTop = 8f;
-                foreach (DeucarianControlCenterAction action in card.Actions)
-                {
-                    DeucarianControlCenterAction captured = action;
-                    var button = new Button(() =>
-                    {
-                        if (Confirm(captured.Label, captured.RequiresConfirmation))
-                        {
-                            InvokeSafely(captured.Label, captured.Invoke);
-                        }
-                    })
-                    {
-                        text = action.Label,
-                        name = "control-center-action-" + action.Id
-                    };
-                    button.style.marginRight = 5f;
-                    actions.Add(button);
-                }
-
-                result.Add(actions);
-            }
-
-            return result;
+            if (Confirm(action.Label, action.RequiresConfirmation)) InvokeSafely(action.Label, action.Invoke);
         }
 
         private VisualElement CreateCardHost()
@@ -448,44 +377,5 @@ namespace Deucarian.Editor
             return host;
         }
 
-        private static void AddPageHeading(
-            VisualElement parent,
-            string title,
-            string description)
-        {
-            Label heading = CreateLabel(title, true);
-            heading.style.fontSize = 20f;
-            heading.style.marginBottom = 3f;
-            parent.Add(heading);
-            parent.Add(CreateMutedLabel(description));
-        }
-
-        private static void AddSectionHeading(
-            VisualElement parent,
-            string title,
-            string description)
-        {
-            Label heading = CreateLabel(title, true);
-            heading.style.fontSize = 15f;
-            heading.style.marginTop = 10f;
-            parent.Add(heading);
-            if (!string.IsNullOrWhiteSpace(description))
-            {
-                parent.Add(CreateMutedLabel(description));
-            }
-        }
-
-        private static Label CreateLabel(string text, bool strong)
-        {
-            var label = new Label(text ?? string.Empty);
-            label.style.color = DeucarianEditorTheme.Text;
-            label.style.whiteSpace = WhiteSpace.Normal;
-            if (strong)
-            {
-                label.style.unityFontStyleAndWeight = FontStyle.Bold;
-            }
-
-            return label;
-        }
     }
 }
