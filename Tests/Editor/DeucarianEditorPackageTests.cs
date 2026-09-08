@@ -1094,12 +1094,8 @@ namespace Deucarian.Editor.Tests
             int methodStart = source.IndexOf(
                 "private static void DrawColoredLabel",
                 StringComparison.Ordinal);
-            int methodEnd = source.IndexOf(
-                "private static void EnsureStyles",
-                methodStart,
-                StringComparison.Ordinal);
-
             Assert.GreaterOrEqual(methodStart, 0);
+            int methodEnd = source.IndexOf("\n        }", methodStart, StringComparison.Ordinal);
             Assert.Greater(methodEnd, methodStart);
             string methodSource = source.Substring(methodStart, methodEnd - methodStart);
 
@@ -1108,6 +1104,21 @@ namespace Deucarian.Editor.Tests
             StringAssert.Contains("GUI.Label(rect, content, style);", methodSource);
             StringAssert.Contains("GUI.contentColor = previousColor;", methodSource);
             StringAssert.DoesNotContain("new GUIStyle(style)", methodSource);
+        }
+
+        [Test]
+        public void WorkbenchStyleCache_ReusesStylesUntilExplicitlyCleared()
+        {
+            var cache = new DeucarianEditorWorkbenchStyleCache();
+            DeucarianEditorWorkbenchStyles original = cache.Current;
+
+            Assert.That(cache.Current, Is.SameAs(original));
+            Assert.That(cache.Current.TitleStyle, Is.SameAs(original.TitleStyle));
+            cache.Clear();
+            Assert.That(cache.Current, Is.Not.SameAs(original));
+            Assert.That(cache.Current.TitleStyle, Is.Not.SameAs(original.TitleStyle));
+            Assert.That(cache.Current.TitleStyle.normal.textColor,
+                Is.EqualTo(original.TitleStyle.normal.textColor));
         }
 
         [Test]

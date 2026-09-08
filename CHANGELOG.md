@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1 - 2026-09-09
+
+- Give workbench controls named files and compose style-cache lifetime separately from drawing. Reuse safe style copying and verify cache identity/invalidation.
+
 ## 1.3.0 - Unreleased
 
 - Add project-scoped preferences, calm editor appearance, searchable recent/favorite tools, stable refresh navigation, accessible action states and a composable task-layout sample.
