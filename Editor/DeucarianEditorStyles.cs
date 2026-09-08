@@ -198,7 +198,7 @@ namespace Deucarian.Editor
             footerVersionText.normal.textColor = DeucarianEditorColors.MutedText;
         }
 
-        private static GUIStyle CopyStyle(System.Func<GUIStyle> styleFactory)
+        internal static GUIStyle CopyStyle(System.Func<GUIStyle> styleFactory)
         {
             if (styleFactory != null)
             {
