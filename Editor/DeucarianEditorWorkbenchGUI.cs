@@ -21,29 +21,7 @@ namespace Deucarian.Editor
         public const float CompactIconSize = DeucarianEditorIconTextButton.IconSize;
         public const float CompactIconTextGap = DeucarianEditorIconTextButton.IconTextGap;
 
-        private static bool initialized;
-        private static bool lastProSkin;
-        private static GUIStyle windowStyle;
-        private static GUIStyle embeddedPageStyle;
-        private static GUIStyle sidebarStyle;
-        private static GUIStyle detailsStyle;
-        private static GUIStyle sampleRowStyle;
-        private static GUIStyle titleStyle;
-        private static GUIStyle subtitleStyle;
-        private static GUIStyle sectionTitleStyle;
-        private static GUIStyle labelStyle;
-        private static GUIStyle boldLabelStyle;
-        private static GUIStyle wordWrappedMiniLabelStyle;
-        private static GUIStyle miniLabelStyle;
-        private static GUIStyle mutedMiniLabelStyle;
-        private static GUIStyle rowTitleStyle;
-        private static GUIStyle rowSubLabelStyle;
-        private static GUIStyle rowStatusStyle;
-        private static GUIStyle markerStyle;
-        private static GUIStyle foldoutStyle;
-        private static GUIStyle primaryButtonStyle;
-        private static GUIStyle secondaryButtonStyle;
-        private static GUIStyle compactIconActionLabelStyle;
+        private static readonly DeucarianEditorWorkbenchStyleCache styles = new DeucarianEditorWorkbenchStyleCache();
 
         public static Color MainBackgroundColor => DeucarianEditorVisualShell.DeepBackground;
         public static Color SidebarBackgroundColor => DeucarianEditorVisualShell.MainPanel;
@@ -67,51 +45,30 @@ namespace Deucarian.Editor
             ? new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.52f)
             : new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.25f);
 
-        public static GUIStyle WindowStyle { get { EnsureStyles(); return windowStyle; } }
-        public static GUIStyle EmbeddedPageStyle { get { EnsureStyles(); return embeddedPageStyle; } }
-        public static GUIStyle SidebarStyle { get { EnsureStyles(); return sidebarStyle; } }
-        public static GUIStyle DetailsStyle { get { EnsureStyles(); return detailsStyle; } }
-        public static GUIStyle SampleRowStyle { get { EnsureStyles(); return sampleRowStyle; } }
-        public static GUIStyle TitleStyle { get { EnsureStyles(); return titleStyle; } }
-        public static GUIStyle SubtitleStyle { get { EnsureStyles(); return subtitleStyle; } }
-        public static GUIStyle SectionTitleStyle { get { EnsureStyles(); return sectionTitleStyle; } }
-        public static GUIStyle LabelStyle { get { EnsureStyles(); return labelStyle; } }
-        public static GUIStyle BoldLabelStyle { get { EnsureStyles(); return boldLabelStyle; } }
-        public static GUIStyle WordWrappedMiniLabelStyle { get { EnsureStyles(); return wordWrappedMiniLabelStyle; } }
-        public static GUIStyle MiniLabelStyle { get { EnsureStyles(); return miniLabelStyle; } }
-        public static GUIStyle MutedMiniLabelStyle { get { EnsureStyles(); return mutedMiniLabelStyle; } }
-        public static GUIStyle RowTitleStyle { get { EnsureStyles(); return rowTitleStyle; } }
-        public static GUIStyle RowSubLabelStyle { get { EnsureStyles(); return rowSubLabelStyle; } }
-        public static GUIStyle RowStatusStyle { get { EnsureStyles(); return rowStatusStyle; } }
-        public static GUIStyle MarkerStyle { get { EnsureStyles(); return markerStyle; } }
-        public static GUIStyle FoldoutStyle { get { EnsureStyles(); return foldoutStyle; } }
-        public static GUIStyle PrimaryButtonStyle { get { EnsureStyles(); return primaryButtonStyle; } }
-        public static GUIStyle SecondaryButtonStyle { get { EnsureStyles(); return secondaryButtonStyle; } }
+        public static GUIStyle WindowStyle => styles.Current.WindowStyle;
+        public static GUIStyle EmbeddedPageStyle => styles.Current.EmbeddedPageStyle;
+        public static GUIStyle SidebarStyle => styles.Current.SidebarStyle;
+        public static GUIStyle DetailsStyle => styles.Current.DetailsStyle;
+        public static GUIStyle SampleRowStyle => styles.Current.SampleRowStyle;
+        public static GUIStyle TitleStyle => styles.Current.TitleStyle;
+        public static GUIStyle SubtitleStyle => styles.Current.SubtitleStyle;
+        public static GUIStyle SectionTitleStyle => styles.Current.SectionTitleStyle;
+        public static GUIStyle LabelStyle => styles.Current.LabelStyle;
+        public static GUIStyle BoldLabelStyle => styles.Current.BoldLabelStyle;
+        public static GUIStyle WordWrappedMiniLabelStyle => styles.Current.WordWrappedMiniLabelStyle;
+        public static GUIStyle MiniLabelStyle => styles.Current.MiniLabelStyle;
+        public static GUIStyle MutedMiniLabelStyle => styles.Current.MutedMiniLabelStyle;
+        public static GUIStyle RowTitleStyle => styles.Current.RowTitleStyle;
+        public static GUIStyle RowSubLabelStyle => styles.Current.RowSubLabelStyle;
+        public static GUIStyle RowStatusStyle => styles.Current.RowStatusStyle;
+        public static GUIStyle MarkerStyle => styles.Current.MarkerStyle;
+        public static GUIStyle FoldoutStyle => styles.Current.FoldoutStyle;
+        public static GUIStyle PrimaryButtonStyle => styles.Current.PrimaryButtonStyle;
+        public static GUIStyle SecondaryButtonStyle => styles.Current.SecondaryButtonStyle;
 
         public static void ClearCache()
         {
-            initialized = false;
-            windowStyle = null;
-            embeddedPageStyle = null;
-            sidebarStyle = null;
-            detailsStyle = null;
-            sampleRowStyle = null;
-            titleStyle = null;
-            subtitleStyle = null;
-            sectionTitleStyle = null;
-            labelStyle = null;
-            boldLabelStyle = null;
-            wordWrappedMiniLabelStyle = null;
-            miniLabelStyle = null;
-            mutedMiniLabelStyle = null;
-            rowTitleStyle = null;
-            rowSubLabelStyle = null;
-            rowStatusStyle = null;
-            markerStyle = null;
-            foldoutStyle = null;
-            primaryButtonStyle = null;
-            secondaryButtonStyle = null;
-            compactIconActionLabelStyle = null;
+            styles.Clear();
         }
 
         public static void DrawPanel(string title, Action content, params GUILayoutOption[] options)
@@ -269,7 +226,7 @@ namespace Deucarian.Editor
                 DrawColoredLabel(
                     textRect,
                     new GUIContent(text ?? string.Empty, tooltip ?? string.Empty),
-                    compactIconActionLabelStyle,
+                    styles.Current.CompactIconActionLabelStyle,
                     tint);
                 return clicked;
             }
@@ -338,244 +295,7 @@ namespace Deucarian.Editor
                 StatusRowHeight);
         }
 
-        private static void EnsureStyles()
-        {
-            bool proSkin = EditorGUIUtility.isProSkin;
-            if (initialized && lastProSkin == proSkin && windowStyle != null)
-            {
-                return;
-            }
-
-            initialized = true;
-            lastProSkin = proSkin;
-
-            windowStyle = new GUIStyle
-            {
-                padding = new RectOffset(
-                    DeucarianEditorLayoutMetrics.PageHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.PageHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.PageTopPadding,
-                    DeucarianEditorLayoutMetrics.PageBottomPadding)
-            };
-            embeddedPageStyle = new GUIStyle
-            {
-                padding = new RectOffset(0, 0, 0, 0),
-                margin = new RectOffset(0, 0, 0, 0)
-            };
-            sidebarStyle = new GUIStyle
-            {
-                padding = new RectOffset(
-                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
-            };
-            detailsStyle = new GUIStyle
-            {
-                padding = new RectOffset(
-                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding)
-            };
-            sampleRowStyle = new GUIStyle
-            {
-                padding = new RectOffset(
-                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceHorizontalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding,
-                    DeucarianEditorLayoutMetrics.SurfaceVerticalPadding),
-                margin = new RectOffset(
-                    0,
-                    0,
-                    0,
-                    DeucarianEditorLayoutMetrics.SurfaceSpacing)
-            };
-
-            titleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderTitle);
-            DeucarianEditorTypography.ApplyDisplay(titleStyle);
-            titleStyle.fontSize = 15;
-            titleStyle.normal.textColor = TextColor;
-            titleStyle.wordWrap = true;
-
-            subtitleStyle = CopyStyle(() => DeucarianEditorStyles.PackageHeaderSubtitle);
-            DeucarianEditorTypography.ApplyBody(subtitleStyle);
-            subtitleStyle.normal.textColor = MutedTextColor;
-            sectionTitleStyle = CopyStyle(() => DeucarianEditorStyles.SectionTitle);
-            DeucarianEditorTypography.ApplyStrong(sectionTitleStyle);
-            sectionTitleStyle.normal.textColor = TextColor;
-
-            labelStyle = CopyStyle(() => EditorStyles.label);
-            DeucarianEditorTypography.ApplyBody(labelStyle);
-            labelStyle.normal.textColor = TextColor;
-
-            boldLabelStyle = CopyStyle(() => EditorStyles.boldLabel);
-            DeucarianEditorTypography.ApplyStrong(boldLabelStyle);
-            boldLabelStyle.normal.textColor = TextColor;
-
-            wordWrappedMiniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
-            DeucarianEditorTypography.ApplyBody(wordWrappedMiniLabelStyle);
-            wordWrappedMiniLabelStyle.normal.textColor = MutedTextColor;
-            wordWrappedMiniLabelStyle.wordWrap = true;
-
-            miniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
-            DeucarianEditorTypography.ApplyBody(miniLabelStyle);
-            miniLabelStyle.normal.textColor = TextColor;
-            miniLabelStyle.wordWrap = true;
-            miniLabelStyle.clipping = TextClipping.Overflow;
-
-            mutedMiniLabelStyle = CopyStyle(() => DeucarianEditorStyles.MutedLabel);
-            DeucarianEditorTypography.ApplyBody(mutedMiniLabelStyle);
-            mutedMiniLabelStyle.fontSize = GetWordWrappedMiniLabelFontSize();
-            mutedMiniLabelStyle.wordWrap = true;
-            mutedMiniLabelStyle.clipping = TextClipping.Overflow;
-
-            rowTitleStyle = CopyStyle(() => EditorStyles.miniBoldLabel);
-            DeucarianEditorTypography.ApplyStrong(rowTitleStyle);
-            rowTitleStyle.normal.textColor = TextColor;
-            rowTitleStyle.wordWrap = true;
-            rowTitleStyle.clipping = TextClipping.Clip;
-
-            rowSubLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
-            DeucarianEditorTypography.ApplyBody(rowSubLabelStyle);
-            rowSubLabelStyle.normal.textColor = MutedTextColor;
-            rowSubLabelStyle.wordWrap = true;
-            rowSubLabelStyle.clipping = TextClipping.Clip;
-
-            rowStatusStyle = CopyStyle(() => EditorStyles.miniLabel);
-            DeucarianEditorTypography.ApplyBody(rowStatusStyle);
-            rowStatusStyle.normal.textColor = TextColor;
-            rowStatusStyle.alignment = TextAnchor.MiddleLeft;
-            rowStatusStyle.clipping = TextClipping.Clip;
-
-            markerStyle = CopyStyle(() => EditorStyles.miniBoldLabel);
-            DeucarianEditorTypography.ApplyStrong(markerStyle);
-            markerStyle.alignment = TextAnchor.MiddleCenter;
-            markerStyle.fontSize = 10;
-            markerStyle.normal.textColor = TextColor;
-
-            foldoutStyle = CopyStyle(() => EditorStyles.foldout);
-            DeucarianEditorTypography.ApplyStrong(foldoutStyle);
-            foldoutStyle.normal.textColor = TextColor;
-            foldoutStyle.onNormal.textColor = TextColor;
-            foldoutStyle.hover.textColor = TextColor;
-            foldoutStyle.onHover.textColor = TextColor;
-
-            primaryButtonStyle = CopyStyle(() => EditorStyles.miniButton);
-            DeucarianEditorTypography.ApplyStrong(primaryButtonStyle);
-            primaryButtonStyle.fixedHeight = ButtonHeight;
-
-            secondaryButtonStyle = CopyStyle(() => DeucarianEditorStyles.ToolbarButton);
-            DeucarianEditorTypography.ApplyStrong(secondaryButtonStyle);
-            secondaryButtonStyle.fixedHeight = ButtonHeight;
-
-            compactIconActionLabelStyle = CopyStyle(() => EditorStyles.label);
-            DeucarianEditorTypography.ApplyStrong(compactIconActionLabelStyle);
-            compactIconActionLabelStyle.alignment = TextAnchor.MiddleLeft;
-            compactIconActionLabelStyle.padding = new RectOffset(0, 0, 0, 0);
-            compactIconActionLabelStyle.margin = new RectOffset(0, 0, 0, 0);
-            compactIconActionLabelStyle.normal.textColor = TextColor;
-        }
-
-        private static GUIStyle CopyStyle(Func<GUIStyle> styleFactory)
-        {
-            try
-            {
-                GUIStyle style = styleFactory?.Invoke();
-                return style == null ? new GUIStyle() : new GUIStyle(style);
-            }
-            catch
-            {
-                return new GUIStyle();
-            }
-        }
-
-        private static int GetWordWrappedMiniLabelFontSize()
-        {
-            try
-            {
-                return EditorStyles.wordWrappedMiniLabel.fontSize;
-            }
-            catch
-            {
-                return 9;
-            }
-        }
     }
 
-    /// <summary>
-    /// Shared settings-page actions. Packages provide only their domain callback;
-    /// labels, icons, tooltips, geometry, and padding remain Editor-owned.
-    /// </summary>
-    public static class DeucarianEditorSettingsActions
-    {
-        public const string ResetToDefaultsLabel = "Reset to Defaults";
-        public const string ResetToDefaultsTooltip = "Restore the package defaults.";
-        public const string ResetActionClass = "deucarian-settings-action--reset";
-        public const float ResetButtonWidth = 164f;
-        public const float ResetButtonHeight = DeucarianEditorWorkbenchGUI.CompactIconActionHeight;
 
-        public static Button CreateResetToDefaultsButton(
-            Action resetAction,
-            string tooltip = null,
-            bool enabled = true,
-            float width = ResetButtonWidth)
-        {
-            Button button = DeucarianEditorIconTextButton.Create(
-                DeucarianEditorIconIds.Reset,
-                ResetToDefaultsLabel,
-                resetAction,
-                string.IsNullOrWhiteSpace(tooltip) ? ResetToDefaultsTooltip : tooltip,
-                true);
-            button.AddToClassList(ResetActionClass);
-            button.style.width = Mathf.Max(0f, width);
-            button.style.minWidth = Mathf.Max(0f, width);
-            button.style.height = ResetButtonHeight;
-            button.style.minHeight = ResetButtonHeight;
-            button.SetEnabled(enabled);
-            return button;
-        }
-
-        public static bool DrawResetToDefaultsButton(
-            Action resetAction,
-            string tooltip = null,
-            bool enabled = true,
-            float width = ResetButtonWidth)
-        {
-            bool clicked = DeucarianEditorWorkbenchGUI.DrawCompactIconAction(
-                DeucarianEditorIconIds.Reset,
-                ResetToDefaultsLabel,
-                string.IsNullOrWhiteSpace(tooltip) ? ResetToDefaultsTooltip : tooltip,
-                enabled,
-                GUILayout.Width(Mathf.Max(0f, width)));
-            if (clicked)
-            {
-                resetAction?.Invoke();
-            }
-
-            return clicked;
-        }
-    }
-
-    public sealed class DeucarianEditorWorkbenchPanelScope : IDisposable
-    {
-        private readonly float trailingSpace;
-        private bool disposed;
-
-        internal DeucarianEditorWorkbenchPanelScope(float trailingSpace)
-        {
-            this.trailingSpace = trailingSpace;
-        }
-
-        public void Dispose()
-        {
-            if (disposed)
-            {
-                return;
-            }
-
-            disposed = true;
-            DeucarianEditorWorkbenchGUI.EndPanel(trailingSpace);
-        }
-    }
 }
