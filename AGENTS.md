@@ -34,7 +34,7 @@ Optional/version-defined dependencies:
 
 Architecture exceptions:
 
-- None.
+- `DeucarianEditorWindowPages` synchronously destroys only its own never-shown EditorWindow controllers. This editor-framework lifetime bridge is not runtime object cleanup: Unity 2021 `Close()` requires a native parent, and Common intentionally defers destruction in Play Mode. New tools should contribute plain `IDeucarianEditorPage` objects instead. The exact file is declared in `allowedDirectUnityObjectLifetimeCalls`.
 
 ## Policies
 
