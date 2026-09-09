@@ -238,7 +238,8 @@
 .deucarian-workspace .dw-tool-row > .dw-actions > .dw-button { margin-bottom: 0; font-size: 14px; }
 .deucarian-workspace .dw-tool-row.dw-tool-stacked { flex-direction: column; align-items: stretch; }
 .deucarian-workspace .dw-tool-row.dw-tool-stacked > .dw-actions { margin-top: 10px; }
-.deucarian-workspace .dw-footer > .dw-muted { font-size: 14px; flex-shrink: 1; }
+.deucarian-workspace .dw-footer-content { flex-direction: row; align-items: center; flex-grow: 1; flex-shrink: 1; min-width: 0; flex-wrap: wrap; }
+.deucarian-workspace .dw-footer-content > .dw-muted { font-size: 14px; flex-shrink: 1; }
 .deucarian-workspace .dw-lab-test { flex-grow: 1; min-height: 0; }
 .deucarian-workspace .dw-lab-split > .dw-form-pane { flex-grow: 0; }
 .deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-form-pane { flex-basis: 48%; flex-shrink: 1; max-height: 280px; padding-bottom: 8px; }
@@ -248,3 +249,33 @@
 .deucarian-workspace .dw-card-status--error { color: var(--dw-error); }
 .deucarian-workspace .dw-pinned-actions { flex-shrink: 0; padding-top: 12px; }
 .deucarian-workspace .dw-pinned-actions > .dw-primary { margin-bottom: 0; }
+.deucarian-workspace .dw-scale { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 22px; }
+.deucarian-workspace .dw-scale > .dw-muted { font-size: 13px; margin-right: 10px; white-space: nowrap; }
+.deucarian-workspace .dw-scale .unity-slider-int { width: 96px; min-width: 96px; margin: 0 8px 0 0; }
+.deucarian-workspace .dw-scale .unity-base-field__input { background-color: transparent; border-width: 0; padding: 0; min-height: 24px; }
+.deucarian-workspace .dw-scale .dw-button { width: 54px; min-height: 28px; height: 28px; padding: 0 4px; font-size: 13px; border-color: var(--dw-border); }
+.deucarian-workspace.dw-narrow .dw-scale { margin-left: 0; margin-top: 4px; }
+.deucarian-workspace.dw-overview-page .dw-title { font-size: 22px; }
+.deucarian-workspace.dw-overview-page .dw-subtitle { display: none; }
+.deucarian-workspace.dw-overview-page .dw-page-header { margin-bottom: 8px; }
+.deucarian-workspace .dw-overview-focus { flex-direction: row; align-items: flex-start; padding: 20px 0 28px 0; flex-shrink: 0; }
+.deucarian-workspace .dw-overview-focus > .dw-icon { width: 36px; height: 36px; margin-right: 18px; margin-top: 22px; }
+.deucarian-workspace .dw-focus--success > .dw-icon { -unity-background-image-tint-color: var(--dw-success); }
+.deucarian-workspace .dw-focus--warning > .dw-icon { -unity-background-image-tint-color: var(--dw-warning); }
+.deucarian-workspace .dw-focus--error > .dw-icon { -unity-background-image-tint-color: var(--dw-error); }
+.deucarian-workspace .dw-focus-text { flex-grow: 1; min-width: 0; max-width: 700px; }
+.deucarian-workspace .dw-eyebrow { font-size: 12px; color: var(--dw-muted); margin-bottom: 6px; }
+.deucarian-workspace .dw-focus-title { font-size: 32px; -unity-font: url("../Fonts/DINish-SemiBold.otf"); -unity-font-style: bold; white-space: normal; }
+.deucarian-workspace .dw-focus-description { font-size: 16px; color: var(--dw-muted); white-space: normal; margin-top: 6px; }
+.deucarian-workspace .dw-focus-text > .dw-button { align-self: flex-start; margin-top: 18px; max-width: 100%; white-space: normal; height: auto; padding-top: 8px; padding-bottom: 8px; }
+.deucarian-workspace .dw-overview-summary { flex-direction: row; align-items: center; justify-content: flex-start; min-width: 0; min-height: 78px; height: auto; border-width: 0; border-top-width: 1px; border-color: var(--dw-border); border-radius: 0; background-color: transparent; padding: 16px 10px 16px 0; }
+.deucarian-workspace .dw-overview-summary:focus { border-bottom-width: 2px; border-bottom-color: var(--dw-accent); }
+.deucarian-workspace .dw-overview-summary { -unity-text-align: middle-left; }
+.deucarian-workspace .dw-overview-summary .dw-icon { width: 18px; height: 18px; -unity-background-image-tint-color: var(--dw-muted); }
+.deucarian-workspace .dw-summary-title { font-size: 16px; -unity-font-style: bold; white-space: normal; }
+.deucarian-workspace .dw-summary-status { font-size: 14px; white-space: normal; color: var(--dw-muted); margin-top: 5px; }
+.deucarian-workspace .dw-summary-status.dw-card-status--success { color: var(--dw-success); }
+.deucarian-workspace .dw-summary-status.dw-card-status--warning { color: var(--dw-warning); }
+.deucarian-workspace .dw-summary-status.dw-card-status--error { color: var(--dw-error); }
+.deucarian-workspace.dw-narrow .dw-focus-title { font-size: 28px; }
+.deucarian-workspace.dw-narrow .dw-overview-focus > .dw-icon { width: 28px; height: 28px; margin-right: 12px; }

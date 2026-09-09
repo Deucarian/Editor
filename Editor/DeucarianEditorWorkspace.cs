@@ -34,6 +34,7 @@ namespace Deucarian.Editor
         private readonly EventCallback<GeometryChangedEvent> resized;
         private bool disposed;
         private readonly Label searchPlaceholder;
+        private readonly DeucarianEditorWorkspaceScale uiScale;
 
         public DeucarianEditorWorkspace(VisualElement root, string context, bool includeDrawer = false)
         {
@@ -90,16 +91,19 @@ namespace Deucarian.Editor
             Tabs = DeucarianEditorWorkspaceControls.Region("workspace-tabs", "dw-tabs");
             Scope = DeucarianEditorWorkspaceControls.Region("workspace-scope", "dw-scope");
             Content = DeucarianEditorWorkspaceControls.Region("workspace-content", "dw-content");
-            Footer = DeucarianEditorWorkspaceControls.Region("workspace-footer", "dw-footer");
+            var footerBar = DeucarianEditorWorkspaceControls.Region("workspace-footer-bar", "dw-footer");
+            Footer = DeucarianEditorWorkspaceControls.Region("workspace-footer", "dw-footer-content");
             FooterLeading = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
             FooterTrailing = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
             Footer.Add(FooterLeading);
             Footer.Add(DeucarianEditorWorkspaceControls.Region(null, "dw-spacer"));
             Footer.Add(FooterTrailing);
+            footerBar.Add(Footer);
+            uiScale = new DeucarianEditorWorkspaceScale(Root, footerBar);
             Page.Add(Tabs);
             Page.Add(Scope);
             Page.Add(Content);
-            Page.Add(Footer);
+            Page.Add(footerBar);
             resized = evt => ApplyWidth(evt.newRect.width);
             Root.RegisterCallback(resized);
             Root.RegisterCallback<KeyDownEvent>(OnKeyDown);
@@ -163,6 +167,7 @@ namespace Deucarian.Editor
         {
             if (disposed) return;
             disposed = true;
+            uiScale.Dispose();
             Root.UnregisterCallback(resized);
             Root.UnregisterCallback<KeyDownEvent>(OnKeyDown);
             if (host.Contains(Root)) host.RemoveFromClassList("deucarian-workspace-host");

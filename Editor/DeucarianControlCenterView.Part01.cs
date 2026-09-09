@@ -144,13 +144,18 @@ namespace Deucarian.Editor
             if (area != DeucarianControlCenterArea.Overview)
                 DeucarianControlCenterVisuals.AddPageHeading(content,
                     DeucarianControlCenterAreaIds.GetDisplayName(area), GetAreaDescription(area));
+            else
+                content.Add(DeucarianControlCenterOverviewPresentation.CreateFocus(snapshot, navigate));
             VisualElement cards = CreateCardHost();
             content.Add(cards);
             foreach (DeucarianControlCenterCard card in snapshot.Cards)
             {
                 if (card.Area == area)
                 {
-                    cards.Add(DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
+                    if (area == DeucarianControlCenterArea.Overview && card.Id == "deucarian.readiness.overview") continue;
+                    cards.Add(area == DeucarianControlCenterArea.Overview && DeucarianControlCenterOverviewPresentation.TryGetSummaryArea(card.Id, out _)
+                        ? DeucarianControlCenterOverviewPresentation.CreateSummary(card, navigate)
+                        : DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
                 }
             }
 
@@ -220,7 +225,8 @@ namespace Deucarian.Editor
                 DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-tool-stacked", 520);
                 var text = DeucarianEditorWorkspaceControls.Region(null, "dw-tool-text");
                 text.Add(DeucarianControlCenterVisuals.CreateLabel(tool.DisplayName, true));
-                if (tool.Description.Length > 0)
+                row.tooltip = tool.Description;
+                if (area != DeucarianControlCenterArea.Overview && tool.Description.Length > 0)
                 {
                     text.Add(DeucarianControlCenterVisuals.CreateMutedLabel(tool.Description));
                 }

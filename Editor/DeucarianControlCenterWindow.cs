@@ -265,6 +265,7 @@ namespace Deucarian.Editor
                 selectedArea,
                 focusedTargetId,
                 searchQuery);
+            workspace.Root.EnableInClassList("dw-overview-page", selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery));
             if (summary != null)
             {
                 summary.text = snapshot.CapturedAtUtc.ToLocalTime()
