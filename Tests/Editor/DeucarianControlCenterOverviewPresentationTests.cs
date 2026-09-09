@@ -57,7 +57,16 @@ namespace Deucarian.Editor.Tests
         }
 
         private static DeucarianControlCenterCard Card(string id, DeucarianControlCenterArea area, DeucarianControlCenterStatus status) =>
-            new DeucarianControlCenterCard(id, area, "Build & packages", "Verbose source description for search.", "com.deucarian.editor", status, "Ready", details: new[] { "Errors: 0", "Warnings: 0" });
+            new DeucarianControlCenterCard(id, area, "Build & packages", "Verbose source description for search.", "com.deucarian.editor", status, status == DeucarianControlCenterStatus.Success ? "Ready" : status.ToString(), details: new[] { "Errors: 0", "Warnings: 0" });
+
+        [Test]
+        public void AConcreteStatusTakesPrecedenceOverAGenericToolDescription()
+        {
+            var card = new DeucarianControlCenterCard("theming", DeucarianControlCenterArea.Experience, "Theming",
+                "Project-local active theme selection and authoring workflow.", "com.deucarian.theming",
+                DeucarianControlCenterStatus.Warning, "No active theme");
+            Assert.That(DeucarianControlCenterOverviewPresentation.DescribeAttention(card), Is.EqualTo("Theming · No active theme"));
+        }
 
         private static DeucarianControlCenterSnapshot Snapshot(params DeucarianControlCenterCard[] cards) =>
             new DeucarianControlCenterSnapshot(DateTime.UtcNow, cards, Array.Empty<DeucarianControlCenterSection>(), Array.Empty<DeucarianToolDescriptor>());
