@@ -65,6 +65,7 @@ namespace Deucarian.Editor
             DeucarianControlCenterWindow window =
                 DeucarianEditorWindowPages.GetStandalone<DeucarianControlCenterWindow>(
                     "Deucarian Control Center");
+            window.navigation?.Navigate(DeucarianToolIds.ControlCenter, area == DeucarianControlCenterArea.Developer ? "developer" : null);
             window.selectedArea = area;
             window.focusedTargetId = null;
             window.SetSearch(string.Empty);
@@ -100,8 +101,9 @@ namespace Deucarian.Editor
 
         private void ActivatePage(string route)
         {
-            Navigate(route == "developer" ? DeucarianControlCenterArea.Developer :
-                DeucarianControlCenterArea.Overview, null);
+            var area = route == "developer" ? DeucarianControlCenterArea.Developer : DeucarianControlCenterArea.Overview;
+            if (selectedArea != area) Navigate(area, null);
+            else Render();
             workspace?.SelectNavigation(route == "developer" ? "advanced" : DeucarianToolIds.ControlCenter);
         }
 
