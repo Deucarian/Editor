@@ -221,3 +221,6 @@
 .deucarian-workspace .dw-summary-card { border-width: 1px; border-color: var(--dw-border); border-radius: 6px; background-color: var(--dw-field); }
 .deucarian-workspace .dw-summary-card .unity-button { min-height: 32px; border-radius: 4px; background-color: var(--dw-field); border-color: var(--dw-border); color: var(--dw-text); }
 .deucarian-workspace .dw-summary-card .unity-button:hover { background-color: var(--dw-hover); border-color: var(--dw-accent); }
+.deucarian-workspace .dw-scope { flex-wrap: wrap; }
+.deucarian-workspace .dw-scope .dw-field { min-width: 250px; max-width: 500px; flex-grow: 1; margin-right: 20px; margin-bottom: 8px; }
+.deucarian-workspace .dw-footer .deucarian-workbench-operation-footer { flex-grow: 1; background-color: transparent; border-width: 0; }
