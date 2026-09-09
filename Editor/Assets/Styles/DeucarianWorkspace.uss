@@ -270,6 +270,7 @@
 .deucarian-workspace .dw-focus-text > .dw-button { align-self: flex-start; margin-top: 18px; max-width: 100%; white-space: normal; height: auto; padding-top: 8px; padding-bottom: 8px; }
 .deucarian-workspace .dw-overview-summary { flex-direction: row; align-items: center; justify-content: flex-start; min-width: 0; min-height: 78px; height: auto; border-width: 0; border-top-width: 1px; border-color: var(--dw-border); border-radius: 0; background-color: transparent; padding: 16px 10px 16px 0; }
 .deucarian-workspace .dw-overview-summary:focus { border-bottom-width: 2px; border-bottom-color: var(--dw-accent); }
+.deucarian-workspace .dw-overview-summary { -unity-text-align: middle-left; }
 .deucarian-workspace .dw-overview-summary .dw-icon { width: 18px; height: 18px; -unity-background-image-tint-color: var(--dw-muted); }
 .deucarian-workspace .dw-summary-title { font-size: 16px; -unity-font-style: bold; white-space: normal; }
 .deucarian-workspace .dw-summary-status { font-size: 14px; white-space: normal; color: var(--dw-muted); margin-top: 5px; }
