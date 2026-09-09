@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0] - 2026-09-09
+
+### Changed
+
+- Adopt the shared Editor 1.7 workspace presentation: neutral surfaces, readable typography, consistent actions and aligned controls.
+- Preserve package workflows and native serialized editing; this is an editor-only presentation update.
+- Shared IMGUI text/input/action adapters and inspector composition; embedded headers are omitted explicitly by their owning window.
+
 ## [1.6.1] - 2026-09-09
 
 - Keep sidebar expansion and scroll state with the owning window across cached pages, without sharing state between windows.

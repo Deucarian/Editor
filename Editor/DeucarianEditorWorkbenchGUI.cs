@@ -35,17 +35,12 @@ namespace Deucarian.Editor
         public static Color TextColor => DeucarianEditorVisualShell.Text;
         public static Color MutedTextColor => DeucarianEditorVisualShell.MutedText;
         public static Color InteractiveTextColor => TextColor;
-        public static Color RowBackgroundColor => DeucarianEditorTheme.IsDark
-            ? new Color(48f / 255f, 46f / 255f, 42f / 255f, 0.46f)
-            : new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.56f);
-        public static Color RowHoverColor => DeucarianEditorTheme.IsDark
-            ? new Color(62f / 255f, 65f / 255f, 60f / 255f, 0.66f)
-            : new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.16f);
-        public static Color RowSelectedColor => DeucarianEditorTheme.IsDark
-            ? new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.52f)
-            : new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.25f);
+        public static Color RowBackgroundColor => DeucarianEditorSurfacePalette.Field;
+        public static Color RowHoverColor => DeucarianEditorSurfacePalette.Hover;
+        public static Color RowSelectedColor => DeucarianEditorSurfacePalette.Selected;
 
         public static GUIStyle WindowStyle => styles.Current.WindowStyle;
+        public static DeucarianEditorInputStyles InputStyles => styles.Current.InputStyles;
         public static GUIStyle EmbeddedPageStyle => styles.Current.EmbeddedPageStyle;
         public static GUIStyle SidebarStyle => styles.Current.SidebarStyle;
         public static GUIStyle DetailsStyle => styles.Current.DetailsStyle;
@@ -145,6 +140,9 @@ namespace Deucarian.Editor
             return new DeucarianEditorWorkbenchPanelScope(0f);
         }
 
+        public static DeucarianEditorWorkbenchPanelScope BeginSettingsPage(EditorWindow owner, params GUILayoutOption[] options) =>
+            DeucarianEditorWindowPages.IsPageController(owner) ? BeginEmbeddedPage(options) : BeginSettingsPage(options);
+
         /// <summary>
         /// Begins IMGUI content embedded inside a workbench shell. The shell already
         /// owns page padding and wallpaper, so this scope deliberately adds no inset.
@@ -160,7 +158,7 @@ namespace Deucarian.Editor
             string label,
             string tooltip = null,
             float labelWidth = 140f,
-            float height = DeucarianEditorLayoutMetrics.TextLineHeight)
+            float height = DeucarianEditorInputGUI.RowHeight)
         {
             Rect row = EditorGUILayout.GetControlRect(false, height);
             float safeLabelWidth = Mathf.Clamp(labelWidth, 0f, row.width);

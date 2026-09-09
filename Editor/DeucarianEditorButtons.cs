@@ -9,95 +9,53 @@ namespace Deucarian.Editor
         private static GUIStyle secondaryButton;
         private static GUIStyle disabledButton;
 
-        public static GUIStyle PrimaryStyle
-        {
-            get
-            {
-                if (primaryButton == null)
-                {
-                    primaryButton = CreateBaseButton(true);
-                    primaryButton.normal.background = DeucarianEditorTextures.Solid("button-primary", new Color(0.08f, 0.43f, 0.45f, 0.96f));
-                    primaryButton.hover.background = DeucarianEditorTextures.Solid("button-primary-hover", new Color(0.10f, 0.55f, 0.58f, 0.98f));
-                    primaryButton.active.background = DeucarianEditorTextures.Solid("button-primary-active", new Color(0.05f, 0.34f, 0.37f, 1f));
-                    primaryButton.focused.background = DeucarianEditorTextures.Solid("button-primary-focused", new Color(0.16f, 0.62f, 0.65f, 1f));
-                    primaryButton.focused.textColor = Color.white;
-                    primaryButton.onNormal.background = primaryButton.normal.background;
-                    primaryButton.onHover.background = primaryButton.hover.background;
-                    primaryButton.onActive.background = primaryButton.active.background;
-                }
-
-                return primaryButton;
-            }
-        }
-
-        public static GUIStyle SecondaryStyle
-        {
-            get
-            {
-                if (secondaryButton == null)
-                {
-                    secondaryButton = CreateBaseButton(false);
-                    secondaryButton.normal.background = DeucarianEditorTextures.Solid("button-secondary", new Color(0.08f, 0.20f, 0.25f, 0.88f));
-                    secondaryButton.hover.background = DeucarianEditorTextures.Solid("button-secondary-hover", new Color(0.10f, 0.31f, 0.36f, 0.94f));
-                    secondaryButton.active.background = DeucarianEditorTextures.Solid("button-secondary-active", new Color(0.05f, 0.16f, 0.21f, 1f));
-                    secondaryButton.focused.background = DeucarianEditorTextures.Solid("button-secondary-focused", new Color(0.16f, 0.40f, 0.46f, 1f));
-                    secondaryButton.focused.textColor = Color.white;
-                    secondaryButton.onNormal.background = secondaryButton.normal.background;
-                    secondaryButton.onHover.background = secondaryButton.hover.background;
-                    secondaryButton.onActive.background = secondaryButton.active.background;
-                }
-
-                return secondaryButton;
-            }
-        }
-
-        public static GUIStyle DisabledStyle
-        {
-            get
-            {
-                if (disabledButton == null)
-                {
-                    disabledButton = CreateBaseButton(false);
-                    disabledButton.normal.background = DeucarianEditorTextures.Solid("button-disabled", new Color(0.12f, 0.15f, 0.18f, 0.62f));
-                    disabledButton.normal.textColor = new Color(0.50f, 0.58f, 0.63f, 0.92f);
-                }
-
-                return disabledButton;
-            }
-        }
+        public static GUIStyle PrimaryStyle => Resolve(ref primaryButton, "primary", true);
+        public static GUIStyle SecondaryStyle => Resolve(ref secondaryButton, "secondary", false);
+        public static GUIStyle DisabledStyle => Resolve(ref disabledButton, "disabled", false);
 
         public static bool Primary(string label, bool enabled, params GUILayoutOption[] options)
         {
-            GUIContent content = new GUIContent(label ?? string.Empty);
             using (new EditorGUI.DisabledScope(!enabled))
-            {
-                return GUILayout.Button(content, enabled ? PrimaryStyle : DisabledStyle, options);
-            }
+                return GUILayout.Button(new GUIContent(label ?? string.Empty), PrimaryStyle, options);
         }
 
         public static bool Secondary(string label, bool enabled = true, params GUILayoutOption[] options)
         {
-            GUIContent content = new GUIContent(label ?? string.Empty);
             using (new EditorGUI.DisabledScope(!enabled))
-            {
-                return GUILayout.Button(content, enabled ? SecondaryStyle : DisabledStyle, options);
-            }
+                return GUILayout.Button(new GUIContent(label ?? string.Empty), SecondaryStyle, options);
         }
 
-        private static GUIStyle CreateBaseButton(bool primary)
+        private static GUIStyle Resolve(ref GUIStyle cached, string role, bool primary)
         {
-            GUIStyle style = new GUIStyle(EditorStyles.miniButton)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontStyle = primary ? FontStyle.Bold : FontStyle.Normal,
-                fixedHeight = DeucarianEditorSpacing.ControlHeight,
-                padding = new RectOffset(10, 10, 3, 4),
-                border = new RectOffset(4, 4, 4, 4)
-            };
-            style.normal.textColor = DeucarianEditorTheme.Text;
-            style.hover.textColor = Color.white;
-            style.active.textColor = Color.white;
-            return style;
+            string key = role + "-" + DeucarianEditorTheme.IsDark;
+            if (cached != null && cached.name == key) return cached;
+            var style = DeucarianEditorStyles.CopyStyle(() => EditorStyles.miniButton);
+            style.name = key;
+            DeucarianEditorTypography.ApplyBody(style);
+            style.fontSize = 16;
+            style.fontStyle = primary ? FontStyle.Bold : FontStyle.Normal;
+            style.alignment = TextAnchor.MiddleCenter;
+            style.fixedHeight = primary ? 42 : 36;
+            style.padding = new RectOffset(14, 14, 4, 4);
+            style.margin = new RectOffset(2, 2, 4, 4);
+            style.border = new RectOffset(4, 4, 4, 4);
+            DeucarianEditorInputStyles.SetText(style, primary ? Color.white : DeucarianEditorSurfacePalette.Text);
+            style.normal.background = DeucarianEditorTextures.Bordered("button-" + role,
+                primary ? DeucarianEditorSurfacePalette.Primary : DeucarianEditorSurfacePalette.Field,
+                primary ? DeucarianEditorSurfacePalette.Accent : DeucarianEditorSurfacePalette.Border);
+            style.hover.background = DeucarianEditorTextures.Bordered("button-hover-" + role,
+                primary ? DeucarianEditorSurfacePalette.PrimaryHover : DeucarianEditorSurfacePalette.Hover,
+                DeucarianEditorSurfacePalette.Accent);
+            style.active.background = DeucarianEditorTextures.Bordered("button-active-" + role,
+                DeucarianEditorSurfacePalette.Selected, DeucarianEditorSurfacePalette.Accent);
+            style.focused.background = style.hover.background;
+            style.onNormal.background = style.active.background;
+            style.onHover.background = style.hover.background;
+            style.onActive.background = style.active.background;
+            style.onFocused.background = style.focused.background;
+            if (role == "disabled") DeucarianEditorInputStyles.SetText(style, DeucarianEditorSurfacePalette.Muted);
+            cached = style;
+            return cached;
         }
     }
 }

@@ -1,22 +1,22 @@
 .deucarian-editor {
-    --deucarian-bg: #1b1a18;
-    --deucarian-panel: rgba(37, 36, 33, 0.88);
-    --deucarian-panel-soft: rgba(48, 46, 42, 0.82);
-    --deucarian-panel-header: rgba(42, 41, 38, 0.92);
-    --deucarian-sidebar: rgba(37, 36, 33, 0.88);
-    --deucarian-border: rgba(98, 186, 182, 0.24);
-    --deucarian-border-active: rgba(98, 186, 182, 0.62);
-    --deucarian-text: #f2efe7;
-    --deucarian-muted: #aaa69e;
-    --deucarian-teal: #62bab6;
-    --deucarian-blue: #0f626a;
+    --deucarian-bg: #23282b;
+    --deucarian-panel: #202528;
+    --deucarian-panel-soft: #24292c;
+    --deucarian-panel-header: #24292c;
+    --deucarian-sidebar: #202528;
+    --deucarian-border: #41494e;
+    --deucarian-border-active: #72e1df;
+    --deucarian-text: #f2f4f7;
+    --deucarian-muted: #bac3cd;
+    --deucarian-teal: #72e1df;
+    --deucarian-blue: #178f94;
     --deucarian-window-overlay: rgba(27, 26, 24, 0.18);
-    --deucarian-control: rgba(48, 46, 42, 0.68);
-    --deucarian-control-hover: rgba(62, 65, 60, 0.78);
-    --deucarian-control-active: rgba(15, 98, 106, 0.52);
-    --deucarian-green: #5fbf86;
-    --deucarian-amber: #d99d48;
-    --deucarian-red: #d36a68;
+    --deucarian-control: #24292c;
+    --deucarian-control-hover: #30393d;
+    --deucarian-control-active: #214e52;
+    --deucarian-green: #69cea0;
+    --deucarian-amber: #ffcb4a;
+    --deucarian-red: #ff6b70;
     --deucarian-grove: #8fa991;
     --deucarian-cobalt: #7995d5;
     --deucarian-tideline: #62bab6;
@@ -50,22 +50,30 @@
     color: var(--deucarian-text);
 }
 
+.deucarian-inspector {
+    padding: 8px 12px 12px 12px;
+    min-width: 0;
+    flex-grow: 1;
+    color: var(--deucarian-text);
+    background-color: var(--deucarian-bg);
+}
+
 .deucarian-editor.deucarian-theme--light {
-    --deucarian-bg: #f8f6f1;
-    --deucarian-panel: rgba(255, 255, 255, 0.90);
-    --deucarian-panel-soft: rgba(242, 239, 231, 0.88);
-    --deucarian-panel-header: rgba(255, 255, 255, 0.94);
-    --deucarian-sidebar: rgba(255, 255, 255, 0.86);
-    --deucarian-border: rgba(27, 26, 24, 0.14);
-    --deucarian-border-active: rgba(15, 98, 106, 0.58);
-    --deucarian-text: #1b1a18;
-    --deucarian-muted: #79766f;
-    --deucarian-teal: #0f626a;
-    --deucarian-blue: #0f626a;
+    --deucarian-bg: #f6f8fa;
+    --deucarian-panel: #edf1f4;
+    --deucarian-panel-soft: #ffffff;
+    --deucarian-panel-header: #ffffff;
+    --deucarian-sidebar: #edf1f4;
+    --deucarian-border: #bdc9d0;
+    --deucarian-border-active: #006970;
+    --deucarian-text: #202a32;
+    --deucarian-muted: #52616d;
+    --deucarian-teal: #006970;
+    --deucarian-blue: #087b81;
     --deucarian-window-overlay: rgba(255, 255, 255, 0.10);
-    --deucarian-control: rgba(242, 239, 231, 0.76);
-    --deucarian-control-hover: rgba(98, 186, 182, 0.16);
-    --deucarian-control-active: rgba(98, 186, 182, 0.25);
+    --deucarian-control: #ffffff;
+    --deucarian-control-hover: #e4edf0;
+    --deucarian-control-active: #d5eeee;
     --deucarian-grove: #355545;
     --deucarian-cobalt: #234b91;
     --deucarian-tideline: #0f626a;
@@ -97,19 +105,19 @@
 }
 
 .deucarian-editor.deucarian-quiet {
-    --deucarian-panel: #252421;
-    --deucarian-panel-soft: #302e2a;
-    --deucarian-panel-header: #2a2926;
-    --deucarian-sidebar: #252421;
-    --deucarian-border: rgba(242, 239, 231, 0.12);
+    --deucarian-panel: #202528;
+    --deucarian-panel-soft: #24292c;
+    --deucarian-panel-header: #24292c;
+    --deucarian-sidebar: #202528;
+    --deucarian-border: #41494e;
 }
 
 .deucarian-editor.deucarian-quiet.deucarian-theme--light {
-    --deucarian-panel: #ffffff;
-    --deucarian-panel-soft: #f2efe7;
+    --deucarian-panel: #edf1f4;
+    --deucarian-panel-soft: #ffffff;
     --deucarian-panel-header: #ffffff;
-    --deucarian-sidebar: #ffffff;
-    --deucarian-border: rgba(27, 26, 24, 0.12);
+    --deucarian-sidebar: #edf1f4;
+    --deucarian-border: #bdc9d0;
 }
 
 .deucarian-quiet .deucarian-window-background,
@@ -260,7 +268,7 @@
 .deucarian-package-header__subtitle,
 .deucarian-header__subtitle {
     min-height: 16px;
-    font-size: 11px;
+    font-size: 14px;
     color: var(--deucarian-muted);
 }
 
@@ -350,9 +358,9 @@
     flex-direction: row;
     align-items: center;
     align-content: center;
-    height: 46px;
-    min-height: 46px;
-    max-height: 46px;
+    height: 54px;
+    min-height: 54px;
+    max-height: 54px;
     margin-bottom: 8px;
     padding-left: 10px;
     padding-right: 10px;
@@ -478,7 +486,7 @@
     padding-top: 0;
     padding-bottom: 0;
     color: var(--deucarian-muted);
-    font-size: 11px;
+    font-size: 14px;
     height: 18px;
     min-height: 18px;
     max-height: 18px;
@@ -490,9 +498,9 @@
 .deucarian-command-bar__action,
 .deucarian-workbench-toolbar__action,
 .dpi-view-toolbar__action {
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     min-width: 86px;
     margin-left: 4px;
     padding-left: 0;
@@ -531,9 +539,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 0;
@@ -685,9 +693,9 @@
 .deucarian-command-bar__actions,
 .deucarian-workbench-toolbar__group {
     min-width: 0;
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
@@ -695,9 +703,9 @@
 
 .deucarian-command-bar__leading,
 .deucarian-command-bar__trailing {
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
 }
 
 .deucarian-command-bar__summary {
@@ -725,9 +733,9 @@
 
 .deucarian-command-bar__reserved-slot,
 .deucarian-workbench-toolbar__reserved-slot {
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     margin-left: 4px;
     flex-grow: 0;
     flex-shrink: 0;
@@ -744,9 +752,9 @@
 
 .deucarian-command-bar__state,
 .deucarian-workbench-toolbar__status-pill {
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     flex-direction: row;
     align-items: center;
     justify-content: center;
@@ -804,9 +812,9 @@
 .deucarian-responsive--narrow .dpi-view-toolbar,
 .dpi-responsive--narrow .deucarian-workbench-toolbar,
 .dpi-responsive--narrow .dpi-view-toolbar {
-    height: 78px;
-    min-height: 78px;
-    max-height: 78px;
+    height: 94px;
+    min-height: 94px;
+    max-height: 94px;
     flex-grow: 0;
     flex-shrink: 0;
     align-items: center;
@@ -831,9 +839,9 @@
 
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes,
 .dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes {
-    height: 78px;
-    min-height: 78px;
-    max-height: 78px;
+    height: 94px;
+    min-height: 94px;
+    max-height: 94px;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
@@ -848,7 +856,7 @@
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group,
 .dpi-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group {
     width: 100%;
-    min-height: 28px;
+    min-height: 36px;
 }
 
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes .deucarian-workbench-toolbar__group--actions,
@@ -858,9 +866,9 @@
 
 .deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line,
 .dpi-responsive--narrow .deucarian-workbench-toolbar--compact-single-line {
-    height: 46px;
-    min-height: 46px;
-    max-height: 46px;
+    height: 54px;
+    min-height: 54px;
+    max-height: 54px;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
@@ -999,7 +1007,7 @@
 
 .deucarian-workbench-operation-drawer__header-title {
     color: var(--deucarian-text);
-    font-size: 12px;
+    font-size: 16px;
     -unity-font-style: bold;
 }
 
@@ -1019,14 +1027,14 @@
 .deucarian-workbench-operation-drawer__group-title {
     height: 20px;
     color: var(--deucarian-muted);
-    font-size: 10px;
+    font-size: 12px;
     -unity-font-style: bold;
     -unity-text-align: middle-left;
 }
 
 .deucarian-workbench-operation-drawer__action {
-    height: 28px;
-    min-height: 28px;
+    height: 36px;
+    min-height: 36px;
     margin-top: 0;
     margin-bottom: 4px;
     flex-direction: row;
@@ -1115,7 +1123,7 @@
 .deucarian-workbench-operation-drawer__title,
 .dpi-operation-drawer__title {
     -unity-font-style: bold;
-    font-size: 12px;
+    font-size: 16px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1132,14 +1140,14 @@
 
 .deucarian-workbench-operation-drawer__option-label,
 .dpi-operation-drawer__option-label {
-    font-size: 11px;
+    font-size: 14px;
     -unity-text-align: middle-left;
     white-space: nowrap;
 }
 
 .deucarian-workbench-operation-drawer__message,
 .dpi-operation-drawer__message {
-    font-size: 11px;
+    font-size: 14px;
     white-space: normal;
     overflow: visible;
 }
@@ -1213,7 +1221,7 @@
     padding-bottom: 0;
     -unity-text-align: middle-center;
     -unity-font-style: bold;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .deucarian-workbench-operation-footer__status-icon--success,
@@ -1257,7 +1265,7 @@
     padding-bottom: 0;
     flex-shrink: 0;
     color: var(--deucarian-text);
-    font-size: 11px;
+    font-size: 14px;
     -unity-text-align: middle-left;
     white-space: nowrap;
 }
@@ -1273,7 +1281,7 @@
     margin-left: 0;
     margin-right: var(--deucarian-workbench-operation-control-gap);
     color: var(--deucarian-muted);
-    font-size: 11px;
+    font-size: 14px;
     -unity-text-align: middle-left;
     white-space: nowrap;
     overflow: hidden;
@@ -1300,9 +1308,9 @@
     width: 96px;
     min-width: 96px;
     max-width: 96px;
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     margin-left: 0;
     margin-right: var(--deucarian-workbench-operation-control-gap);
     padding-left: 0;
@@ -1323,7 +1331,7 @@
     border-bottom-color: var(--deucarian-border);
     background-color: var(--deucarian-control);
     color: var(--deucarian-text);
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .deucarian-workbench-operation-footer__action:hover,
@@ -1351,7 +1359,7 @@
     min-height: 18px;
     max-height: 18px;
     color: var(--deucarian-text);
-    font-size: 11px;
+    font-size: 14px;
     -unity-text-align: middle-right;
     white-space: nowrap;
     overflow: hidden;
@@ -1363,7 +1371,7 @@
 
 .deucarian-section__title {
     margin-bottom: 8px;
-    font-size: 12px;
+    font-size: 16px;
     -unity-font-style: bold;
     color: var(--deucarian-muted);
 }
@@ -1405,7 +1413,7 @@
     border-bottom-left-radius: 5px;
     background-color: #2b3b44;
     color: var(--deucarian-text);
-    font-size: 10px;
+    font-size: 12px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
@@ -1423,7 +1431,7 @@
 }
 
 .deucarian-button {
-    height: 28px;
+    height: 36px;
     min-width: 94px;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
@@ -1440,7 +1448,7 @@
 .deucarian-status-row {
     flex-direction: row;
     align-items: center;
-    min-height: 28px;
+    min-height: 36px;
     margin-bottom: 6px;
 }
 
@@ -1601,7 +1609,7 @@
 .deucarian-dialog__message {
     flex-shrink: 0;
     color: var(--deucarian-text);
-    font-size: 12px;
+    font-size: 16px;
     white-space: normal;
     margin-bottom: 8px;
 }
@@ -1631,7 +1639,7 @@
 
 .deucarian-dialog__details-text {
     color: var(--deucarian-muted);
-    font-size: 10px;
+    font-size: 12px;
     white-space: normal;
 }
 
@@ -1751,3 +1759,15 @@
     -unity-font: url("../Fonts/DINish-SemiBold.otf");
     -unity-font-style: normal;
 }
+
+/* Native toolkit controls outside a full workspace share the same visual vocabulary. */
+.deucarian-editor .unity-button {
+    min-height: 32px; padding: 0 12px; font-size: 14px;
+    border-width: 1px; border-radius: 5px;
+    background-color: var(--deucarian-control); border-color: var(--deucarian-border);
+    color: var(--deucarian-text); -unity-text-align: middle-center;
+}
+.deucarian-editor .unity-button:hover,
+.deucarian-editor .unity-button:focus { border-color: var(--deucarian-border-active); background-color: var(--deucarian-control-hover); }
+.deucarian-editor .deucarian-button--primary,
+.deucarian-editor .deucarian-workbench-toolbar__action--emphasized { background-color: var(--deucarian-blue); color: #ffffff; }

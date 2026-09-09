@@ -11,7 +11,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.6.1`.
+Current package version: `1.7.0`.
 
 ## Reading and scaling the workspace
 
