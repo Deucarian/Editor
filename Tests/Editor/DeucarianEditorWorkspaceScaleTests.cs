@@ -54,6 +54,9 @@ namespace Deucarian.Editor.Tests
                     DeucarianEditorWorkspaceControls.Show(workspace.Scope, false);
                     DeucarianEditorWorkspaceControls.Show(workspace.Tabs, false);
                     var slider = workspace.Root.Q<SliderInt>("workspace-scale-slider");
+                    workspace.Footer.Clear();
+                    workspace.Footer.Add(new Label("Consumer-owned status footer"));
+                    Assert.That(workspace.Root.Q<SliderInt>("workspace-scale-slider"), Is.SameAs(slider), "Consumer footer replacement must not remove shared scale controls.");
                     foreach (var size in new[] { new Vector2(1480, 697), new Vector2(1319, 697), new Vector2(820, 650) })
                     {
                         window.rootVisualElement.style.width = size.x;
