@@ -39,13 +39,16 @@ namespace Deucarian.Editor.Tests
             var draft = new TextField { name = "guest-draft", value = "Keep this draft" };
             registration = Register(() => { creates++; return new DeucarianEditorPage(draft); }, () => launches++);
             var bounds = window.position;
+            var title = window.titleContent.text;
             var homeDraft = window.rootVisualElement.Q<TextField>("home-draft");
             homeDraft.value = "Keep home too";
             Assert.That(session.Navigate(ToolId), Is.True);
             Assert.That(window.rootVisualElement.Q<TextField>("guest-draft"), Is.SameAs(draft));
+            Assert.That(window.titleContent.text, Is.EqualTo("Test page"));
             Assert.That(session.Navigate("home"), Is.True);
             Assert.That(window.rootVisualElement.Q<TextField>("home-draft"), Is.SameAs(homeDraft));
             Assert.That(homeDraft.value, Is.EqualTo("Keep home too"));
+            Assert.That(window.titleContent.text, Is.EqualTo(title));
             Assert.That(session.Navigate(ToolId), Is.True);
             Assert.That(session.Navigate(ToolId), Is.True);
             Assert.That(draft.value, Is.EqualTo("Keep this draft"));

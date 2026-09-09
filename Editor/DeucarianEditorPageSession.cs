@@ -14,6 +14,7 @@ namespace Deucarian.Editor
         private readonly VisualElement root;
         private readonly IVisualElementScheduledItem refresh;
         private readonly string homeId;
+        private readonly UnityEngine.GUIContent homeTitle;
         private bool disposed;
 
         public DeucarianEditorPageSession(EditorWindow window, string homeId,
@@ -22,6 +23,7 @@ namespace Deucarian.Editor
         {
             this.window = window != null ? window : throw new ArgumentNullException(nameof(window));
             this.homeId = homeId ?? throw new ArgumentNullException(nameof(homeId));
+            homeTitle = new UnityEngine.GUIContent(window.titleContent);
             if (buildHome == null) throw new ArgumentNullException(nameof(buildHome));
             root = window.rootVisualElement;
             root.Clear();
@@ -76,6 +78,9 @@ namespace Deucarian.Editor
             next.Root.style.minHeight = 0;
             root.Add(next.Root);
             ActiveToolId = toolId;
+            if (toolId == homeId) window.titleContent = new UnityEngine.GUIContent(homeTitle);
+            else if (DeucarianToolRegistry.TryGet(toolId, out var tool))
+                window.titleContent = new UnityEngine.GUIContent(tool.DisplayName, homeTitle.image);
             DeucarianToolHistory.RecordOpened(toolId);
             window.Repaint();
             return true;
