@@ -85,6 +85,16 @@ namespace Deucarian.Editor.Tests
         }
 
         [Test]
+        public void RecreatedSessionUsesItsHomeTitleInsteadOfTheLastVisitedPagesTitle()
+        {
+            session.Dispose();
+            registration = Register(() => new DeucarianEditorPage(new VisualElement()));
+            window.titleContent = new GUIContent("Previously visited tool");
+            session = new DeucarianEditorPageSession(window, ToolId, _ => { });
+            Assert.That(window.titleContent.text, Is.EqualTo("Test page"));
+        }
+
+        [Test]
         public void PreviousPreviewStopsBeforeTheNextPageActivatesAndCachedFailureIsCleanedUp()
         {
             session.Dispose();

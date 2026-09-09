@@ -26,6 +26,7 @@ namespace Deucarian.Editor
             this.window = window != null ? window : throw new ArgumentNullException(nameof(window));
             this.homeId = homeId ?? throw new ArgumentNullException(nameof(homeId));
             homeTitle = new UnityEngine.GUIContent(window.titleContent);
+            if (DeucarianToolRegistry.TryGet(homeId, out var homeTool)) homeTitle.text = homeTool.DisplayName;
             if (buildHome == null) throw new ArgumentNullException(nameof(buildHome));
             root = window.rootVisualElement;
             root.Clear();
@@ -37,6 +38,7 @@ namespace Deucarian.Editor
             buildHome(homeRoot);
             pages.Add(homeId, new DeucarianEditorPage(homeRoot, activateHome, deactivateHome));
             ActiveToolId = homeId;
+            window.titleContent = new UnityEngine.GUIContent(homeTitle);
             pageHost.Add(homeRoot);
             root.RegisterCallback<DeucarianEditorNavigateEvent>(OnNavigate);
             refresh = root.schedule.Execute(Update).Every(100);
