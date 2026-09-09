@@ -41,6 +41,7 @@ namespace Deucarian.Editor.Tests
             string target = null;
             var focus = DeucarianControlCenterOverviewPresentation.CreateFocus(snapshot, (value, id) => { area = value; target = id; });
             Assert.That(focus.Q<Label>(className: "dw-focus-title").text, Is.EqualTo("Needs your attention"));
+            Assert.That(focus.Q<Label>(className: "dw-focus-description").text, Is.EqualTo(error.Description), "Explain the issue rather than repeating an internal code or severity.");
             var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
             try
             {

@@ -21,8 +21,9 @@ namespace Deucarian.Editor
             text.Add(DeucarianEditorWorkspaceControls.Label(attention == null
                 ? "No issues reported" : "Needs your attention", "dw-focus-title"));
             text.Add(DeucarianEditorWorkspaceControls.Label(attention == null
-                ? "Installed checks report no blockers or warnings."
-                : attention.Title + (attention.StatusText.Length > 0 ? " · " + attention.StatusText : string.Empty), "dw-focus-description"));
+                ? "Continue with a tool below."
+                : attention.Description.Length > 0 ? attention.Description : attention.Title, "dw-focus-description"));
+            focus.tooltip = "Status reported by checks from installed packages.";
             var area = attention?.Area ?? DeucarianControlCenterArea.Project;
             string target = attention?.Id;
             var action = DeucarianEditorWorkspaceControls.Button(attention == null
