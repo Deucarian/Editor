@@ -1,12 +1,12 @@
 # Deucarian Editor
 
-## Shared workspace (1.4.0)
+## Shared workspace (1.4.1)
 
 Shared responsive workspace, searchable list/detail surfaces, form bindings, stable audio navigation and Control Center migration. Visual tokens remain owned here; domain operations stay in consumers.
 
-Requires Editor 1.4.0 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
+Requires Editor 1.4.1 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.4.0`.
+Current package version: `1.4.1`.
 
 ## What this is
 
