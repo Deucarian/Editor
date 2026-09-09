@@ -233,6 +233,19 @@ namespace Deucarian.Editor.Tests
             Assert.That(released, Is.EqualTo(2));
         }
 
+        [UnityTest]
+        public IEnumerator SelectingOverviewAgainDoesNotRebuildItsContents()
+        {
+            window.Show();
+            session.Navigate(DeucarianToolIds.ControlCenter, "overview");
+            for (int i = 0; i < 4; i++) yield return null;
+            var content = window.rootVisualElement.Q<ScrollView>("control-center-content");
+            Assert.That(content.childCount, Is.GreaterThan(0));
+            var first = content.ElementAt(0);
+            session.Navigate(DeucarianToolIds.ControlCenter, "overview");
+            Assert.That(content.Contains(first), Is.True);
+        }
+
         private static IDisposable Register(Func<IDeucarianEditorPage> factory, Action open = null) =>
             DeucarianToolRegistry.Register(new DeucarianToolDescriptor(ToolId, "Test page", "Test",
                 DeucarianControlCenterArea.Developer, open ?? (() => { }), "com.deucarian.editor", createPage: factory));

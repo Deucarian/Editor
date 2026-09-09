@@ -14,6 +14,7 @@ namespace Deucarian.Editor
         private DeucarianEditorNavigationState state = new DeucarianEditorNavigationState();
         private ScrollView scroll;
         private bool restoringScroll;
+        private bool filteredView;
         private bool disposed;
 
         internal DeucarianEditorNavigationTree(DeucarianEditorWorkspace workspace, string selected, bool filter)
@@ -64,6 +65,7 @@ namespace Deucarian.Editor
             workspace.Navigation.Add(scroll);
             var groups = new Dictionary<string, Foldout>(StringComparer.Ordinal);
             string query = filter ? workspace.SearchField.value?.Trim() ?? "" : "";
+            filteredView = query.Length > 0;
             DeucarianToolRegistry.TryGet(selected, out var selectedTool);
             string selectedPath = selectedTool?.NavigationPath ?? "";
             foreach (var tool in DeucarianToolRegistry.GetTools())
@@ -103,12 +105,13 @@ namespace Deucarian.Editor
             advanced.tooltip = "Project checks and all registered tools, in this window.";
             workspace.SelectNavigation(workspace.SelectedNavigation ?? (selected == DeucarianEditorWorkspaceNavigation.AudioToolId ? "audio" : selected));
             var currentScroll = scroll;
+            float targetOffset = filteredView ? 0 : state.ScrollOffset;
             int restoreAttempts = 0;
             currentScroll.schedule.Execute(() =>
             {
                 if (disposed || scroll != currentScroll) return;
-                if (state.ScrollOffset > 0 && currentScroll.verticalScroller.highValue <= 0 && ++restoreAttempts < 8) return;
-                currentScroll.scrollOffset = new UnityEngine.Vector2(0, state.ScrollOffset);
+                if (targetOffset > 0 && currentScroll.verticalScroller.highValue <= 0 && ++restoreAttempts < 8) return;
+                currentScroll.scrollOffset = new UnityEngine.Vector2(0, targetOffset);
                 restoringScroll = false;
             }).Every(16).Until(() => disposed || scroll != currentScroll || !restoringScroll);
             currentScroll.verticalScroller.valueChanged += _ =>
@@ -119,7 +122,7 @@ namespace Deucarian.Editor
 
         private void SaveScroll()
         {
-            if (!restoringScroll && scroll != null && (filter ? workspace.SearchField.value?.Length ?? 0 : 0) == 0)
+            if (!restoringScroll && scroll != null && !filteredView)
                 state.ScrollOffset = scroll.scrollOffset.y;
         }
 

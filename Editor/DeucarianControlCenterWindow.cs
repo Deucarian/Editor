@@ -105,8 +105,7 @@ namespace Deucarian.Editor
             var area = DeucarianControlCenterArea.Overview;
             foreach (DeucarianControlCenterArea candidate in Enum.GetValues(typeof(DeucarianControlCenterArea)))
                 if (DeucarianControlCenterAreaIds.GetId(candidate) == route) { area = candidate; break; }
-            if (selectedArea != area) Navigate(area, null);
-            else Render();
+            if (selectedArea != area || !string.IsNullOrEmpty(searchQuery) || focusedTargetId != null) Navigate(area, null);
             workspace?.SelectNavigation(route == "developer" ? "advanced" : DeucarianToolIds.ControlCenter);
         }
 

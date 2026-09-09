@@ -50,7 +50,13 @@ namespace Deucarian.Editor.Tests
                         var search = root.Q<TextField>("workspace-search");
                         search.value = "Shared navigation test";
                         Assert.That(root.Q<Foldout>("workspace-group-Test group/Nested").value, Is.True);
+                        for (int i = 0; i < 4; i++) yield return null;
                         search.value = "";
+                        root.Q<ScrollView>("workspace-navigation-scroll").style.height = 60;
+                        root.Q<ScrollView>("workspace-navigation-scroll").style.flexGrow = 0;
+                        for (int i = 0; i < 5; i++) yield return null;
+                        Assert.That(root.Q<ScrollView>("workspace-navigation-scroll").scrollOffset.y, Is.EqualTo(35).Within(1),
+                            "Clearing a filter restores the full tree's scroll position.");
                         session.Navigate("home");
                         for (int i = 0; i < 5; i++) yield return null;
                         Assert.That(root.Q<Foldout>("workspace-group-Test group/Nested").value, Is.False);
