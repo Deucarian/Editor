@@ -81,6 +81,33 @@ namespace Deucarian.Editor.Tests
             Assert.Throws<ArgumentNullException>(() => DeucarianEditorInspector.Create(null));
         }
 
+        [UnityTest]
+        public IEnumerator OperationFooterContainsItsActionsAtSupportedWidths()
+        {
+            var window = ScriptableObject.CreateInstance<SurfaceStyleTestWindow>();
+            var root = window.rootVisualElement;
+            root.AddToClassList("deucarian-editor");
+            root.AddToClassList(DeucarianEditorTheme.CurrentClass);
+            DeucarianEditorUIResources.TryAddSharedStyleSheet(root);
+            var footer = DeucarianEditorWorkbenchSurfaces.CreateFooter("", "Ready", "", "Details", null, "1.7.0");
+            root.Add(footer.Root);
+            try
+            {
+                window.Show();
+                foreach (int width in new[] { 820, 1480 })
+                {
+                    window.position = new Rect(50, 50, width, 400);
+                    for (int frame = 0; frame < 5; frame++) yield return null;
+                    Assert.That(footer.Root.resolvedStyle.height, Is.EqualTo(46).Within(.5));
+                    Assert.That(footer.Action.resolvedStyle.height, Is.EqualTo(36).Within(.5));
+                    Assert.That(footer.Action.worldBound.yMin, Is.GreaterThanOrEqualTo(footer.Root.worldBound.yMin));
+                    Assert.That(footer.Action.worldBound.yMax, Is.LessThanOrEqualTo(footer.Root.worldBound.yMax));
+                    Assert.That(footer.Action.worldBound.xMax, Is.LessThanOrEqualTo(footer.Root.worldBound.xMax));
+                }
+            }
+            finally { window.Close(); }
+        }
+
         public sealed class SurfaceStyleTestWindow : EditorWindow { }
     }
 }

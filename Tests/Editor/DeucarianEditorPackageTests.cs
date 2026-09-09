@@ -1141,7 +1141,7 @@ namespace Deucarian.Editor.Tests
             StringAssert.Contains(".dpi-operation-drawer", uss);
             StringAssert.Contains(".deucarian-workbench-operation-footer__action:active", uss);
             StringAssert.Contains(".dpi-operation-footer__details-button:active", uss);
-            StringAssert.Contains("--deucarian-workbench-operation-footer-height: 34px;", uss);
+            StringAssert.Contains("--deucarian-workbench-operation-footer-height: 46px;", uss);
         }
 
         [Test]

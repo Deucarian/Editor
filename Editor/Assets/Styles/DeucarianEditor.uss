@@ -908,14 +908,14 @@
     --deucarian-workbench-operation-footer-block-padding: 0px;
     --deucarian-workbench-operation-row-gap: 6px;
     --deucarian-workbench-operation-control-gap: 8px;
-    --deucarian-workbench-operation-footer-height: 34px;
+    --deucarian-workbench-operation-footer-height: 46px;
     --dpi-operation-inline-padding: 10px;
     --dpi-operation-block-padding: 8px;
     --dpi-operation-footer-inline-padding: 10px;
     --dpi-operation-footer-block-padding: 0px;
     --dpi-operation-row-gap: 6px;
     --dpi-operation-control-gap: 8px;
-    --dpi-operation-footer-height: 34px;
+    --dpi-operation-footer-height: 46px;
 }
 
 .deucarian-workbench-operation-drawer,
