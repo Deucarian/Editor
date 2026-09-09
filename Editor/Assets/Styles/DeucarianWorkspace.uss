@@ -259,7 +259,7 @@
 .deucarian-workspace .dw-card-status--warning { color: var(--dw-warning); }
 .deucarian-workspace .dw-card-status--error { color: var(--dw-error); }
 .deucarian-workspace .dw-pinned-actions { flex-shrink: 0; padding-top: 12px; }
-.deucarian-workspace .dw-pinned-actions > .dw-primary { margin-bottom: 0; }
+.deucarian-workspace .dw-pinned-actions > .dw-primary { margin-bottom: 0; align-self: stretch; min-height: 42px; }
 .deucarian-workspace .dw-scale { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 22px; }
 .deucarian-workspace .dw-scale > .dw-muted { font-size: 13px; margin-right: 10px; white-space: nowrap; }
 .deucarian-workspace .dw-scale .unity-slider-int { width: 96px; min-width: 96px; margin: 0 8px 0 0; }

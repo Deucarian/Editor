@@ -11,7 +11,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.6.0`.
+Current package version: `1.6.1`.
 
 ## Reading and scaling the workspace
 
@@ -265,13 +265,20 @@ Do not use actions sections for selecting assets already visible in object field
 
 ## Troubleshooting
 
-### New workspace layout preview
+### Editor Component Gallery
 
-Open **Control Center → Developer → Open Editor UI Preview** to inspect the new
-Editor-owned task layout. It is isolated sample content, not a replacement for
-Notification Lab. Adding or resolving a row does not send application messages,
-play audio, or run notification timers. Existing tools opt in through their own
-adapters; installing Editor alone does not migrate their content.
+Open **Control Center → Developer → Editor Component Gallery** to try shared
+fields, buttons, disclosures, status styles and empty states. Its local examples
+save nothing and expose no application settings. Notification testing has one
+home: **Notifications → Notification Lab**, contributed by Notifications.
+
+Each Control Center window owns its sidebar expansion and scroll state. Cached
+pages retain their controls and drafts; clicking the current page does nothing
+unless the action supplies an explicit route. Page activation must refresh bound
+data without rebuilding controls or replacing user selections. The old page is
+deactivated before the next page activates; failed activation is cleaned up and
+the previous page reactivated. Page adapters must make these lifecycle operations
+safe to repeat and release their owned resources when disposed.
 
 The workspace composes the existing workbench with shared navigation, heading,
 tabs, destination, form/preview and footer regions. Its stylesheet owns the

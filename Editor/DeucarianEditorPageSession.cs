@@ -15,7 +15,9 @@ namespace Deucarian.Editor
         private readonly IVisualElementScheduledItem refresh;
         private readonly string homeId;
         private readonly UnityEngine.GUIContent homeTitle;
+        private readonly DeucarianEditorPageHost pageHost;
         private bool disposed;
+        private bool navigating;
 
         public DeucarianEditorPageSession(EditorWindow window, string homeId,
             Action<VisualElement> buildHome, Action<string> activateHome = null,
@@ -24,16 +26,20 @@ namespace Deucarian.Editor
             this.window = window != null ? window : throw new ArgumentNullException(nameof(window));
             this.homeId = homeId ?? throw new ArgumentNullException(nameof(homeId));
             homeTitle = new UnityEngine.GUIContent(window.titleContent);
+            if (DeucarianToolRegistry.TryGet(homeId, out var homeTool)) homeTitle.text = homeTool.DisplayName;
             if (buildHome == null) throw new ArgumentNullException(nameof(buildHome));
             root = window.rootVisualElement;
             root.Clear();
+            pageHost = new DeucarianEditorPageHost();
+            root.Add(pageHost);
             var homeRoot = new VisualElement { name = "deucarian-page-" + homeId };
             homeRoot.style.flexGrow = 1;
             homeRoot.style.minHeight = 0;
             buildHome(homeRoot);
             pages.Add(homeId, new DeucarianEditorPage(homeRoot, activateHome, deactivateHome));
             ActiveToolId = homeId;
-            root.Add(homeRoot);
+            window.titleContent = new UnityEngine.GUIContent(homeTitle);
+            pageHost.Add(homeRoot);
             root.RegisterCallback<DeucarianEditorNavigateEvent>(OnNavigate);
             refresh = root.schedule.Execute(Update).Every(100);
             AssemblyReloadEvents.beforeAssemblyReload += Dispose;
@@ -45,6 +51,20 @@ namespace Deucarian.Editor
         public bool Navigate(string toolId, string route = null)
         {
             if (disposed || string.IsNullOrEmpty(toolId)) return false;
+            if (navigating) throw new InvalidOperationException("A page transition is already in progress.");
+            if (toolId == ActiveToolId && string.IsNullOrEmpty(route)) return true;
+            navigating = true;
+            try { return NavigateCore(toolId, route); }
+            finally { navigating = false; }
+        }
+
+        private bool NavigateCore(string toolId, string route)
+        {
+            if (toolId == ActiveToolId)
+            {
+                pages[toolId].Activate(route);
+                return true;
+            }
             bool created = false;
             if (!pages.TryGetValue(toolId, out var next))
             {
@@ -54,17 +74,6 @@ namespace Deucarian.Editor
                 if (next == null) throw new InvalidOperationException("The tool did not create a page: " + toolId);
                 created = true;
             }
-            try
-            {
-                next.Update(window.position);
-                next.Activate(route);
-            }
-            catch
-            {
-                if (created) next.Dispose();
-                throw;
-            }
-            if (toolId == ActiveToolId) return true;
             var previous = pages[ActiveToolId];
             try { previous.Deactivate(); }
             catch
@@ -72,11 +81,26 @@ namespace Deucarian.Editor
                 if (created) next.Dispose();
                 throw;
             }
+            try
+            {
+                next.Update(window.position);
+                next.Activate(route);
+            }
+            catch (Exception error)
+            {
+                var failures = new List<Exception> { error };
+                try { next.Deactivate(); } catch (Exception cleanup) { failures.Add(cleanup); }
+                if (created)
+                    try { next.Dispose(); } catch (Exception cleanup) { failures.Add(cleanup); }
+                try { previous.Activate(null); } catch (Exception restore) { failures.Add(restore); }
+                if (failures.Count > 1) throw new AggregateException("Page activation and recovery failed.", failures);
+                throw;
+            }
             if (created) pages.Add(toolId, next);
             previous.Root.RemoveFromHierarchy();
             next.Root.style.flexGrow = 1;
             next.Root.style.minHeight = 0;
-            root.Add(next.Root);
+            pageHost.Add(next.Root);
             ActiveToolId = toolId;
             if (toolId == homeId) window.titleContent = new UnityEngine.GUIContent(homeTitle);
             else if (DeucarianToolRegistry.TryGet(toolId, out var tool))
@@ -124,6 +148,7 @@ namespace Deucarian.Editor
                     catch (Exception error) { failures.Add(error); }
                 }
                 pages.Clear();
+                pageHost.RemoveFromHierarchy();
                 if (failures.Count != 0) throw new AggregateException("Could not release all editor pages.", failures);
             }
         }

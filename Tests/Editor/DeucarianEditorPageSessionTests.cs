@@ -70,6 +70,55 @@ namespace Deucarian.Editor.Tests
         }
 
         [Test]
+        public void ClickingTheActivePageDoesNotReactivateItButExplicitRoutesStillWork()
+        {
+            int activations = 0;
+            string route = null;
+            registration = Register(() => new DeucarianEditorPage(new VisualElement(), value => { activations++; route = value; }));
+            session.Navigate(ToolId);
+            session.Navigate(ToolId);
+            session.Navigate(ToolId, "");
+            Assert.That(activations, Is.EqualTo(1));
+            session.Navigate(ToolId, "details");
+            Assert.That(activations, Is.EqualTo(2));
+            Assert.That(route, Is.EqualTo("details"));
+        }
+
+        [Test]
+        public void RecreatedSessionUsesItsHomeTitleInsteadOfTheLastVisitedPagesTitle()
+        {
+            session.Dispose();
+            registration = Register(() => new DeucarianEditorPage(new VisualElement()));
+            window.titleContent = new GUIContent("Previously visited tool");
+            session = new DeucarianEditorPageSession(window, ToolId, _ => { });
+            Assert.That(window.titleContent.text, Is.EqualTo("Test page"));
+        }
+
+        [Test]
+        public void PreviousPreviewStopsBeforeTheNextPageActivatesAndCachedFailureIsCleanedUp()
+        {
+            session.Dispose();
+            var calls = new System.Collections.Generic.List<string>();
+            bool fail = false;
+            session = new DeucarianEditorPageSession(window, "home", _ => { },
+                _ => calls.Add("home.activate"), () => calls.Add("home.stop"));
+            registration = Register(() => new DeucarianEditorPage(new VisualElement(),
+                _ => { calls.Add("next.activate"); if (fail) throw new InvalidOperationException("Failed"); },
+                () => calls.Add("next.stop")));
+            session.Navigate(ToolId);
+            Assert.That(calls, Is.EqualTo(new[] { "home.stop", "next.activate" }));
+            session.Navigate("home");
+            calls.Clear();
+            fail = true;
+            Assert.Throws<InvalidOperationException>(() => session.Navigate(ToolId));
+            Assert.That(calls, Is.EqualTo(new[] { "home.stop", "next.activate", "next.stop", "home.activate" }));
+            Assert.That(session.ActiveToolId, Is.EqualTo("home"));
+            Assert.That(session.PageCount, Is.EqualTo(2));
+            fail = false;
+            Assert.That(session.Navigate(ToolId), Is.True);
+        }
+
+        [Test]
         public void FailedActivationKeepsThePreviousPageAndReleasesTheNewPage()
         {
             int releases = 0;
@@ -192,6 +241,19 @@ namespace Deucarian.Editor.Tests
             }
             finally { first.Close(); second.Close(); }
             Assert.That(released, Is.EqualTo(2));
+        }
+
+        [UnityTest]
+        public IEnumerator SelectingOverviewAgainDoesNotRebuildItsContents()
+        {
+            window.Show();
+            session.Navigate(DeucarianToolIds.ControlCenter, "overview");
+            for (int i = 0; i < 4; i++) yield return null;
+            var content = window.rootVisualElement.Q<ScrollView>("control-center-content");
+            Assert.That(content.childCount, Is.GreaterThan(0));
+            var first = content.ElementAt(0);
+            session.Navigate(DeucarianToolIds.ControlCenter, "overview");
+            Assert.That(content.Contains(first), Is.True);
         }
 
         private static IDisposable Register(Func<IDeucarianEditorPage> factory, Action open = null) =>

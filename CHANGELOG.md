@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1] - 2026-09-09
+
+- Keep sidebar expansion and scroll state with the owning window across cached pages, without sharing state between windows.
+- Treat selecting the current page as a no-op unless explicitly routing; stop the previous page before activating the next and clean up failed activations.
+- Replace the duplicate Notifications mockup with an Editor Component Gallery containing real, isolated control examples.
+- Keep the notification composer's pinned primary action full-width and consistently sized.
+- Add switching, scroll, independent-window, recovery and gallery regression coverage.
+
 ## [1.6.0] - 2026-09-09
 
 - Keep Control Center tool rows, search results, status actions, and project-setup links in their owning window. Build expandable submenus from installed tool registrations. Add shared embedded IMGUI and explicit command/reference page adapters; retain the fixed compact scale dock.

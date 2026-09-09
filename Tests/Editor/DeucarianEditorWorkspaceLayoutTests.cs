@@ -54,6 +54,8 @@ namespace Deucarian.Editor.Tests
                         Assert.That(add.worldBound.yMin, Is.EqualTo(actionY).Within(1), "The primary action does not scroll away.");
                         Assert.That(composerScroll.Contains(add), Is.False);
                         Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1));
+                        Assert.That(add.resolvedStyle.height, Is.GreaterThanOrEqualTo(42));
+                        Assert.That(add.worldBound.width, Is.EqualTo(add.parent.worldBound.width).Within(2));
                         Assert.That(add.worldBound.yMin, Is.GreaterThanOrEqualTo(lab.Workspace.Content.worldBound.yMin));
                         var message = lab.Workspace.Root.Q<DeucarianEditorMessageRow>("layout-message");
                         AssertInside(message.Q<Button>(), message, size.ToString());
