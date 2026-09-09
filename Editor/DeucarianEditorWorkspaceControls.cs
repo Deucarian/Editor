@@ -53,7 +53,7 @@ namespace Deucarian.Editor
             input.AddToClassList("dw-field-input");
             if (string.IsNullOrEmpty(input.tooltip)) input.tooltip = label;
             row.Add(input);
-            DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-field-stacked", 520);
+            DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-field-stacked", input is Label ? 320 : 520);
             return row;
         }
 

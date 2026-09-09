@@ -52,11 +52,15 @@ namespace Deucarian.Editor
             form.AddToClassList("dw-lab-composer");
             var preview = DeucarianEditorWorkspaceControls.Scroll("lab-preview-scroll");
             preview.AddToClassList("dw-lab-preview");
-            var split = DeucarianEditorWorkspaceControls.Split(form, preview);
+            var composerPane = DeucarianEditorWorkspaceControls.Region(null, "dw-lab-composer-pane");
+            var primaryActions = DeucarianEditorWorkspaceControls.Region("lab-primary-actions", "dw-pinned-actions");
+            composerPane.Add(form);
+            composerPane.Add(primaryActions);
+            var split = DeucarianEditorWorkspaceControls.Split(composerPane, preview);
             split.AddToClassList("dw-lab-split");
             test.Add(split);
             form.Add(DeucarianEditorWorkspaceControls.Label("New test message", "dw-section-title"));
-            Composer = new DeucarianEditorWorkspaceForm(form);
+            Composer = new DeucarianEditorWorkspaceForm(form, primaryActions);
             var toolbar = DeucarianEditorWorkspaceControls.Region(null, "dw-preview-toolbar");
             toolbar.Add(DeucarianEditorWorkspaceControls.Label("Message preview", "dw-section-title"));
             count = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");

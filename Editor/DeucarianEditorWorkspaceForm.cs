@@ -10,9 +10,16 @@ namespace Deucarian.Editor
     public sealed class DeucarianEditorWorkspaceForm
     {
         private readonly List<Action> synchronizers = new List<Action>();
+        private readonly VisualElement primaryActions;
         public VisualElement Root { get; }
 
-        public DeucarianEditorWorkspaceForm(VisualElement root) => Root = root ?? throw new ArgumentNullException(nameof(root));
+        public DeucarianEditorWorkspaceForm(VisualElement root) : this(root, null) { }
+
+        internal DeucarianEditorWorkspaceForm(VisualElement root, VisualElement primaryActions)
+        {
+            Root = root ?? throw new ArgumentNullException(nameof(root));
+            this.primaryActions = primaryActions;
+        }
 
         public TextField Text(string id, string label, Func<string> read, Action<string> write, bool multiline = false)
         {
@@ -74,7 +81,7 @@ namespace Deucarian.Editor
             var button = DeucarianEditorWorkspaceControls.Button(label, execute, primary);
             button.name = id;
             button.AddToClassList("dw-form-action");
-            Root.Add(button);
+            (primary && primaryActions != null ? primaryActions : Root).Add(button);
             if (enabled != null) synchronizers.Add(() => button.SetEnabled(enabled()));
             Refresh();
             return button;
@@ -120,7 +127,12 @@ namespace Deucarian.Editor
         public void VisibleWhen(VisualElement field, Func<bool> visible)
             => synchronizers.Add(() => field.parent.style.display = visible() ? DisplayStyle.Flex : DisplayStyle.None);
 
-        public void EnabledWhen(Func<bool> enabled) => synchronizers.Add(() => Root.SetEnabled(enabled()));
+        public void EnabledWhen(Func<bool> enabled) => synchronizers.Add(() =>
+        {
+            bool active = enabled();
+            Root.SetEnabled(active);
+            primaryActions?.SetEnabled(active);
+        });
         public void Refresh() { foreach (var synchronize in synchronizers) synchronize(); }
 
         private void Bind<T>(string id, string label, BaseField<T> field, Func<T> read, Action<T> write)

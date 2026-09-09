@@ -47,10 +47,14 @@ namespace Deucarian.Editor.Tests
                         Assert.That(composerScroll.resolvedStyle.height, Is.GreaterThan(70));
                         Assert.That(previewScroll.resolvedStyle.height, Is.GreaterThan(70));
                         var previousPreviewOffset = previewScroll.scrollOffset;
-                        composerScroll.ScrollTo(add);
+                        float actionY = add.worldBound.yMin;
+                        composerScroll.scrollOffset = new Vector2(0, 100);
                         yield return null;
                         Assert.That(previewScroll.scrollOffset, Is.EqualTo(previousPreviewOffset));
-                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(composerScroll.contentViewport.worldBound.yMax + 1), "The primary action must be reachable by scrolling its own pane.");
+                        Assert.That(add.worldBound.yMin, Is.EqualTo(actionY).Within(1), "The primary action does not scroll away.");
+                        Assert.That(composerScroll.Contains(add), Is.False);
+                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1));
+                        Assert.That(add.worldBound.yMin, Is.GreaterThanOrEqualTo(lab.Workspace.Content.worldBound.yMin));
                         var message = lab.Workspace.Root.Q<DeucarianEditorMessageRow>("layout-message");
                         AssertInside(message.Q<Button>(), message, size.ToString());
                         Assert.That(message.Q(className: "dw-message-state").parent.parent.ClassListContains("dw-message-text"), Is.True);
@@ -59,6 +63,11 @@ namespace Deucarian.Editor.Tests
                         Assert.That(title, Is.EqualTo("Example warning"));
                         Assert.That(lifetime, Is.Zero, "Resizing must not change the selected dismissal policy.");
                     }
+                    lab.Composer.EnabledWhen(() => false);
+                    lab.RefreshForms();
+                    Assert.That(add.enabledInHierarchy, Is.False, "Pinned actions follow the composer's enabled state.");
+                    lab.Composer.EnabledWhen(() => true);
+                    lab.RefreshForms();
                     choice.Q<Button>("choice-1").Focus();
                     yield return null;
                     using (var evt = NavigationSubmitEvent.GetPooled())

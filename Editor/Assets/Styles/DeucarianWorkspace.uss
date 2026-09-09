@@ -246,3 +246,5 @@
 .deucarian-workspace .dw-card-status--success { color: var(--dw-success); }
 .deucarian-workspace .dw-card-status--warning { color: var(--dw-warning); }
 .deucarian-workspace .dw-card-status--error { color: var(--dw-error); }
+.deucarian-workspace .dw-pinned-actions { flex-shrink: 0; padding-top: 12px; }
+.deucarian-workspace .dw-pinned-actions > .dw-primary { margin-bottom: 0; }
