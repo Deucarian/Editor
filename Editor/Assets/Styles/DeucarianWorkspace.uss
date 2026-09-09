@@ -77,7 +77,14 @@
 .deucarian-workspace .dw-search .unity-text-field__input { border-width: 0; background-color: transparent; color: var(--dw-text); font-size: 16px; padding-left: 10px; }
 .deucarian-workspace .dw-search-placeholder { position: absolute; left: 46px; right: 10px; top: 10px; color: var(--dw-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .deucarian-workspace .dw-sidebar { width: 238px; min-width: 238px; padding-top: 14px; border-right-width: 1px; border-right-color: var(--dw-border); background-color: var(--dw-sidebar); }
-.deucarian-workspace .dw-navigation { flex-shrink: 0; }
+.deucarian-workspace .dw-navigation { flex-grow: 1; min-height: 0; flex-shrink: 1; }
+.deucarian-workspace .dw-navigation-group { margin: 0; flex-shrink: 0; }
+.deucarian-workspace .dw-navigation-group > .unity-toggle { min-height: 40px; margin: 0; padding: 0 14px; color: var(--dw-muted); }
+.deucarian-workspace .dw-navigation-group > .unity-toggle .unity-toggle__text { white-space: normal; }
+.deucarian-workspace .dw-navigation-group > .unity-foldout__content { margin-left: 0; padding-left: 8px; }
+.deucarian-workspace .dw-navigation-group .dw-nav-item { min-height: 38px; height: auto; padding: 8px 12px; }
+.deucarian-workspace .dw-navigation-group .dw-nav-item .dw-icon { width: 18px; height: 18px; margin-right: 12px; }
+.deucarian-workspace .dw-navigation-group .dw-nav-label { font-size: 14px; white-space: normal; flex-shrink: 1; }
 .deucarian-workspace .dw-nav-item {
     flex-direction: row; align-items: center; justify-content: flex-start;
     border-radius: 0; border-width: 0; border-left-width: 5px; border-left-color: transparent;

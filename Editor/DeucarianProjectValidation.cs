@@ -24,7 +24,9 @@ namespace Deucarian.Editor
             string affectedPath = null,
             Action fix = null,
             Action select = null,
-            Action openSetup = null)
+            Action openSetup = null,
+            string setupToolId = null,
+            string setupRoute = null)
         {
             Code = Require(code, nameof(code));
             Severity = severity;
@@ -34,6 +36,8 @@ namespace Deucarian.Editor
             Fix = fix;
             Select = select;
             OpenSetup = openSetup;
+            SetupToolId = setupToolId;
+            SetupRoute = setupRoute;
         }
 
         public string Code { get; }
@@ -44,6 +48,8 @@ namespace Deucarian.Editor
         public Action Fix { get; }
         public Action Select { get; }
         public Action OpenSetup { get; }
+        public string SetupToolId { get; }
+        public string SetupRoute { get; }
         public bool IsBlocking => Severity == DeucarianProjectIssueSeverity.Error;
 
         public override string ToString()

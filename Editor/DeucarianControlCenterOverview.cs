@@ -147,7 +147,8 @@ namespace Deucarian.Editor
                         definition.Id + ".open",
                         "Review " +
                             DeucarianControlCenterAreaIds.GetDisplayName(area),
-                        () => DeucarianControlCenterWindow.Open(area))
+                        () => DeucarianControlCenterWindow.Open(area),
+                        navigationToolId: DeucarianToolIds.ControlCenter, navigationRoute: DeucarianControlCenterAreaIds.GetId(area))
                 },
                 definition.SearchTerms);
         }

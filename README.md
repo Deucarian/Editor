@@ -11,7 +11,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.5.3`.
+Current package version: `1.6.0`.
 
 ## Reading and scaling the workspace
 
@@ -329,3 +329,13 @@ git diff --check
 ## License
 
 MIT. See [LICENSE.md](LICENSE.md).
+
+## In-window navigation and submenus
+
+Every registered tool contributes a fresh `IDeucarianEditorPage` through `createPage`. Its factory must not call `Show`, `GetWindow`, or run a domain command. Page sessions cache instances per native window and dispose them with that window.
+
+Use `navigationPath` for readable submenu groups, for example `"Experience/Audio"`. Omitting it uses the tool's registered area. The shared sidebar discovers installed registrations, preserves parent groups during filtering, and offers an explicit **Open in new window** context action. Runtime-only packages do not need artificial menus.
+
+A page button calls `DeucarianEditorNavigation.Open(sourceElement, toolId, route)`. Card actions declare `navigationToolId` and optional `navigationRoute`; project checks declare `setupToolId` and optional `setupRoute`. Search carries the same destination. Non-navigation actions retain explicit execution and confirmation behavior. Do not use a global current-window lookup.
+
+Older IMGUI tools can compose `DeucarianEditorImGuiPage` while retaining their domain renderer. New tools should use plain composed pages and shared workspace controls. Native file pickers, confirmations, and deliberately external documentation links remain explicit external interactions.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.0] - 2026-09-09
+
+- Keep Control Center tool rows, search results, status actions, and project-setup links in their owning window. Build expandable submenus from installed tool registrations. Add shared embedded IMGUI and explicit command/reference page adapters; retain the fixed compact scale dock.
+
 ## [1.5.3] - 2026-09-09
 
 - Make the previous 75% workspace size the new 100% default, with a separate project-local preference for the normalized scale.
