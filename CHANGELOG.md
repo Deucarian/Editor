@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.1] - 2026-09-09
+
+### Fixed
+- Resolve workspace popup and numeric fields on Unity 2021.3 as well as Unity 6.
+- Keep long search prompts and field captions inside compact workspace layouts.
+
 ## 1.4.0 - 2026-09-09
 
 - Add an Editor-owned task workspace with responsive navigation, typography,
