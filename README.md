@@ -11,13 +11,13 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.5.2`.
+Current package version: `1.5.3`.
 
 ## Reading and scaling the workspace
 
 The overview starts with one project-status focus, then short area statuses and recent or pinned tools. Full source details stay in their owning sections and search; a status action navigates to the relevant check, never runs its fix automatically.
 
-Use **UI scale** in the footer to resize the complete workspace from 75% to 150%. Click the percentage to reset to 100%. The preference is local to this project, persists across editor restarts, and applies to other shared workspace pages and windows. It does not change Unity's own menus, unrelated inspectors, runtime UI, or theme assets.
+Use **UI scale** in the footer to resize the complete workspace from 75% to 150%. The new 100% is the compact size previously labelled 75%. Click the percentage to reset to that default. The slider stays in a fixed, unscaled footer while the workspace resizes. Existing scale preferences start at the new default once, then retain subsequent choices. The preference is local to this project, persists across editor restarts, and applies to other shared workspace pages and windows. It does not change Unity's own menus, unrelated inspectors, runtime UI, or theme assets.
 
 ## What this is
 

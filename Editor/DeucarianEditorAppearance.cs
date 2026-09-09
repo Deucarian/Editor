@@ -8,7 +8,7 @@ namespace Deucarian.Editor
     public static class DeucarianEditorAppearance
     {
         private const string DecorativeKey = "Editor.DecorativeBackgrounds";
-        internal const string ScaleKey = "Editor.WorkspaceScalePercent";
+        internal const string ScaleKey = "Editor.WorkspaceScalePercent.CompactBaseline";
         private static readonly ConditionalWeakTable<VisualElement, Binding> Bindings = new ConditionalWeakTable<VisualElement, Binding>();
         public static event Action Changed;
 
