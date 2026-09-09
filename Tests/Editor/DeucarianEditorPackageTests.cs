@@ -1010,18 +1010,9 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.BoldLabelStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.SectionTitleStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.MutedTextColor, DeucarianEditorWorkbenchGUI.WordWrappedMiniLabelStyle.normal.textColor);
-            Assert.AreEqual(
-                DeucarianEditorTheme.IsDark ? 0.46f : 0.56f,
-                DeucarianEditorWorkbenchGUI.RowBackgroundColor.a,
-                0.001f);
-            Assert.AreEqual(
-                DeucarianEditorTheme.IsDark ? 0.66f : 0.16f,
-                DeucarianEditorWorkbenchGUI.RowHoverColor.a,
-                0.001f);
-            Assert.AreEqual(
-                DeucarianEditorTheme.IsDark ? 0.52f : 0.25f,
-                DeucarianEditorWorkbenchGUI.RowSelectedColor.a,
-                0.001f);
+            Assert.AreEqual(DeucarianEditorSurfacePalette.Field, DeucarianEditorWorkbenchGUI.RowBackgroundColor);
+            Assert.AreEqual(DeucarianEditorSurfacePalette.Hover, DeucarianEditorWorkbenchGUI.RowHoverColor);
+            Assert.AreEqual(DeucarianEditorSurfacePalette.Selected, DeucarianEditorWorkbenchGUI.RowSelectedColor);
         }
 
         [Test]
