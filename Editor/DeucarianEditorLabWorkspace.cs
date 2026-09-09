@@ -47,10 +47,14 @@ namespace Deucarian.Editor
             Workspace.Scope.Add(targets);
             destinationNote = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
             Workspace.Scope.Add(destinationNote);
-            var test = AddPage();
-            var form = DeucarianEditorWorkspaceControls.Region(null, "dw-lab-composer");
-            var preview = DeucarianEditorWorkspaceControls.Region(null, "dw-lab-preview");
-            test.Add(DeucarianEditorWorkspaceControls.Split(form, preview));
+            var test = AddPage(scrollable: false);
+            var form = DeucarianEditorWorkspaceControls.Scroll("lab-composer-scroll");
+            form.AddToClassList("dw-lab-composer");
+            var preview = DeucarianEditorWorkspaceControls.Scroll("lab-preview-scroll");
+            preview.AddToClassList("dw-lab-preview");
+            var split = DeucarianEditorWorkspaceControls.Split(form, preview);
+            split.AddToClassList("dw-lab-split");
+            test.Add(split);
             form.Add(DeucarianEditorWorkspaceControls.Label("New test message", "dw-section-title"));
             Composer = new DeucarianEditorWorkspaceForm(form);
             var toolbar = DeucarianEditorWorkspaceControls.Region(null, "dw-preview-toolbar");
@@ -119,9 +123,11 @@ namespace Deucarian.Editor
         public void RefreshForms() { Composer.Refresh(); Appearance.Refresh(); Audio.Refresh(); }
         public void Dispose() { Workspace.Dispose(); entries.Clear(); }
 
-        private VisualElement AddPage()
+        private VisualElement AddPage(bool scrollable = true)
         {
-            var page = DeucarianEditorWorkspaceControls.Scroll("lab-page-" + pages.Count);
+            VisualElement page = scrollable
+                ? DeucarianEditorWorkspaceControls.Scroll("lab-page-" + pages.Count)
+                : DeucarianEditorWorkspaceControls.Region("lab-page-" + pages.Count, "dw-lab-test");
             page.AddToClassList("dw-lab-page");
             Workspace.Content.Add(page);
             pages.Add(page);

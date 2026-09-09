@@ -90,16 +90,17 @@ namespace Deucarian.Editor
                 return;
             }
 
+            bool narrow = mode == DeucarianEditorLayoutMode.Narrow;
             layout.style.flexDirection = FlexDirection.Column;
             sidebar.style.flexDirection = FlexDirection.Row;
             sidebar.style.flexWrap = Wrap.Wrap;
             foreach (VisualElement host in cardHosts)
             {
-                host.style.flexDirection = FlexDirection.Row;
+                host.style.flexDirection = narrow ? FlexDirection.Column : FlexDirection.Row;
                 foreach (VisualElement card in host.Children())
                 {
-                    card.style.flexBasis = 280f;
-                    card.style.flexGrow = 1f;
+                    card.style.flexBasis = narrow ? new StyleLength(StyleKeyword.Auto) : new StyleLength(280f);
+                    card.style.flexGrow = narrow ? 0f : 1f;
                     card.style.minWidth = 0f;
                 }
             }

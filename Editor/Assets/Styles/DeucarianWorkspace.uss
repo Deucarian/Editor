@@ -239,3 +239,7 @@
 .deucarian-workspace .dw-tool-row.dw-tool-stacked { flex-direction: column; align-items: stretch; }
 .deucarian-workspace .dw-tool-row.dw-tool-stacked > .dw-actions { margin-top: 10px; }
 .deucarian-workspace .dw-footer > .dw-muted { font-size: 14px; flex-shrink: 1; }
+.deucarian-workspace .dw-lab-test { flex-grow: 1; min-height: 0; }
+.deucarian-workspace .dw-lab-split > .dw-form-pane { flex-grow: 0; }
+.deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-form-pane { flex-basis: 48%; flex-shrink: 1; max-height: 280px; padding-bottom: 8px; }
+.deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-preview-pane { flex-basis: 0; flex-grow: 1; }

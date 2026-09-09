@@ -22,6 +22,7 @@ namespace Deucarian.Editor.Tests
                 {
                     string title = "Example warning";
                     int lifetime = 0;
+                    lab.Composer.Choice("layout-type", "Type", new[] { "Warning", "Error", "Information" }, () => 0, _ => { });
                     lab.Composer.Text("layout-title", "Title", () => title, value => title = value);
                     lab.Composer.Text("layout-body", "Message", () => "A long message that wraps across several lines.", _ => { }, true);
                     var choice = lab.Composer.Segments("layout-dismissal", "Dismissal", new[] { "Resolve manually", "After a delay" }, () => lifetime, value => lifetime = value);
@@ -41,6 +42,15 @@ namespace Deucarian.Editor.Tests
                         }
                         foreach (var button in choice.Query<Button>().ToList()) AssertInside(button, choice, size.ToString());
                         AssertInside(add, composer, size.ToString());
+                        var composerScroll = (ScrollView)composer;
+                        var previewScroll = lab.Workspace.Root.Q<ScrollView>("lab-preview-scroll");
+                        Assert.That(composerScroll.resolvedStyle.height, Is.GreaterThan(70));
+                        Assert.That(previewScroll.resolvedStyle.height, Is.GreaterThan(70));
+                        var previousPreviewOffset = previewScroll.scrollOffset;
+                        composerScroll.ScrollTo(add);
+                        yield return null;
+                        Assert.That(previewScroll.scrollOffset, Is.EqualTo(previousPreviewOffset));
+                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(composerScroll.contentViewport.worldBound.yMax + 1), "The primary action must be reachable by scrolling its own pane.");
                         var message = lab.Workspace.Root.Q<DeucarianEditorMessageRow>("layout-message");
                         AssertInside(message.Q<Button>(), message, size.ToString());
                         Assert.That(message.Q(className: "dw-message-state").parent.parent.ClassListContains("dw-message-text"), Is.True);
