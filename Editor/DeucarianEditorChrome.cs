@@ -96,6 +96,11 @@ namespace Deucarian.Editor
 
     public static class DeucarianEditorChrome
     {
+        public static void DrawPackageHeader(EditorWindow owner, string title, string subtitle)
+        {
+            if (!DeucarianEditorWindowPages.IsPageController(owner)) DrawPackageHeader(title, subtitle);
+        }
+
         public static void DrawPackageHeader(EditorWindow owner, string packageKey, string title, string subtitle)
         {
             if (!DeucarianEditorWindowPages.IsPageController(owner)) DrawPackageHeader(packageKey, title, subtitle);

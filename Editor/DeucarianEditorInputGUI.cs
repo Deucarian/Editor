@@ -34,6 +34,8 @@ namespace Deucarian.Editor
             EditorGUI.DelayedTextField(Row(new GUIContent(label), options), value, Styles.Text);
         public static string PasswordField(string label, string value, params GUILayoutOption[] options) =>
             EditorGUI.PasswordField(Row(new GUIContent(label), options), value, Styles.Text);
+        public static string PasswordField(string value, params GUILayoutOption[] options) =>
+            EditorGUI.PasswordField(Row(GUIContent.none, options), value, Styles.Text);
         public static string TextArea(string value, params GUILayoutOption[] options) =>
             EditorGUILayout.TextArea(value, Styles.TextArea, options);
         public static string TextArea(string value, GUIStyle style, params GUILayoutOption[] options) =>
@@ -43,6 +45,8 @@ namespace Deucarian.Editor
         public static bool Toggle(GUIContent label, bool value, params GUILayoutOption[] options) =>
             EditorGUI.Toggle(Row(label, options), value);
         public static bool ToggleLeft(string label, bool value, params GUILayoutOption[] options) =>
+            EditorGUI.ToggleLeft(Row(GUIContent.none, options), label, value, DeucarianEditorWorkbenchGUI.LabelStyle);
+        public static bool ToggleLeft(GUIContent label, bool value, params GUILayoutOption[] options) =>
             EditorGUI.ToggleLeft(Row(GUIContent.none, options), label, value, DeucarianEditorWorkbenchGUI.LabelStyle);
         public static Enum EnumPopup(string label, Enum value, params GUILayoutOption[] options) =>
             EditorGUI.EnumPopup(Row(new GUIContent(label), options), value, Styles.Popup);
@@ -72,6 +76,10 @@ namespace Deucarian.Editor
             EditorGUI.IntSlider(Row(new GUIContent(label), options), value, min, max);
         public static bool Foldout(bool value, string label, bool toggleOnLabelClick = false, params GUILayoutOption[] options) =>
             EditorGUI.Foldout(Row(GUIContent.none, options), value, label, toggleOnLabelClick, DeucarianEditorWorkbenchGUI.FoldoutStyle);
+        public static bool Foldout(bool value, string label, bool toggleOnLabelClick, GUIStyle style, params GUILayoutOption[] options) =>
+            Foldout(value, new GUIContent(label), toggleOnLabelClick, style, options);
+        public static bool Foldout(bool value, GUIContent label, bool toggleOnLabelClick, GUIStyle style, params GUILayoutOption[] options) =>
+            EditorGUI.Foldout(Row(GUIContent.none, options), value, label, toggleOnLabelClick, style);
 
         private static Rect Row(GUIContent label, GUILayoutOption[] options)
         {
