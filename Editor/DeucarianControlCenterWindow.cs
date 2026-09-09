@@ -15,7 +15,7 @@ namespace Deucarian.Editor
             "Tools/Deucarian/Advanced/Legacy Shortcuts...";
 
         private const int SnapshotIntervalMilliseconds = 15000;
-        private DeucarianEditorWorkbench workbench;
+        private DeucarianEditorWorkspace workspace;
         private DeucarianControlCenterView view;
         private DeucarianControlCenterSnapshot snapshot;
         private IVisualElementScheduledItem periodicRefresh;
@@ -89,48 +89,26 @@ namespace Deucarian.Editor
         {
             DisposeVisualTree();
             rootVisualElement.Clear();
-            workbench = DeucarianEditorWorkbench.Create(
-                rootVisualElement,
-                new DeucarianEditorWorkbenchOptions
-                {
-                    IncludeHeader = true,
-                    IncludeToolbar = true,
-                    IncludeFooter = true,
-                    HeaderPackageKey = "editor",
-                    HeaderTitle = "Deucarian Control Center",
-                    HeaderSubtitle =
-                        "Project readiness, installed capabilities, and trusted shortcuts.",
-                    ToolbarLayout =
-                        DeucarianEditorWorkbenchToolbarLayout.Responsive
-                });
-
-            DeucarianEditorCommandBarLanes lanes =
-                DeucarianEditorCommandBar.CreateLanes(workbench.Toolbar);
-            searchField = DeucarianEditorSearchField.Create("Search tools · Ctrl/Cmd+K", value =>
-            {
-                searchQuery = value ?? string.Empty;
-                Render();
-            }, searchQuery);
+            workspace = new DeucarianEditorWorkspace(rootVisualElement, Application.productName);
+            workspace.Title.text = "Control Center";
+            workspace.Subtitle.text = "Project readiness and your installed tools.";
+            DeucarianEditorWorkspaceNavigation.Populate(workspace, DeucarianToolIds.ControlCenter, filterNavigation: false);
+            workspace.SetSearchPrompt("Search tools and checks…");
+            searchField = workspace.SearchField;
             searchField.name = "control-center-search";
-            searchField.tooltip = "Search tools and project checks. Ctrl/Cmd+K to search; arrows to choose; Enter to open.";
-            searchField.style.minWidth = 200f;
-            searchField.style.flexGrow = 1f;
-            lanes.Leading.style.flexGrow = 1f;
-            lanes.Leading.Add(searchField);
-            summary = lanes.Summary;
-            summary.RemoveFromHierarchy();
-            Button refresh = DeucarianEditorCommandBar.CreateAction(
-                DeucarianEditorIconIds.Refresh,
-                "Refresh",
-                () => Refresh(true),
-                tooltip: "Capture a fresh bounded status snapshot.");
+            searchField.SetValueWithoutNotify(searchQuery);
+            searchField.RegisterValueChangedCallback(evt => { searchQuery = evt.newValue ?? string.Empty; Render(); });
+            summary = workspace.FooterTrailing;
+            var refresh = DeucarianEditorWorkspaceControls.Button("Refresh", () => Refresh(true));
             refresh.name = "control-center-refresh";
-            lanes.Trailing.Add(refresh);
+            workspace.PageActions.Add(refresh);
+            DeucarianEditorWorkspaceControls.Show(workspace.Scope, false);
+            DeucarianEditorWorkspaceControls.Show(workspace.Tabs, false);
 
             view = new DeucarianControlCenterView(
                 Navigate,
                 () => Refresh(false));
-            workbench.Content.Add(view.Root);
+            workspace.Content.Add(view.Root);
             ConfigureFooter();
             rootVisualElement.RegisterCallback<GeometryChangedEvent>(
                 OnGeometryChanged);
@@ -271,27 +249,12 @@ namespace Deucarian.Editor
 
         private void ConfigureFooter()
         {
-            if (workbench.Footer == null)
-            {
-                return;
-            }
-
-            var label = new Label("Project status · refreshes automatically");
-            label.style.color = DeucarianEditorTheme.MutedText;
-            label.style.marginLeft = 10f;
-            label.style.flexGrow = 1f;
-            label.style.whiteSpace = WhiteSpace.Normal;
-            workbench.Footer.style.flexWrap = Wrap.Wrap;
-            workbench.Footer.Add(label);
-            workbench.Footer.Add(summary);
+            workspace.FooterLeading.text = "Local project · refreshes automatically";
         }
 
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
-            DeucarianEditorLayoutMode mode =
-                workbench?.ApplyResponsiveLayout(evt.newRect.width) ??
-                DeucarianEditorResponsiveLayout.ResolveMode(evt.newRect.width);
-            view?.SetLayoutMode(mode);
+            view?.SetLayoutMode(DeucarianEditorResponsiveLayout.ResolveMode(workspace?.Content.resolvedStyle.width ?? evt.newRect.width));
         }
 
         private void DisposeVisualTree()
@@ -303,8 +266,8 @@ namespace Deucarian.Editor
             rootVisualElement?.UnregisterCallback<KeyDownEvent>(OnSearchKeyDown);
             view?.Dispose();
             view = null;
-            workbench?.Dispose();
-            workbench = null;
+            workspace?.Dispose();
+            workspace = null;
         }
 
         private void OnSearchKeyDown(KeyDownEvent evt)

@@ -56,6 +56,12 @@ namespace Deucarian.Editor
                     tools.Count + " tool(s)",
                     -1000,
                     details,
+                    actions: new[]
+                    {
+                        new DeucarianControlCenterAction("deucarian.editor.workspace-preview", "Open Editor UI Preview",
+                            DeucarianEditorWorkspacePreviewWindow.Open,
+                            "Inspect the shared editor layout using isolated sample content.")
+                    },
                     searchTerms: new[]
                     {
                         "developer", "legacy", "shortcuts", "tools", "registry"

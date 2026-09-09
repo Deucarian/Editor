@@ -100,19 +100,10 @@ namespace Deucarian.Editor
                 return;
             }
 
-            bool narrow = mode == DeucarianEditorLayoutMode.Narrow;
-            layout.style.flexDirection =
-                narrow ? FlexDirection.Column : FlexDirection.Row;
-            StyleLength sidebarWidth = narrow
-                ? new StyleLength(StyleKeyword.Auto)
-                : new StyleLength(190f);
-            sidebar.style.width = sidebarWidth;
-            sidebar.style.minWidth = sidebarWidth;
-            sidebar.style.marginBottom = narrow ? 8f : 0f;
-            sidebar.style.marginRight = narrow ? 0f : 8f;
-            sidebar.style.flexDirection = narrow ? FlexDirection.Row : FlexDirection.Column;
-            sidebar.style.flexWrap = narrow ? Wrap.Wrap : Wrap.NoWrap;
-            foreach (VisualElement item in sidebar.Children()) item.style.marginRight = narrow ? 4 : 0;
+            bool narrow = mode != DeucarianEditorLayoutMode.Wide;
+            layout.style.flexDirection = FlexDirection.Column;
+            sidebar.style.flexDirection = FlexDirection.Row;
+            sidebar.style.flexWrap = Wrap.Wrap;
             foreach (VisualElement host in cardHosts)
             {
                 host.style.flexDirection =
@@ -141,35 +132,14 @@ namespace Deucarian.Editor
             {
                 name = "control-center-sidebar"
             };
-            DeucarianControlCenterVisuals.StylePanel(result);
-            result.style.paddingTop = 6f;
-            result.style.paddingBottom = 6f;
-            result.style.paddingLeft = 6f;
-            result.style.paddingRight = 6f;
+            result.AddToClassList("dw-control-sections");
             foreach (DeucarianControlCenterArea area in snapshot.Areas)
             {
                 DeucarianControlCenterArea captured = area;
-                var button = new Button(() => navigate(captured, null))
-                {
-                    text = DeucarianControlCenterAreaIds.GetDisplayName(area),
-                    name = "control-center-area-" +
-                        DeucarianControlCenterAreaIds.GetId(area)
-                };
-                button.style.unityTextAlign = TextAnchor.MiddleLeft;
-                button.style.height = 30f;
-                button.style.marginBottom = 3f;
-                button.style.borderLeftWidth = 3f;
-                button.style.borderLeftColor = Color.clear;
-                if (area == selectedArea)
-                {
-                    button.style.backgroundColor =
-                        DeucarianEditorTheme.GlassPanelStrong;
-                    button.style.color = DeucarianEditorTheme.Text;
-                    button.style.borderLeftColor = DeucarianEditorTheme.Accent;
-                    button.style.unityFontStyleAndWeight = FontStyle.Bold;
-                    button.tooltip = "Current section";
-                }
-
+                var button = DeucarianEditorWorkspaceControls.Button(
+                    DeucarianControlCenterAreaIds.GetDisplayName(area), () => navigate(captured, null));
+                button.name = "control-center-area-" + DeucarianControlCenterAreaIds.GetId(area);
+                button.EnableInClassList("dw-selected", area == selectedArea);
                 result.Add(button);
             }
 
