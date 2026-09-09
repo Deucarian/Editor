@@ -126,6 +126,7 @@ namespace Deucarian.Editor
         public Label FooterTrailing { get; }
         public TextField SearchField { get; }
         public Button ContextButton { get; }
+        internal string SelectedNavigation { get; private set; }
         public VisualElement Drawer => workbench.Drawer;
 
         public void SetSearchPrompt(string prompt)
@@ -165,6 +166,7 @@ namespace Deucarian.Editor
 
         public void SelectNavigation(string id)
         {
+            SelectedNavigation = id;
             foreach (var entry in navigation)
                 entry.Value.EnableInClassList("dw-selected", string.Equals(entry.Key, id, StringComparison.Ordinal));
         }

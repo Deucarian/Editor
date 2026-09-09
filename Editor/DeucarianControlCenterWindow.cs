@@ -101,6 +101,7 @@ namespace Deucarian.Editor
 
         private void ActivatePage(string route)
         {
+            if (string.IsNullOrEmpty(route)) return;
             var area = DeucarianControlCenterArea.Overview;
             foreach (DeucarianControlCenterArea candidate in Enum.GetValues(typeof(DeucarianControlCenterArea)))
                 if (DeucarianControlCenterAreaIds.GetId(candidate) == route) { area = candidate; break; }

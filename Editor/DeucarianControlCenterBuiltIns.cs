@@ -17,7 +17,7 @@ namespace Deucarian.Editor
         static DeucarianControlCenterBuiltIns()
         {
             DeucarianToolRegistry.Register(new DeucarianToolDescriptor("deucarian.editor.workspace-preview",
-                "Editor UI Preview", "Inspect shared controls using isolated sample content.",
+                "Editor Component Gallery", "Explore shared fields, buttons and status styles. No application settings.",
                 DeucarianControlCenterArea.Developer, DeucarianEditorWorkspacePreviewWindow.Open, PackageName,
                 createPage: DeucarianEditorWorkspacePreviewWindow.CreatePage));
             ProviderRegistration =
@@ -62,7 +62,7 @@ namespace Deucarian.Editor
                     details,
                     actions: new[]
                     {
-                        new DeucarianControlCenterAction("deucarian.editor.workspace-preview", "Open Editor UI Preview",
+                        new DeucarianControlCenterAction("deucarian.editor.workspace-preview", "Open Component Gallery",
                             DeucarianEditorWorkspacePreviewWindow.Open,
                             "Inspect the shared editor layout using isolated sample content.", navigationToolId: "deucarian.editor.workspace-preview")
                     },

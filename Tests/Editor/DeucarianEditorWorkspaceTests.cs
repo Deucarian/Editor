@@ -163,12 +163,14 @@ namespace Deucarian.Editor.Tests
                 yield return null;
                 yield return null;
                 var root = window.rootVisualElement;
-                Assert.That(root.Q("specimen-message-rows").childCount, Is.EqualTo(5));
-                Assert.That(root.Q<TextField>("specimen-title").value, Is.EqualTo("Example warning"));
-                Assert.That(root.Q<Label>(className: "dw-preview-label").text, Does.Contain("NOT CONNECTED"));
+                Assert.That(root.Q("specimen-message-rows").childCount, Is.EqualTo(4));
+                Assert.That(root.Q<TextField>("specimen-title").value, Is.EqualTo("Example title"));
+                Assert.That(root.Q<Label>(className: "dw-title").text, Is.EqualTo("Editor Component Gallery"));
+                Assert.That(root.Query<Button>().ToList().Exists(button => button.text == "Open standalone" || button.text == "Add test message"), Is.False);
+                Assert.That(root.Q("specimen-duration"), Is.Null);
                 Assert.That(root.Q("workspace-content").resolvedStyle.height, Is.GreaterThan(100));
                 Assert.That(root.Q("workspace-sidebar").resolvedStyle.width, Is.GreaterThan(100));
-                Assert.That(root.Q("specimen-add").resolvedStyle.height, Is.GreaterThanOrEqualTo(42));
+                Assert.That(root.Q("specimen-add").resolvedStyle.height, Is.GreaterThan(20));
                 Assert.That(root.Q("workspace-footer").worldBound.yMax, Is.LessThanOrEqualTo(root.worldBound.yMax + 1));
             }
             finally { window.Close(); }

@@ -5,13 +5,15 @@ using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
-    /// <summary>One workspace's installed-tool hierarchy, filtering, and expansion state.</summary>
+    /// <summary>Renders the installed-tool hierarchy using its owning window's navigation state.</summary>
     internal sealed class DeucarianEditorNavigationTree : IDisposable
     {
         private readonly DeucarianEditorWorkspace workspace;
         private readonly string selected;
         private readonly bool filter;
-        private readonly Dictionary<string, bool> expanded = new Dictionary<string, bool>(StringComparer.Ordinal);
+        private DeucarianEditorNavigationState state = new DeucarianEditorNavigationState();
+        private ScrollView scroll;
+        private bool restoringScroll;
         private bool disposed;
 
         internal DeucarianEditorNavigationTree(DeucarianEditorWorkspace workspace, string selected, bool filter)
@@ -22,29 +24,48 @@ namespace Deucarian.Editor
             workspace.Root.RegisterCallback<AttachToPanelEvent>(OnAttach);
             workspace.Root.RegisterCallback<DetachFromPanelEvent>(OnDetach);
             workspace.SearchField.RegisterValueChangedCallback(OnSearch);
-            if (workspace.Root.panel != null) Subscribe();
+            if (workspace.Root.panel != null)
+            {
+                state = workspace.Root.GetFirstAncestorOfType<DeucarianEditorPageHost>()?.NavigationState ?? state;
+                Subscribe();
+            }
             Render();
         }
 
         private void Subscribe() { DeucarianToolRegistry.Changed -= Render; DeucarianToolRegistry.Changed += Render; }
-        private void OnAttach(AttachToPanelEvent evt) { Subscribe(); Render(); }
-        private void OnDetach(DetachFromPanelEvent evt) => DeucarianToolRegistry.Changed -= Render;
+        private void OnAttach(AttachToPanelEvent evt)
+        {
+            restoringScroll = true;
+            state = workspace.Root.GetFirstAncestorOfType<DeucarianEditorPageHost>()?.NavigationState ?? state;
+            Subscribe();
+            Render();
+        }
+        private void OnDetach(DetachFromPanelEvent evt)
+        {
+            SaveScroll();
+            restoringScroll = true;
+            DeucarianToolRegistry.Changed -= Render;
+        }
         private void OnSearch(ChangeEvent<string> evt) { if (filter) Render(); }
 
         private void Render()
         {
             if (disposed) return;
+            SaveScroll();
+            restoringScroll = true;
             workspace.ClearNavigation();
             AddTool(workspace.Navigation, DeucarianToolIds.ControlCenter, "Overview", DeucarianEditorIconIds.Dashboard);
             var menu = new ToolbarMenu { name = "workspace-navigation-menu", text = "Navigate…" };
             menu.AddToClassList("dw-navigation-menu");
             workspace.Navigation.Add(menu);
-            menu.menu.AppendAction("Overview", _ => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter));
-            var scroll = DeucarianEditorWorkspaceControls.Scroll("workspace-navigation-scroll");
+            menu.menu.AppendAction("Overview", _ => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter, "overview"));
+            scroll = DeucarianEditorWorkspaceControls.Scroll("workspace-navigation-scroll");
             scroll.AddToClassList("dw-navigation-tree");
             workspace.Navigation.Add(scroll);
             var groups = new Dictionary<string, Foldout>(StringComparer.Ordinal);
             string query = filter ? workspace.SearchField.value?.Trim() ?? "" : "";
+            DeucarianToolRegistry.TryGet(selected, out var selectedTool);
+            string selectedPath = selectedTool?.NavigationPath ?? "";
             foreach (var tool in DeucarianToolRegistry.GetTools())
             {
                 if (tool.Id == DeucarianToolIds.ControlCenter) continue;
@@ -64,15 +85,15 @@ namespace Deucarian.Editor
                     if (!groups.TryGetValue(path, out var group))
                     {
                         string groupPath = path;
-                        bool open = expanded.TryGetValue(path, out bool value) && value;
+                        bool activePath = selectedPath == path || selectedPath.StartsWith(path + "/", StringComparison.Ordinal);
+                        bool open = state.IsExpanded(path, activePath);
                         group = new Foldout { text = label, value = query.Length > 0 || open,
                             name = "workspace-group-" + path };
                         group.AddToClassList("dw-navigation-group");
-                        group.RegisterValueChangedCallback(evt => { if (evt.target == group) expanded[groupPath] = evt.newValue; });
+                        group.RegisterValueChangedCallback(evt => { if (evt.target == group) state.SetExpanded(groupPath, evt.newValue); });
                         groups.Add(path, group);
                         parent.Add(group);
                     }
-                    if (tool.Id == selected) group.SetValueWithoutNotify(true);
                     parent = group;
                 }
                 AddTool(parent, tool.Id, tool.DisplayName, tool.IconKey);
@@ -80,14 +101,33 @@ namespace Deucarian.Editor
             var advanced = workspace.AddNavigation("advanced", "Advanced", DeucarianEditorIconIds.Settings,
                 () => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter, "developer"), true);
             advanced.tooltip = "Project checks and all registered tools, in this window.";
-            workspace.SelectNavigation(selected == DeucarianEditorWorkspaceNavigation.AudioToolId ? "audio" : selected);
+            workspace.SelectNavigation(workspace.SelectedNavigation ?? (selected == DeucarianEditorWorkspaceNavigation.AudioToolId ? "audio" : selected));
+            var currentScroll = scroll;
+            int restoreAttempts = 0;
+            currentScroll.schedule.Execute(() =>
+            {
+                if (disposed || scroll != currentScroll) return;
+                if (state.ScrollOffset > 0 && currentScroll.verticalScroller.highValue <= 0 && ++restoreAttempts < 8) return;
+                currentScroll.scrollOffset = new UnityEngine.Vector2(0, state.ScrollOffset);
+                restoringScroll = false;
+            }).Every(16).Until(() => disposed || scroll != currentScroll || !restoringScroll);
+            currentScroll.verticalScroller.valueChanged += _ =>
+            {
+                if (!restoringScroll && currentScroll.panel != null && scroll == currentScroll) SaveScroll();
+            };
+        }
+
+        private void SaveScroll()
+        {
+            if (!restoringScroll && scroll != null && (filter ? workspace.SearchField.value?.Length ?? 0 : 0) == 0)
+                state.ScrollOffset = scroll.scrollOffset.y;
         }
 
         private void AddTool(VisualElement parent, string id, string label, string icon)
         {
             string navigationId = id == DeucarianEditorWorkspaceNavigation.AudioToolId ? "audio" : id;
             var button = workspace.AddNavigation(navigationId, label, icon,
-                () => DeucarianEditorNavigation.Open(workspace.Root, id));
+                () => DeucarianEditorNavigation.Open(workspace.Root, id, id == DeucarianToolIds.ControlCenter ? "overview" : null));
             if (parent != workspace.Navigation) parent.Add(button);
             else button.AddToClassList("dw-navigation-overview");
             bool available = DeucarianToolRegistry.TryGet(id, out var descriptor) && descriptor.CreatePage != null;

@@ -10,7 +10,7 @@ namespace Deucarian.Editor
 
         public static void Open()
         {
-            var window = DeucarianEditorWindowPages.GetStandalone<DeucarianEditorWorkspacePreviewWindow>("Editor UI Preview");
+            var window = DeucarianEditorWindowPages.GetStandalone<DeucarianEditorWorkspacePreviewWindow>("Editor Component Gallery");
             window.minSize = new Vector2(420, 420);
             window.Show();
             window.Focus();
