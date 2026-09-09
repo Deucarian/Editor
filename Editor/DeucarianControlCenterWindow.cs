@@ -66,7 +66,7 @@ namespace Deucarian.Editor
             window.selectedArea = area;
             window.focusedTargetId = null;
             window.SetSearch(string.Empty);
-            window.minSize = new Vector2(420f, 360f);
+            DeucarianEditorWorkspace.ConfigureWindow(window);
             window.Show();
             window.Focus();
             window.Render();

@@ -10,6 +10,17 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianEditorWorkspaceTests
     {
+        [TestCase(520, 420, false, 1180, 800)]
+        [TestCase(1400, 420, false, 1400, 800)]
+        [TestCase(900, 700, false, 900, 700)]
+        [TestCase(520, 420, true, 520, 420)]
+        public void WindowSizingUpgradesSmallFloatingWindowsAndPreservesUserLayout(
+            float width, float height, bool docked, float expectedWidth, float expectedHeight)
+        {
+            Rect bounds = DeucarianEditorWorkspace.FitWindowBounds(new Rect(35, 60, width, height), docked);
+            Assert.That(bounds, Is.EqualTo(new Rect(35, 60, expectedWidth, expectedHeight)));
+        }
+
         [Test]
         public void WorkspaceComposesNamedRegionsAndUsesOwnedStyleSheet()
         {

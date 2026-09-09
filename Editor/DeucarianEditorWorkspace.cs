@@ -10,6 +10,24 @@ namespace Deucarian.Editor
     public sealed class DeucarianEditorWorkspace : IDisposable
     {
         public const string StyleSheetPath = DeucarianEditorUIResources.StylesPath + "/DeucarianWorkspace.uss";
+        public static Vector2 MinimumWindowSize => new Vector2(820f, 650f);
+        public static Vector2 PreferredWindowSize => new Vector2(1180f, 800f);
+
+        public static void ConfigureWindow(EditorWindow window)
+        {
+            if (window == null) throw new ArgumentNullException(nameof(window));
+            Rect bounds = FitWindowBounds(window.position, window.docked);
+            window.minSize = MinimumWindowSize;
+            if (!window.docked && window.position != bounds) window.position = bounds;
+        }
+
+        internal static Rect FitWindowBounds(Rect current, bool docked)
+        {
+            if (docked || current.width >= MinimumWindowSize.x && current.height >= MinimumWindowSize.y)
+                return current;
+            return new Rect(current.position, new Vector2(Mathf.Max(current.width, PreferredWindowSize.x),
+                Mathf.Max(current.height, PreferredWindowSize.y)));
+        }
         private readonly DeucarianEditorWorkbench workbench;
         private readonly VisualElement host;
         private readonly Dictionary<string, Button> navigation = new Dictionary<string, Button>(StringComparer.Ordinal);
