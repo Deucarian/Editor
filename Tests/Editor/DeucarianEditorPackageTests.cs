@@ -715,13 +715,13 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(10, DeucarianEditorLayoutMetrics.FooterHorizontalPadding);
             Assert.AreEqual(0, DeucarianEditorLayoutMetrics.FooterVerticalPadding);
             Assert.AreEqual(34, DeucarianEditorLayoutMetrics.FooterHeight);
-            Assert.AreEqual(28, DeucarianEditorLayoutMetrics.CommandControlHeight);
+            Assert.AreEqual(36, DeucarianEditorLayoutMetrics.CommandControlHeight);
             Assert.AreEqual(8, DeucarianEditorLayoutMetrics.CommandControlHorizontalPadding);
             Assert.AreEqual(18, DeucarianEditorLayoutMetrics.TextLineHeight);
             Assert.AreEqual(14, DeucarianEditorLayoutMetrics.IconSize);
             Assert.AreEqual(8, DeucarianEditorLayoutMetrics.IconTextGap);
-            Assert.AreEqual(46, DeucarianEditorLayoutMetrics.CommandBarSingleRowHeight);
-            Assert.AreEqual(78, DeucarianEditorLayoutMetrics.CommandBarTwoRowHeight);
+            Assert.AreEqual(54, DeucarianEditorLayoutMetrics.CommandBarSingleRowHeight);
+            Assert.AreEqual(94, DeucarianEditorLayoutMetrics.CommandBarTwoRowHeight);
 
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.CommandControlHeight,

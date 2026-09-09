@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.IO;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
 namespace Deucarian.Editor.Tests
@@ -26,8 +28,30 @@ namespace Deucarian.Editor.Tests
             Assert.That(DeucarianEditorColors.BodyText, Is.EqualTo(DeucarianEditorSurfacePalette.Text));
         }
 
-        [Test]
-        public void OwnedControlStylesDoNotMutateUnityStyles()
+        [UnityTest]
+        public IEnumerator OwnedControlStylesDoNotMutateUnityStyles()
+        {
+            Exception failure = null;
+            bool checkedStyles = false;
+            var window = ScriptableObject.CreateInstance<SurfaceStyleTestWindow>();
+            window.rootVisualElement.Add(new IMGUIContainer(() =>
+            {
+                if (checkedStyles) return;
+                checkedStyles = true;
+                try { AssertOwnedControlStyles(); }
+                catch (Exception exception) { failure = exception; }
+            }));
+            try
+            {
+                window.Show();
+                for (int frame = 0; frame < 10 && !checkedStyles; frame++) yield return null;
+                Assert.That(checkedStyles, Is.True, "Inspect native styles during an actual IMGUI draw.");
+                if (failure != null) throw failure;
+            }
+            finally { window.Close(); }
+        }
+
+        private static void AssertOwnedControlStyles()
         {
             int textSize = EditorStyles.textField.fontSize;
             int buttonSize = EditorStyles.miniButton.fontSize;
@@ -56,5 +80,7 @@ namespace Deucarian.Editor.Tests
             Assert.That(draws, Is.Zero, "Constructing an inspector must not perform its actions.");
             Assert.Throws<ArgumentNullException>(() => DeucarianEditorInspector.Create(null));
         }
+
+        public sealed class SurfaceStyleTestWindow : EditorWindow { }
     }
 }

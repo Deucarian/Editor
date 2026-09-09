@@ -15,6 +15,12 @@ namespace Deucarian.Editor
             EditorGUI.Toggle(Row(GUIContent.none, options), value);
         public static double DoubleField(double value, params GUILayoutOption[] options) =>
             EditorGUI.DoubleField(Row(GUIContent.none, options), value, Styles.Text);
+        public static int IntField(int value, params GUILayoutOption[] options) =>
+            EditorGUI.IntField(Row(GUIContent.none, options), value, Styles.Text);
+        public static float FloatField(float value, params GUILayoutOption[] options) =>
+            EditorGUI.FloatField(Row(GUIContent.none, options), value, Styles.Text);
+        public static Enum EnumPopup(Enum value, params GUILayoutOption[] options) =>
+            EditorGUI.EnumPopup(Row(GUIContent.none, options), value, Styles.Popup);
         public static double DelayedDoubleField(double value, params GUILayoutOption[] options) =>
             EditorGUI.DelayedDoubleField(Row(GUIContent.none, options), value, Styles.Text);
         public static long LongField(long value, params GUILayoutOption[] options) =>

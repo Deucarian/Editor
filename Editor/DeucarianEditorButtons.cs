@@ -31,9 +31,10 @@ namespace Deucarian.Editor
             if (cached != null && cached.name == key) return cached;
             var style = DeucarianEditorStyles.CopyStyle(() => EditorStyles.miniButton);
             style.name = key;
-            DeucarianEditorTypography.ApplyBody(style);
             style.fontSize = 16;
             style.fontStyle = primary ? FontStyle.Bold : FontStyle.Normal;
+            if (primary) DeucarianEditorTypography.ApplyStrong(style);
+            else DeucarianEditorTypography.ApplyBody(style);
             style.alignment = TextAnchor.MiddleCenter;
             style.fixedHeight = primary ? 42 : 36;
             style.padding = new RectOffset(14, 14, 4, 4);
