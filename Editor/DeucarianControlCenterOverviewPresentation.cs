@@ -22,7 +22,7 @@ namespace Deucarian.Editor
                 ? "No issues reported" : "Needs your attention", "dw-focus-title"));
             text.Add(DeucarianEditorWorkspaceControls.Label(attention == null
                 ? "Continue with a tool below."
-                : attention.Description.Length > 0 ? attention.Description : attention.Title, "dw-focus-description"));
+                : DescribeAttention(attention), "dw-focus-description"));
             focus.tooltip = "Status reported by checks from installed packages.";
             var area = attention?.Area ?? DeucarianControlCenterArea.Project;
             string target = attention?.Id;
@@ -44,6 +44,13 @@ namespace Deucarian.Editor
                 if (result == null || card.Status > result.Status) result = card;
             }
             return result;
+        }
+
+        internal static string DescribeAttention(DeucarianControlCenterCard card)
+        {
+            if (card.StatusText.Length > 0 && !string.Equals(card.StatusText, card.Status.ToString(), StringComparison.OrdinalIgnoreCase))
+                return card.Title + " · " + card.StatusText;
+            return card.Description.Length > 0 ? card.Description : card.Title;
         }
 
         private static IEnumerable<DeucarianControlCenterCard> AllCards(DeucarianControlCenterSnapshot snapshot)
