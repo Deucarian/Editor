@@ -21,8 +21,8 @@ namespace Deucarian.Editor
             result.style.minWidth = 0f;
             result.style.marginRight = 6f;
             result.style.marginBottom = 6f;
-            result.style.paddingLeft = 12f;
-            result.style.paddingRight = 12f;
+            result.style.paddingLeft = 0f;
+            result.style.paddingRight = 16f;
             result.style.paddingTop = 10f;
             result.style.paddingBottom = 10f;
             if (string.Equals(card.Id, focusedTargetId, StringComparison.Ordinal))
@@ -40,7 +40,7 @@ namespace Deucarian.Editor
             if (card.StatusText.Length > 0)
             {
                 Label badge = DeucarianControlCenterVisuals.CreateLabel(card.StatusText, false);
-                badge.style.color = DeucarianControlCenterVisuals.GetStatusColor(card.Status);
+                badge.AddToClassList("dw-card-status--" + card.Status.ToString().ToLowerInvariant());
                 heading.Add(badge);
             }
 
@@ -60,6 +60,8 @@ namespace Deucarian.Editor
                 var actions = new VisualElement();
                 actions.style.flexDirection = FlexDirection.Row;
                 actions.style.flexWrap = Wrap.Wrap;
+                actions.style.flexGrow = 1f;
+                actions.style.alignItems = Align.FlexEnd;
                 actions.style.marginTop = 8f;
                 foreach (DeucarianControlCenterAction action in card.Actions)
                 {

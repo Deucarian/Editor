@@ -107,7 +107,7 @@
 .deucarian-workspace .dw-choice-bar .dw-selected { border-color: #35c8c7; background-color: var(--dw-selected); }
 .deucarian-workspace .dw-content { flex-grow: 1; min-height: 0; padding-top: 12px; }
 .deucarian-workspace .dw-split { flex-direction: row; flex-grow: 1; min-height: 0; }
-.deucarian-workspace .dw-form-pane { width: 37%; min-width: 0; flex-shrink: 0; padding: 6px 24px 18px 4px; border-right-width: 1px; border-right-color: var(--dw-border); }
+.deucarian-workspace .dw-form-pane { width: 37%; min-width: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; padding: 6px 24px 18px 4px; border-right-width: 1px; border-right-color: var(--dw-border); }
 .deucarian-workspace .dw-preview-pane { flex-grow: 1; min-width: 0; padding: 6px 0 18px 20px; }
 .deucarian-workspace .dw-scroll { flex-grow: 1; min-height: 0; }
 .deucarian-workspace .dw-scroll .unity-scroll-view__content-container { min-width: 0; }
@@ -201,8 +201,8 @@
 .deucarian-workspace .dw-collection-select:focus { background-color: transparent; border-color: transparent; border-bottom-color: var(--dw-accent); }
 .deucarian-workspace .dw-collection-status { font-size: 13px; color: var(--dw-muted); max-width: 120px; white-space: normal; margin-left: 8px; margin-right: 8px; }
 .deucarian-workspace .dw-collection-action { height: 34px; min-height: 34px; font-size: 14px; padding: 0 12px; }
-.deucarian-workspace .dw-collection-split > .dw-form-pane { width: 55%; }
-.deucarian-workspace .dw-collection-split > .dw-preview-pane { width: 45%; }
+.deucarian-workspace .dw-collection-split > .dw-form-pane { width: 55%; flex-grow: 0; flex-basis: auto; }
+.deucarian-workspace .dw-collection-split > .dw-preview-pane { width: 45%; flex-grow: 0; flex-basis: auto; }
 .deucarian-workspace .dw-page-actions .dw-button { margin-left: 8px; }
 .deucarian-workspace .dw-page-actions { flex-wrap: wrap; }
 .deucarian-workspace .dw-tab-bar { flex-wrap: wrap; }
@@ -243,3 +243,6 @@
 .deucarian-workspace .dw-lab-split > .dw-form-pane { flex-grow: 0; }
 .deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-form-pane { flex-basis: 48%; flex-shrink: 1; max-height: 280px; padding-bottom: 8px; }
 .deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-preview-pane { flex-basis: 0; flex-grow: 1; }
+.deucarian-workspace .dw-card-status--success { color: var(--dw-success); }
+.deucarian-workspace .dw-card-status--warning { color: var(--dw-warning); }
+.deucarian-workspace .dw-card-status--error { color: var(--dw-error); }

@@ -89,6 +89,11 @@ namespace Deucarian.Editor.Tests
                     {
                         Resize(window, size);
                         for (int i = 0; i < 8; i++) yield return null;
+                        if (!collection.Collection.ClassListContains("dw-split-stacked"))
+                        {
+                            float paneRatio = collection.Details.resolvedStyle.width / collection.Collection.resolvedStyle.width;
+                            Assert.That(paneRatio, Is.EqualTo(0.45f).Within(0.025f), "Details retain their share of the split: " + size);
+                        }
                         var row = collection.Collection.Q("workspace-item-key");
                         var select = row.Q<Button>(className: "dw-collection-select");
                         select.Focus();
