@@ -75,7 +75,7 @@
 .deucarian-workspace .dw-search .dw-icon { width: 22px; height: 22px; }
 .deucarian-workspace .dw-search .unity-text-field { flex-grow: 1; margin: 0; }
 .deucarian-workspace .dw-search .unity-text-field__input { border-width: 0; background-color: transparent; color: var(--dw-text); font-size: 16px; padding-left: 10px; }
-.deucarian-workspace .dw-search-placeholder { position: absolute; left: 46px; top: 10px; color: var(--dw-muted); }
+.deucarian-workspace .dw-search-placeholder { position: absolute; left: 46px; right: 10px; top: 10px; color: var(--dw-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .deucarian-workspace .dw-sidebar { width: 238px; min-width: 238px; padding-top: 14px; border-right-width: 1px; border-right-color: var(--dw-border); background-color: var(--dw-sidebar); }
 .deucarian-workspace .dw-navigation { flex-shrink: 0; }
 .deucarian-workspace .dw-nav-item {
@@ -113,7 +113,7 @@
 .deucarian-workspace .dw-scroll .unity-scroll-view__content-container { min-width: 0; }
 .deucarian-workspace .dw-section-title { font-size: 24px; -unity-font: url("../Fonts/DINish-SemiBold.otf"); -unity-font-style: bold; margin-bottom: 20px; }
 .deucarian-workspace .dw-field { flex-direction: row; margin-bottom: 16px; align-items: flex-start; flex-shrink: 0; }
-.deucarian-workspace .dw-field-label { width: 104px; padding-top: 11px; flex-shrink: 0; }
+.deucarian-workspace .dw-field-label { width: 104px; padding-top: 11px; flex-shrink: 0; white-space: normal; }
 .deucarian-workspace .dw-field-input { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; }
 .deucarian-workspace .unity-base-field__input { border-color: #59636b; border-width: 1px; border-radius: 5px; background-color: var(--dw-field); color: var(--dw-text); min-height: 42px; padding: 5px 12px; font-size: 16px; }
 .deucarian-workspace .unity-base-field__input:focus { border-color: var(--dw-accent); }
