@@ -28,7 +28,7 @@ namespace Deucarian.Editor
                     PackageName,
                     DeucarianEditorIconIds.Dashboard,
                     new[] { "project", "setup", "dashboard", "tools" },
-                    -1000));
+                    -1000, createPage: DeucarianControlCenterWindow.CreatePage));
         }
 
         public string Id => "deucarian.editor.control-center";

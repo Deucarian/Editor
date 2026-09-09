@@ -12,14 +12,11 @@ namespace Deucarian.Editor
             Add(workspace, DeucarianToolIds.ControlCenter, "Overview", DeucarianEditorIconIds.Dashboard);
             Add(workspace, DeucarianToolIds.PackageInstaller, "Packages", DeucarianEditorIconIds.Package);
             Add(workspace, DeucarianToolIds.ThemeManager, "Appearance", DeucarianEditorIconIds.Palette);
-            var audio = workspace.AddNavigation("audio", "Audio", "headset", openAudio ?? (() => DeucarianToolRegistry.TryOpen(AudioToolId)));
-            bool audioAvailable = openAudio != null || DeucarianToolRegistry.TryGet(AudioToolId, out _);
-            audio.SetEnabled(audioAvailable);
-            audio.tooltip = audioAvailable ? "Open Audio Palette Lab" : "Audio Palette Lab is not installed in this project.";
+            Add(workspace, AudioToolId, "Audio", "headset", navigationId: "audio", openNew: openAudio);
             Add(workspace, "deucarian.notifications.lab", "Notifications", DeucarianEditorIconIds.Sample);
             Add(workspace, DeucarianToolIds.Diagnostics, "Diagnostics", DeucarianEditorIconIds.Activity);
-            workspace.AddNavigation("advanced", "Advanced", DeucarianEditorIconIds.Settings,
-                () => DeucarianControlCenterWindow.Open(DeucarianControlCenterArea.Developer), true);
+            Add(workspace, DeucarianToolIds.ControlCenter, "Advanced", DeucarianEditorIconIds.Settings,
+                navigationId: "advanced", route: "developer", footer: true);
             workspace.SelectNavigation(selectedTool);
             workspace.SearchField.RegisterValueChangedCallback(evt =>
             {
@@ -29,12 +26,20 @@ namespace Deucarian.Editor
             });
         }
 
-        private static void Add(DeucarianEditorWorkspace workspace, string toolId, string label, string icon)
+        private static void Add(DeucarianEditorWorkspace workspace, string toolId, string label, string icon,
+            string navigationId = null, string route = null, bool footer = false, Action openNew = null)
         {
-            var button = workspace.AddNavigation(toolId, label, icon, () => DeucarianToolRegistry.TryOpen(toolId));
-            bool available = DeucarianToolRegistry.TryGet(toolId, out _);
+            var button = workspace.AddNavigation(navigationId ?? toolId, label, icon,
+                () => DeucarianEditorNavigateEvent.Send(workspace.Root, toolId, route), footer);
+            bool available = DeucarianToolRegistry.TryGet(toolId, out var tool) && tool.CreatePage != null;
             button.SetEnabled(available);
-            button.tooltip = available ? "Open " + label : "This tool is not installed in the current project.";
+            button.tooltip = available ? "Show " + label + " in this window. Right-click to open separately." :
+                "Install or update this tool to enable in-window navigation.";
+            button.AddManipulator(new ContextualMenuManipulator(evt =>
+                evt.menu.AppendAction("Open in new window", _ =>
+                {
+                    DeucarianEditorToolWindow.Open(toolId, route);
+                })));
         }
     }
 }

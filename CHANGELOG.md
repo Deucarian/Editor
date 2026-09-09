@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.0] - 2026-09-09
+
+- Keep sidebar navigation in the current workspace and retain page drafts while switching tools.
+- Support explicitly opening independent workspaces through the sidebar context menu.
+
+
 ## [1.4.1] - 2026-09-09
 
 ### Fixed
