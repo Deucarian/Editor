@@ -35,6 +35,7 @@ namespace Deucarian.Editor
         private bool disposed;
         private readonly Label searchPlaceholder;
         private readonly DeucarianEditorWorkspaceScale uiScale;
+        private IDisposable navigationBinding;
 
         public DeucarianEditorWorkspace(VisualElement root, string context, bool includeDrawer = false)
         {
@@ -149,6 +150,19 @@ namespace Deucarian.Editor
             return button;
         }
 
+        internal void BindNavigation(IDisposable binding)
+        {
+            navigationBinding?.Dispose();
+            navigationBinding = binding;
+        }
+
+        internal void ClearNavigation()
+        {
+            navigation.Clear();
+            Navigation.Clear();
+            NavigationFooter.Clear();
+        }
+
         public void SelectNavigation(string id)
         {
             foreach (var entry in navigation)
@@ -166,6 +180,8 @@ namespace Deucarian.Editor
         {
             if (disposed) return;
             disposed = true;
+            navigationBinding?.Dispose();
+            navigationBinding = null;
             uiScale.Dispose();
             Root.UnregisterCallback(resized);
             Root.UnregisterCallback<KeyDownEvent>(OnKeyDown);

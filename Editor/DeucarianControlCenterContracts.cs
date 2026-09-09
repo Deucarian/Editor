@@ -86,7 +86,9 @@ namespace Deucarian.Editor
             Action invoke,
             string description = null,
             IEnumerable<string> searchTerms = null,
-            bool requiresConfirmation = false)
+            bool requiresConfirmation = false,
+            string navigationToolId = null,
+            string navigationRoute = null)
         {
             Id = Require(id, nameof(id));
             Label = Require(label, nameof(label));
@@ -94,6 +96,8 @@ namespace Deucarian.Editor
             Description = Clean(description);
             SearchTerms = Copy(searchTerms);
             RequiresConfirmation = requiresConfirmation;
+            NavigationToolId = Clean(navigationToolId);
+            NavigationRoute = Clean(navigationRoute);
         }
 
         public string Id { get; }
@@ -101,6 +105,8 @@ namespace Deucarian.Editor
         public string Description { get; }
         public IReadOnlyList<string> SearchTerms { get; }
         public bool RequiresConfirmation { get; }
+        public string NavigationToolId { get; }
+        public string NavigationRoute { get; }
         public void Invoke() => invoke();
 
         internal static string Require(string value, string parameterName)

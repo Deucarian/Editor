@@ -31,15 +31,7 @@ namespace Deucarian.Editor
             workspace.Subtitle.text = "Create a test message and see what happens.";
             workspace.Root.Insert(0, DeucarianEditorWorkspaceControls.Label(
                 "EDITOR COMPONENT PREVIEW · SAMPLE DATA · NOT CONNECTED TO YOUR APP", "dw-preview-label"));
-            AddNavigation("overview", "Overview", DeucarianEditorIconIds.Dashboard, DeucarianToolIds.ControlCenter);
-            AddNavigation("packages", "Packages", DeucarianEditorIconIds.Package, DeucarianToolIds.PackageInstaller);
-            AddNavigation("appearance", "Appearance", DeucarianEditorIconIds.Palette, DeucarianToolIds.ThemeManager);
-            AddNavigation("audio", "Audio", "headset", DeucarianToolIds.ThemeManager);
-            workspace.AddNavigation("notifications", "Notifications", DeucarianEditorIconIds.Sample, () => workspace.SelectNavigation("notifications"));
-            AddNavigation("diagnostics", "Diagnostics", DeucarianEditorIconIds.Activity, DeucarianToolIds.Diagnostics);
-            workspace.AddNavigation("advanced", "Advanced", DeucarianEditorIconIds.Settings,
-                () => DeucarianControlCenterWindow.Open(DeucarianControlCenterArea.Developer), true);
-            workspace.SelectNavigation("notifications");
+            DeucarianEditorWorkspaceNavigation.Populate(workspace, "deucarian.editor.workspace-preview");
             workspace.ContextButton.SetEnabled(false);
             workspace.ContextButton.tooltip = "Current project. Project switching is not part of this visual preview.";
             var standalone = DeucarianEditorWorkspaceControls.Button("Open standalone", () => DeucarianToolRegistry.TryOpen("deucarian.notifications.lab"));
@@ -75,21 +67,8 @@ namespace Deucarian.Editor
                         "This is a visual component preview. Application settings remain in their owning package.", "dw-muted"));
                 }
             };
-            workspace.SearchField.RegisterValueChangedCallback(evt =>
-            {
-                string query = evt.newValue ?? string.Empty;
-                foreach (VisualElement item in workspace.Navigation.Children())
-                    item.style.display = (item.Q<Label>()?.text ?? string.Empty).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            });
             workspace.FooterLeading.text = "Preview only · sample timers are frozen";
             workspace.FooterTrailing.text = "Sample layout · Maximum 5 · Fade · Lazy follow off";
-        }
-
-        private void AddNavigation(string id, string label, string icon, string toolId)
-        {
-            var button = workspace.AddNavigation(id, label, icon, () => DeucarianToolRegistry.TryOpen(toolId));
-            button.tooltip = DeucarianToolRegistry.TryGet(toolId, out _) ? "Open " + label : "This tool is not installed in the current project.";
-            button.SetEnabled(DeucarianToolRegistry.TryGet(toolId, out _));
         }
 
         private void BuildForm(VisualElement form)

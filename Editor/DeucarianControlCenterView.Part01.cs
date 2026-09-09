@@ -233,7 +233,7 @@ namespace Deucarian.Editor
 
                 row.Add(text);
                 var button = DeucarianEditorWorkspaceControls.Button("Open",
-                    () => InvokeSafely(captured.DisplayName, captured.Open));
+                    () => DeucarianEditorNavigation.Open(Root, captured.Id));
                 button.name = "control-center-open-" + tool.Id;
                 bool favorite = DeucarianToolHistory.IsFavorite(tool.Id);
                 var pin = DeucarianEditorWorkspaceControls.Button(favorite ? "Unpin" : "Pin", () =>
@@ -316,6 +316,12 @@ namespace Deucarian.Editor
                 return;
             }
 
+            if (!string.IsNullOrEmpty(result.NavigationToolId))
+            {
+                DeucarianEditorNavigation.Open(Root, result.NavigationToolId, result.NavigationRoute);
+                return;
+            }
+
             if (Confirm(result.Title, result.RequiresConfirmation))
             {
                 InvokeSafely(result.Title, result.Invoke);
@@ -324,7 +330,9 @@ namespace Deucarian.Editor
 
         private void ExecuteCardAction(DeucarianControlCenterAction action)
         {
-            if (Confirm(action.Label, action.RequiresConfirmation)) InvokeSafely(action.Label, action.Invoke);
+            if (!string.IsNullOrEmpty(action.NavigationToolId))
+                DeucarianEditorNavigation.Open(Root, action.NavigationToolId, action.NavigationRoute);
+            else if (Confirm(action.Label, action.RequiresConfirmation)) InvokeSafely(action.Label, action.Invoke);
         }
 
         private VisualElement CreateCardHost()

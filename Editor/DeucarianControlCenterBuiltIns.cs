@@ -16,6 +16,10 @@ namespace Deucarian.Editor
 
         static DeucarianControlCenterBuiltIns()
         {
+            DeucarianToolRegistry.Register(new DeucarianToolDescriptor("deucarian.editor.workspace-preview",
+                "Editor UI Preview", "Inspect shared controls using isolated sample content.",
+                DeucarianControlCenterArea.Developer, DeucarianEditorWorkspacePreviewWindow.Open, PackageName,
+                createPage: DeucarianEditorWorkspacePreviewWindow.CreatePage));
             ProviderRegistration =
                 DeucarianControlCenterRegistry.RegisterCardProvider(Provider);
             ToolRegistration = DeucarianToolRegistry.Register(
@@ -50,7 +54,7 @@ namespace Deucarian.Editor
                     "deucarian.tools.discovery",
                     DeucarianControlCenterArea.Developer,
                     "Developer tool discovery",
-                    "Registered tools remain owned by their packages and open as standalone workflows.",
+                    "Registered package tools open as pages in this workspace.",
                     PackageName,
                     DeucarianControlCenterStatus.Info,
                     tools.Count + " tool(s)",
@@ -60,7 +64,7 @@ namespace Deucarian.Editor
                     {
                         new DeucarianControlCenterAction("deucarian.editor.workspace-preview", "Open Editor UI Preview",
                             DeucarianEditorWorkspacePreviewWindow.Open,
-                            "Inspect the shared editor layout using isolated sample content.")
+                            "Inspect the shared editor layout using isolated sample content.", navigationToolId: "deucarian.editor.workspace-preview")
                     },
                     searchTerms: new[]
                     {

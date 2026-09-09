@@ -85,6 +85,9 @@ namespace Deucarian.Editor.Tests
                             Assert.That(workspace.Footer.worldBound.yMax, Is.LessThanOrEqualTo(page.worldBound.yMax + 2), context);
                             Assert.That(slider.worldBound.xMax, Is.LessThanOrEqualTo(page.worldBound.xMax + 2), context);
                             Assert.That(workspace.Content.resolvedStyle.height, Is.GreaterThan(30), context);
+                            if (workspace.Root.resolvedStyle.width < 760)
+                                Assert.That(page.Q("workspace-navigation-menu").resolvedStyle.display,
+                                    Is.EqualTo(DisplayStyle.Flex), context + " uses a bounded navigation menu");
                             var resetButton = page.Q<Button>("workspace-scale-reset");
                             if (sliderBounds.HasValue)
                             {

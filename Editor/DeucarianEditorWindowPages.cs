@@ -32,6 +32,15 @@ namespace Deucarian.Editor
             }
         }
 
+        public static T ShowStandalone<T>(string title, Vector2 minimumSize) where T : EditorWindow
+        {
+            var window = GetStandalone<T>(title);
+            window.minSize = minimumSize;
+            window.Show();
+            window.Focus();
+            return window;
+        }
+
         public static T GetStandalone<T>(string title = null) where T : EditorWindow
         {
             foreach (var candidate in Resources.FindObjectsOfTypeAll<T>())
