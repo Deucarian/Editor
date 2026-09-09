@@ -935,12 +935,12 @@ namespace Deucarian.Editor.Tests
         {
             DeucarianEditorWorkbenchGUI.ClearCache();
 
-            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
+            Assert.AreEqual(42f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
             Assert.AreEqual(FontStyle.Normal, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
             Assert.AreEqual(
                 DeucarianEditorTypography.Strong.name,
                 DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.font.name);
-            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
+            Assert.AreEqual(36f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.PageHorizontalPadding,
                 DeucarianEditorWorkbenchGUI.WindowStyle.padding.left);
@@ -1161,9 +1161,9 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(14f, DeucarianEditorIconTextButton.IconSize);
 
             string rootRule = GetStyleRule(uss, ".deucarian-icon-text-button");
-            StringAssert.Contains("height: 28px;", rootRule);
-            StringAssert.Contains("min-height: 28px;", rootRule);
-            StringAssert.Contains("max-height: 28px;", rootRule);
+            StringAssert.Contains("height: 36px;", rootRule);
+            StringAssert.Contains("min-height: 36px;", rootRule);
+            StringAssert.Contains("max-height: 36px;", rootRule);
             StringAssert.Contains("padding-left: 8px;", rootRule);
             StringAssert.Contains("padding-right: 8px;", rootRule);
             StringAssert.Contains("padding-top: 0;", rootRule);
@@ -1188,7 +1188,7 @@ namespace Deucarian.Editor.Tests
             StringAssert.Contains("min-width: 8px;", gapRule);
             StringAssert.Contains("max-width: 8px;", gapRule);
             StringAssert.Contains("align-content: center;", uss);
-            StringAssert.Contains("height: 28px;", uss);
+            StringAssert.Contains("height: 36px;", uss);
             StringAssert.DoesNotContain("padding-left: 6px;", uss);
             StringAssert.DoesNotContain("padding-right: 6px;", uss);
         }
@@ -1413,16 +1413,16 @@ namespace Deucarian.Editor.Tests
 
             string uss = ReadSharedStyleSheet();
             string toolbarRule = GetStyleRule(uss, ".deucarian-toolbar-row");
-            StringAssert.Contains("height: 46px;", toolbarRule);
-            StringAssert.Contains("min-height: 46px;", toolbarRule);
-            StringAssert.Contains("max-height: 46px;", toolbarRule);
+            StringAssert.Contains("height: 54px;", toolbarRule);
+            StringAssert.Contains("min-height: 54px;", toolbarRule);
+            StringAssert.Contains("max-height: 54px;", toolbarRule);
             StringAssert.Contains("align-items: center;", toolbarRule);
             StringAssert.Contains("align-content: center;", toolbarRule);
 
             string laneRule = GetStyleRule(uss, ".deucarian-command-bar__navigation,");
-            StringAssert.Contains("height: 28px;", laneRule);
-            StringAssert.Contains("min-height: 28px;", laneRule);
-            StringAssert.Contains("max-height: 28px;", laneRule);
+            StringAssert.Contains("height: 36px;", laneRule);
+            StringAssert.Contains("min-height: 36px;", laneRule);
+            StringAssert.Contains("max-height: 36px;", laneRule);
             StringAssert.Contains("align-items: center;", laneRule);
 
             string summaryRule = GetStyleRule(uss, ".deucarian-command-bar__summary");
@@ -1434,18 +1434,18 @@ namespace Deucarian.Editor.Tests
             string stackedRule = GetStyleRule(
                 uss,
                 ".deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes,");
-            StringAssert.Contains("height: 78px;", stackedRule);
-            StringAssert.Contains("min-height: 78px;", stackedRule);
-            StringAssert.Contains("max-height: 78px;", stackedRule);
+            StringAssert.Contains("height: 94px;", stackedRule);
+            StringAssert.Contains("min-height: 94px;", stackedRule);
+            StringAssert.Contains("max-height: 94px;", stackedRule);
             StringAssert.Contains("flex-direction: column;", stackedRule);
             StringAssert.Contains("justify-content: center;", stackedRule);
 
             string compactRule = GetStyleRule(
                 uss,
                 ".deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line,");
-            StringAssert.Contains("height: 46px;", compactRule);
-            StringAssert.Contains("min-height: 46px;", compactRule);
-            StringAssert.Contains("max-height: 46px;", compactRule);
+            StringAssert.Contains("height: 54px;", compactRule);
+            StringAssert.Contains("min-height: 54px;", compactRule);
+            StringAssert.Contains("max-height: 54px;", compactRule);
             StringAssert.Contains("align-items: center;", compactRule);
             StringAssert.Contains("align-content: center;", compactRule);
         }
