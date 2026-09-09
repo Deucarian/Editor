@@ -23,6 +23,12 @@ namespace Deucarian.Editor
         public const string CompactClass = "deucarian-responsive--compact";
         public const string NarrowClass = "deucarian-responsive--narrow";
 
+        internal static void AdaptToWidth(VisualElement element, string compactClass, float breakpoint)
+        {
+            element.RegisterCallback<GeometryChangedEvent>(evt =>
+                element.EnableInClassList(compactClass, evt.newRect.width > 0 && evt.newRect.width < breakpoint));
+        }
+
         public static DeucarianEditorLayoutMode ResolveMode(float width)
         {
             if (width >= WorkbenchWideBreakpoint)

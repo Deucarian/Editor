@@ -53,6 +53,7 @@ namespace Deucarian.Editor
             input.AddToClassList("dw-field-input");
             if (string.IsNullOrEmpty(input.tooltip)) input.tooltip = label;
             row.Add(input);
+            DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-field-stacked", 520);
             return row;
         }
 
@@ -73,6 +74,7 @@ namespace Deucarian.Editor
             preview.AddToClassList("dw-preview-pane");
             split.Add(form);
             split.Add(preview);
+            DeucarianEditorResponsiveLayout.AdaptToWidth(split, "dw-split-stacked", 840);
             return split;
         }
 

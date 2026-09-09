@@ -36,7 +36,7 @@ namespace Deucarian.Editor
             progress.Add(fill);
             progress.style.display = DisplayStyle.None;
             trailing.Add(progress);
-            Add(trailing);
+            text.Add(trailing);
             if (!string.IsNullOrEmpty(actionLabel))
             {
                 hasAction = action != null;

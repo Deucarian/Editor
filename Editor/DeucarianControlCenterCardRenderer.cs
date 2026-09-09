@@ -17,8 +17,8 @@ namespace Deucarian.Editor
             };
             DeucarianControlCenterVisuals.StylePanel(result);
             result.style.flexGrow = 1f;
-            result.style.flexBasis = 300f;
-            result.style.minWidth = 250f;
+            result.style.flexBasis = 280f;
+            result.style.minWidth = 0f;
             result.style.marginRight = 6f;
             result.style.marginBottom = 6f;
             result.style.paddingLeft = 12f;
@@ -32,7 +32,9 @@ namespace Deucarian.Editor
             }
 
             VisualElement heading = new VisualElement();
+            heading.AddToClassList("dw-card-heading");
             heading.style.flexDirection = FlexDirection.Row;
+            heading.style.flexWrap = Wrap.Wrap;
             heading.style.justifyContent = Justify.SpaceBetween;
             heading.Add(DeucarianControlCenterVisuals.CreateLabel(card.Title, true));
             if (card.StatusText.Length > 0)
@@ -62,14 +64,8 @@ namespace Deucarian.Editor
                 foreach (DeucarianControlCenterAction action in card.Actions)
                 {
                     DeucarianControlCenterAction captured = action;
-                    var button = new Button(() =>
-                    {
-                        execute(captured);
-                    })
-                    {
-                        text = action.Label,
-                        name = "control-center-action-" + action.Id
-                    };
+                    var button = DeucarianEditorWorkspaceControls.Button(action.Label, () => execute(captured));
+                    button.name = "control-center-action-" + action.Id;
                     button.style.marginRight = 5f;
                     actions.Add(button);
                 }

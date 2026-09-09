@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1] - 2026-09-09
+
+- Flatten Control Center tool rows and remove duplicate overview headings and inset containers.
+- Adapt fields and split panes to their own available width, including narrow docked layouts.
+- Align input text, keep detail actions content-sized, and use a single selection surface with visible keyboard focus.
+- Keep warning lifetime and progress beneath message text so actions stay reachable.
+- Add layout regression checks at screenshot, live-window, floating-minimum, and docked widths.
+
 ## [1.5.0] - 2026-09-09
 
 - Keep sidebar navigation in the current workspace and retain page drafts while switching tools.
