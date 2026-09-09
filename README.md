@@ -5,13 +5,17 @@
 The left sidebar changes pages in the current window, keeping each page's draft and session alive. Right-click a sidebar item and choose **Open in new window** for an independent workspace. Closing a workspace releases its pages; ordinary page changes do not reset lab messages or stop package operations.
 
 
-## Shared workspace (1.4.1)
+## Shared workspace
 
 Shared responsive workspace, searchable list/detail surfaces, form bindings, stable audio navigation and Control Center migration. Visual tokens remain owned here; domain operations stay in consumers.
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.6.1`.
+Current package version: `1.7.0`.
+
+All editor surfaces share the workspace's charcoal/teal palette and DINish typography. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
+
+Custom inspectors can return `DeucarianEditorInspector.Create(OnInspectorGUI)` from `CreateInspectorGUI`. This adds shared presentation without a second sidebar and preserves native serialized property editing. Embedded legacy windows pass their owner to the header, footer and settings-page helpers so the workspace remains the only page header.
 
 ## Reading and scaling the workspace
 
@@ -183,7 +187,7 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 - `DeucarianEditorResponsiveLayout`: legacy preview calculations plus the exact Wide/Compact/Narrow workbench resolver and idempotent UI Toolkit class application.
 - `DeucarianEditorWorkbenchToolbar` and `DeucarianEditorWorkbenchSurfaces`: domain-neutral toolbar, drawer, row, and footer factories backed by shared USS contracts.
 - `DeucarianEditorIconToolbar`: IMGUI icon-only actions backed exclusively by vendored Lucide IDs.
-- `DeucarianEditorWorkbenchGUI`: shared 24 px IMGUI actions, surface colors, panel scopes, separators, key/value rows, legacy marker rows, and Lucide status rows.
+- `DeucarianEditorWorkbenchGUI`: shared IMGUI styles, surface colors, panel scopes, separators, key/value rows, legacy marker rows, and Lucide status rows. Standard actions are 36 px; primary actions are 42 px and form rows are 32 px before workspace scaling.
 - `DeucarianEditorDialog`: branded responsive callback-based utility dialogs with a Lucide icon, wrapped message/details content, icon-bearing actions, and deterministic Enter/Escape/window-close completion.
 - `DeucarianEditorCardScope`, `DeucarianEditorFoldoutScope`, and `DeucarianEditorWorkbenchPanelScope`: exception-safe layout scopes for composable drawing.
 

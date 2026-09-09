@@ -29,9 +29,9 @@ namespace Deucarian.Editor
             {
                 if (titleStyle == null)
                 {
-                    titleStyle = new GUIStyle(EditorStyles.boldLabel)
+                    titleStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.BoldLabelStyle)
                     {
-                        fontSize = 13,
+                        fontSize = 18,
                         fontStyle = FontStyle.Bold,
                         wordWrap = true
                     };
@@ -48,7 +48,7 @@ namespace Deucarian.Editor
             {
                 if (summaryStyle == null)
                 {
-                    summaryStyle = new GUIStyle(EditorStyles.label)
+                    summaryStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle)
                     {
                         wordWrap = true
                     };

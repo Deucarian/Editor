@@ -46,8 +46,8 @@ namespace Deucarian.Editor
                     miniButtonStyle = new GUIStyle(DeucarianEditorButtons.SecondaryStyle)
                     {
                         fixedHeight = 22f,
-                        fontSize = 10,
-                        padding = new RectOffset(6, 6, 2, 3),
+                        fontSize = 12,
+                        padding = new RectOffset(6, 6, 1, 1),
                         margin = new RectOffset(2, 0, 0, 0)
                     };
                 }

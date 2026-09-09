@@ -12,7 +12,11 @@ namespace Deucarian.Editor
         {
             var root = new VisualElement();
             var workspace = new DeucarianEditorWorkspace(root, Application.productName);
-            if (DeucarianToolRegistry.TryGet(toolId, out var tool)) workspace.Title.text = tool.DisplayName;
+            if (DeucarianToolRegistry.TryGet(toolId, out var tool))
+            {
+                workspace.Title.text = tool.DisplayName;
+                workspace.Subtitle.text = tool.Description;
+            }
             DeucarianEditorWorkspaceNavigation.Populate(workspace, toolId);
             DeucarianEditorWorkspaceControls.Show(workspace.Tabs, false);
             DeucarianEditorWorkspaceControls.Show(workspace.Scope, false);

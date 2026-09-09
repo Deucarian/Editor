@@ -190,9 +190,9 @@ namespace Deucarian.Editor
             {
                 if (headerTitleStyle == null)
                 {
-                    headerTitleStyle = new GUIStyle(EditorStyles.boldLabel)
+                    headerTitleStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.BoldLabelStyle)
                     {
-                        fontSize = 20,
+                        fontSize = 24,
                         fontStyle = FontStyle.Bold,
                         wordWrap = true
                     };
@@ -209,9 +209,9 @@ namespace Deucarian.Editor
             {
                 if (headerSubtitleStyle == null)
                 {
-                    headerSubtitleStyle = new GUIStyle(EditorStyles.label)
+                    headerSubtitleStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle)
                     {
-                        fontSize = 12,
+                        fontSize = 14,
                         wordWrap = true
                     };
                     headerSubtitleStyle.normal.textColor = DeucarianEditorTheme.MutedText;
@@ -227,9 +227,9 @@ namespace Deucarian.Editor
             {
                 if (sectionTitleStyle == null)
                 {
-                    sectionTitleStyle = new GUIStyle(EditorStyles.boldLabel)
+                    sectionTitleStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.BoldLabelStyle)
                     {
-                        fontSize = 13,
+                        fontSize = 18,
                         fontStyle = FontStyle.Bold,
                         wordWrap = true
                     };
@@ -246,7 +246,7 @@ namespace Deucarian.Editor
             {
                 if (mutedStyle == null)
                 {
-                    mutedStyle = new GUIStyle(EditorStyles.label)
+                    mutedStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle)
                     {
                         wordWrap = true
                     };

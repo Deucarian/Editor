@@ -21,18 +21,14 @@ namespace Deucarian.Editor
             value = value ?? string.Empty;
             using (new EditorGUILayout.HorizontalScope())
             {
-                string next = EditorGUILayout.TextField(
-                    new GUIContent(string.Empty, placeholder ?? string.Empty),
-                    value,
-                    SearchStyle,
-                    options);
+                string next = DeucarianEditorInputGUI.TextField(value, SearchStyle, options);
                 if (string.IsNullOrEmpty(next) && Event.current.type == EventType.Repaint)
                 {
                     Rect rect = GUILayoutUtility.GetLastRect();
                     rect.xMin += 18f;
-                    GUI.Label(rect, placeholder ?? "Search", EditorStyles.miniLabel);
+                    GUI.Label(rect, placeholder ?? "Search", DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle);
                 }
-                if (GUILayout.Button(new GUIContent("x", "Clear search"), SearchCancelStyle, GUILayout.Width(22f), GUILayout.Height(20f)))
+                if (GUILayout.Button(new GUIContent("×", "Clear search"), SearchCancelStyle, GUILayout.Width(36f), GUILayout.Height(32f)))
                     next = string.Empty;
                 return next;
             }
@@ -47,10 +43,9 @@ namespace Deucarian.Editor
             {
                 if (searchStyle == null)
                 {
-                    GUIStyle source = GUI.skin.FindStyle("ToolbarSeachTextField") ?? GUI.skin.FindStyle("ToolbarSearchTextField") ?? EditorStyles.toolbarTextField;
-                    searchStyle = new GUIStyle(source)
+                    searchStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.InputStyles.Search)
                     {
-                        fixedHeight = 22f
+                        fixedHeight = 32f
                     };
                 }
 
@@ -64,8 +59,7 @@ namespace Deucarian.Editor
             {
                 if (searchCancelStyle == null)
                 {
-                    GUIStyle source = GUI.skin.FindStyle("ToolbarSeachCancelButton") ?? GUI.skin.FindStyle("ToolbarSearchCancelButton") ?? EditorStyles.toolbarButton;
-                    searchCancelStyle = new GUIStyle(source);
+                    searchCancelStyle = new GUIStyle(DeucarianEditorButtons.SecondaryStyle) { padding = new RectOffset(0, 0, 0, 0) };
                 }
 
                 return searchCancelStyle;
@@ -93,7 +87,7 @@ namespace Deucarian.Editor
             icon.style.marginRight = 5f;
             var label = new Label(placeholder) { name = "deucarian-search-placeholder", pickingMode = PickingMode.Ignore };
             label.style.color = DeucarianEditorTheme.MutedText;
-            label.style.fontSize = 11f;
+            label.style.fontSize = 14f;
             hint.Add(icon);
             hint.Add(label);
             Add(hint);
@@ -119,7 +113,7 @@ namespace Deucarian.Editor
                 {
                     bool selected = i == selectedIndex;
                     GUIStyle style = selected ? SelectedChipStyle : ChipStyle;
-                    if (GUILayout.Button(new GUIContent(labels[i] ?? string.Empty), style, GUILayout.Height(24f)))
+                    if (GUILayout.Button(new GUIContent(labels[i] ?? string.Empty), style, GUILayout.Height(36f)))
                         selectedIndex = i;
                 }
             }
@@ -141,7 +135,7 @@ namespace Deucarian.Editor
             {
                 if (chipStyle == null)
                 {
-                    chipStyle = CreateChipStyle("workflow-chip", new Color(0.08f, 0.20f, 0.25f, 0.78f), DeucarianEditorTheme.MutedText);
+                    chipStyle = CreateChipStyle("workflow-chip", DeucarianEditorSurfacePalette.Field, DeucarianEditorTheme.MutedText);
                 }
 
                 return chipStyle;
@@ -154,7 +148,7 @@ namespace Deucarian.Editor
             {
                 if (selectedChipStyle == null)
                 {
-                    selectedChipStyle = CreateChipStyle("workflow-chip-selected", new Color(0.09f, 0.48f, 0.52f, 0.96f), DeucarianEditorTheme.Text);
+                    selectedChipStyle = CreateChipStyle("workflow-chip-selected", DeucarianEditorSurfacePalette.Selected, DeucarianEditorSurfacePalette.Accent);
                     selectedChipStyle.fontStyle = FontStyle.Bold;
                 }
 
@@ -164,7 +158,7 @@ namespace Deucarian.Editor
 
         private static GUIStyle CreateChipStyle(string key, Color background, Color text)
         {
-            GUIStyle style = new GUIStyle(EditorStyles.miniButton)
+            GUIStyle style = new GUIStyle(DeucarianEditorButtons.SecondaryStyle)
             {
                 alignment = TextAnchor.MiddleCenter,
                 clipping = TextClipping.Clip,
@@ -287,7 +281,7 @@ namespace Deucarian.Editor
                             ? DeucarianEditorStatus.Info
                             : DeucarianEditorStatus.Disabled;
                     string label = (i + 1).ToString(System.Globalization.CultureInfo.InvariantCulture) + ". " + steps[i];
-                    if (GUILayout.Button(label, i == currentStep ? StepSelectedStyle : StepStyle, GUILayout.Height(24f)))
+                    if (GUILayout.Button(label, i == currentStep ? StepSelectedStyle : StepStyle, GUILayout.Height(36f)))
                         currentStep = i;
                     GUILayout.Space(2f);
                     if (Event.current != null && Event.current.type == EventType.Repaint)
@@ -313,7 +307,7 @@ namespace Deucarian.Editor
                 {
                     stepStyle = new GUIStyle(DeucarianEditorButtons.SecondaryStyle)
                     {
-                        fontSize = 10,
+                        fontSize = 14,
                         clipping = TextClipping.Clip,
                         padding = new RectOffset(8, 14, 2, 3)
                     };
@@ -331,7 +325,7 @@ namespace Deucarian.Editor
                 {
                     stepSelectedStyle = new GUIStyle(DeucarianEditorButtons.PrimaryStyle)
                     {
-                        fontSize = 10,
+                        fontSize = 14,
                         clipping = TextClipping.Clip,
                         padding = new RectOffset(8, 14, 2, 3)
                     };
@@ -463,7 +457,7 @@ namespace Deucarian.Editor
             {
                 if (titleStyle == null)
                 {
-                    titleStyle = new GUIStyle(EditorStyles.boldLabel)
+                    titleStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.BoldLabelStyle)
                     {
                         wordWrap = true,
                         clipping = TextClipping.Clip

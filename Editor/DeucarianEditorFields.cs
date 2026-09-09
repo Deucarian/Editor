@@ -19,7 +19,7 @@ namespace Deucarian.Editor
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            T nextValue = EditorGUILayout.ObjectField(label ?? string.Empty, value, typeof(T), false) as T;
+            T nextValue = DeucarianEditorInputGUI.ObjectField(label ?? string.Empty, value, typeof(T), false) as T;
             if (EditorGUI.EndChangeCheck())
             {
                 NotifyValueChanged(value, nextValue, onValueChanged);
@@ -35,7 +35,7 @@ namespace Deucarian.Editor
 
             using (new EditorGUI.DisabledScope(!canClick))
             {
-                if (GUILayout.Button(buttonLabel, GUILayout.Width(72)))
+                if (DeucarianEditorActionGUI.Button(buttonLabel, GUILayout.Width(80)))
                 {
                     if (hasValue)
                     {
@@ -64,9 +64,9 @@ namespace Deucarian.Editor
 
         public static string DrawReadonlyTextField(string label, string value)
         {
-            Rect field = EditorGUILayout.GetControlRect();
-            field = EditorGUI.PrefixLabel(field, new GUIContent(label ?? string.Empty));
-            EditorGUI.SelectableLabel(field, value ?? string.Empty, EditorStyles.textField);
+            Rect field = EditorGUILayout.GetControlRect(false, DeucarianEditorInputGUI.RowHeight);
+            field = EditorGUI.PrefixLabel(field, new GUIContent(label ?? string.Empty), DeucarianEditorWorkbenchGUI.LabelStyle);
+            EditorGUI.SelectableLabel(field, value ?? string.Empty, DeucarianEditorWorkbenchGUI.InputStyles.Text);
             return value ?? string.Empty;
         }
 
@@ -75,7 +75,7 @@ namespace Deucarian.Editor
             EditorGUILayout.BeginHorizontal();
             string result = DrawReadonlyTextField(label, value);
 
-            if (GUILayout.Button(string.IsNullOrWhiteSpace(buttonLabel) ? "Copy" : buttonLabel, GUILayout.Width(72)))
+            if (DeucarianEditorActionGUI.Button(string.IsNullOrWhiteSpace(buttonLabel) ? "Copy" : buttonLabel, GUILayout.Width(80)))
             {
                 EditorGUIUtility.systemCopyBuffer = value ?? string.Empty;
             }
@@ -92,7 +92,7 @@ namespace Deucarian.Editor
             bool canOpen = !string.IsNullOrWhiteSpace(path) && (File.Exists(path) || Directory.Exists(path));
             using (new EditorGUI.DisabledScope(!canOpen))
             {
-                if (GUILayout.Button(string.IsNullOrWhiteSpace(buttonLabel) ? "Open" : buttonLabel, GUILayout.Width(72)))
+                if (DeucarianEditorActionGUI.Button(string.IsNullOrWhiteSpace(buttonLabel) ? "Open" : buttonLabel, GUILayout.Width(80)))
                 {
                     EditorUtility.RevealInFinder(path);
                 }

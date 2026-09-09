@@ -160,7 +160,7 @@ namespace Deucarian.Editor
 
         private static GUIStyle CreateItemLabelStyle(Color textColor, FontStyle fontStyle)
         {
-            GUIStyle style = new GUIStyle(EditorStyles.label)
+            GUIStyle style = new GUIStyle(DeucarianEditorWorkbenchGUI.LabelStyle)
             {
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = fontStyle,

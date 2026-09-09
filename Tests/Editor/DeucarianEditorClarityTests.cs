@@ -58,7 +58,12 @@ namespace Deucarian.Editor.Tests
         {
             using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))
             {
-                view.Render(DeucarianControlCenterSnapshotBuilder.Capture(), DeucarianControlCenterArea.Overview, null, "");
+                var card = new DeucarianControlCenterCard("deucarian.overview.build-packages",
+                    DeucarianControlCenterArea.Overview, "Build & packages", "Review installed packages.",
+                    "com.deucarian.editor", DeucarianControlCenterStatus.Success, "Ready");
+                var snapshot = new DeucarianControlCenterSnapshot(System.DateTime.UtcNow, new[] { card },
+                    System.Array.Empty<DeucarianControlCenterSection>(), System.Array.Empty<DeucarianToolDescriptor>());
+                view.Render(snapshot, DeucarianControlCenterArea.Overview, null, "");
                 view.SetLayoutMode(DeucarianEditorLayoutMode.Narrow);
                 int checkedCards = 0;
                 view.Root.Query<VisualElement>().ForEach(element =>
