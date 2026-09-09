@@ -34,6 +34,14 @@ namespace Deucarian.Editor.Tests
             finally { DeucarianEditorAppearance.Changed -= changed; }
         }
 
+        [Test]
+        public void NewBaselineDefaultsToThePreviousSeventyFivePercentSize()
+        {
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.ScaleKey);
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(100));
+            Assert.That(DeucarianEditorWorkspaceScale.DefaultScale, Is.EqualTo(0.75f));
+        }
+
         [UnityTest]
         public IEnumerator ScaleFitsTheViewportPreservesDraftsAndWorksAfterDetachAndReset()
         {
@@ -53,27 +61,40 @@ namespace Deucarian.Editor.Tests
                     workspace.Content.Add(scroll);
                     DeucarianEditorWorkspaceControls.Show(workspace.Scope, false);
                     DeucarianEditorWorkspaceControls.Show(workspace.Tabs, false);
-                    var slider = workspace.Root.Q<SliderInt>("workspace-scale-slider");
+                    var slider = page.Q<SliderInt>("workspace-scale-slider");
                     workspace.Footer.Clear();
                     workspace.Footer.Add(new Label("Consumer-owned status footer"));
-                    Assert.That(workspace.Root.Q<SliderInt>("workspace-scale-slider"), Is.SameAs(slider), "Consumer footer replacement must not remove shared scale controls.");
+                    Assert.That(page.Q<SliderInt>("workspace-scale-slider"), Is.SameAs(slider), "Consumer footer replacement must not remove shared scale controls.");
+                    var viewport = page.Q("workspace-scale-viewport");
                     foreach (var size in new[] { new Vector2(1480, 697), new Vector2(1319, 697), new Vector2(820, 650) })
                     {
                         window.rootVisualElement.style.width = size.x;
                         window.rootVisualElement.style.height = size.y;
+                        Rect? sliderBounds = null;
+                        Rect? resetBounds = null;
                         foreach (int percent in new[] { 75, 100, 125, 150 })
                         {
                             slider.value = percent;
                             for (int frame = 0; frame < 10; frame++) yield return null;
                             string context = size + " at " + percent + "%";
-                            Assert.That(workspace.Root.worldBound.xMin, Is.EqualTo(page.worldBound.xMin).Within(1), context);
-                            Assert.That(workspace.Root.worldBound.yMin, Is.EqualTo(page.worldBound.yMin).Within(1), context);
-                            Assert.That(workspace.Root.worldBound.width, Is.EqualTo(page.worldBound.width).Within(2), context);
-                            Assert.That(workspace.Root.worldBound.height, Is.EqualTo(page.worldBound.height).Within(2), context);
-                            Assert.That(workspace.Root.resolvedStyle.width, Is.EqualTo(size.x * 100 / percent).Within(2), context);
+                            Assert.That(workspace.Root.worldBound.xMin, Is.EqualTo(viewport.worldBound.xMin).Within(1), context);
+                            Assert.That(workspace.Root.worldBound.yMin, Is.EqualTo(viewport.worldBound.yMin).Within(1), context);
+                            Assert.That(workspace.Root.worldBound.width, Is.EqualTo(viewport.worldBound.width).Within(2), context);
+                            Assert.That(workspace.Root.worldBound.height, Is.EqualTo(viewport.worldBound.height).Within(2), context);
+                            Assert.That(workspace.Root.resolvedStyle.width, Is.EqualTo(size.x * 100 / percent / DeucarianEditorWorkspaceScale.DefaultScale).Within(2), context);
                             Assert.That(workspace.Footer.worldBound.yMax, Is.LessThanOrEqualTo(page.worldBound.yMax + 2), context);
                             Assert.That(slider.worldBound.xMax, Is.LessThanOrEqualTo(page.worldBound.xMax + 2), context);
                             Assert.That(workspace.Content.resolvedStyle.height, Is.GreaterThan(30), context);
+                            var resetButton = page.Q<Button>("workspace-scale-reset");
+                            if (sliderBounds.HasValue)
+                            {
+                                Assert.That(Vector2.Distance(slider.worldBound.position, sliderBounds.Value.position), Is.LessThan(0.1f), context + " slider must not move");
+                                Assert.That(slider.worldBound.size, Is.EqualTo(sliderBounds.Value.size), context + " slider must not resize");
+                                Assert.That(resetButton.worldBound, Is.EqualTo(resetBounds.Value), context + " reset must not move or resize");
+                            }
+                            sliderBounds = slider.worldBound;
+                            resetBounds = resetButton.worldBound;
+                            Assert.That(viewport.worldBound.yMax, Is.LessThanOrEqualTo(slider.worldBound.yMin + 1), context + " the fixed dock must not cover content");
                             Assert.That(input.value, Is.EqualTo("Keep this draft"));
                             Assert.That(workspace.Root.ClassListContains("dw-compact"), Is.EqualTo(workspace.Root.resolvedStyle.width < 1100), context);
                         }
@@ -83,7 +104,7 @@ namespace Deucarian.Editor.Tests
                     window.rootVisualElement.Add(page);
                     for (int frame = 0; frame < 8; frame++) yield return null;
                     Assert.That(slider.value, Is.EqualTo(90), "Cached pages adopt the preference when revisited.");
-                    var reset = workspace.Root.Q<Button>("workspace-scale-reset");
+                    var reset = page.Q<Button>("workspace-scale-reset");
                     reset.Focus();
                     yield return null;
                     using (var evt = NavigationSubmitEvent.GetPooled()) { evt.target = reset; reset.SendEvent(evt); }

@@ -8,6 +8,8 @@ namespace Deucarian.Editor
     {
         private readonly VisualElement viewport;
         private readonly VisualElement content;
+        private readonly VisualElement footer;
+        internal const float DefaultScale = 0.75f;
         private readonly SliderInt slider;
         private readonly Button reset;
         private bool disposed;
@@ -15,7 +17,14 @@ namespace Deucarian.Editor
         internal DeucarianEditorWorkspaceScale(VisualElement content, VisualElement footer)
         {
             this.content = content;
-            viewport = content.parent;
+            this.footer = footer;
+            var shell = content.parent;
+            viewport = DeucarianEditorWorkspaceControls.Region("workspace-scale-viewport", "dw-scale-viewport");
+            shell.Add(viewport);
+            viewport.Add(content);
+            footer.AddToClassList("deucarian-workspace");
+            footer.AddToClassList("dw-scale-dock");
+            shell.Add(footer);
             content.style.position = Position.Absolute;
             content.style.left = 0;
             content.style.top = 0;
@@ -53,7 +62,7 @@ namespace Deucarian.Editor
             int percent = DeucarianEditorAppearance.WorkspaceScalePercent;
             slider.SetValueWithoutNotify(percent);
             reset.text = percent + "%";
-            float scale = percent / 100f;
+            float scale = DefaultScale * percent / 100f;
             content.style.scale = new Scale(new Vector3(scale, scale, 1));
             // Layout in logical pixels first; transforming alone would clip enlarged controls.
             content.style.width = Length.Percent(100f / scale);
@@ -66,6 +75,7 @@ namespace Deucarian.Editor
             disposed = true;
             DeucarianEditorAppearance.Changed -= Apply;
             viewport.UnregisterCallback<GeometryChangedEvent>(OnResize);
+            footer.RemoveFromHierarchy();
             content.UnregisterCallback<AttachToPanelEvent>(OnAttach);
             content.UnregisterCallback<DetachFromPanelEvent>(OnDetach);
         }

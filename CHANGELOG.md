@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.3] - 2026-09-09
+
+- Make the previous 75% workspace size the new 100% default, with a separate project-local preference for the normalized scale.
+- Keep the scale slider and reset button in an unscaled, fixed-height dock. Their position and hit targets remain stable throughout dragging and responsive reflow.
+- Reserve space for the dock so scaled content never overlaps it; preserve consumer status-footer replacement.
+
 ## [1.5.2] - 2026-09-09
 
 - Give the overview one attention-first status, concise area summaries and quieter tool rows; retain full details in sections and search.

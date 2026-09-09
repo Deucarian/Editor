@@ -254,7 +254,17 @@
 .deucarian-workspace .dw-scale .unity-slider-int { width: 96px; min-width: 96px; margin: 0 8px 0 0; }
 .deucarian-workspace .dw-scale .unity-base-field__input { background-color: transparent; border-width: 0; padding: 0; min-height: 24px; }
 .deucarian-workspace .dw-scale .dw-button { width: 54px; min-height: 28px; height: 28px; padding: 0 4px; font-size: 13px; border-color: var(--dw-border); }
-.deucarian-workspace.dw-narrow .dw-scale { margin-left: 0; margin-top: 4px; }
+.deucarian-workspace-host .dw-scale-viewport { position: absolute; left: 0; right: 0; top: 0; bottom: 36px; overflow: hidden; }
+.deucarian-workspace-host .dw-scale-dock {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 36px; min-height: 36px;
+    flex-direction: row; align-items: center; flex-wrap: nowrap; padding: 0 12px;
+    border-top-width: 1px; border-top-color: var(--dw-border); background-color: var(--dw-background);
+}
+.deucarian-workspace-host .dw-scale-dock .dw-footer-content { flex-grow: 1; flex-shrink: 1; min-width: 0; overflow: hidden; flex-wrap: nowrap; }
+.deucarian-workspace-host .dw-scale-dock .dw-muted { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deucarian-workspace-host .dw-scale-dock .dw-scale { margin-left: 16px; width: 232px; min-width: 232px; height: 32px; justify-content: flex-end; }
+.deucarian-workspace-host .dw-scale-dock .dw-scale .unity-slider-int { width: 112px; min-width: 112px; flex-shrink: 0; }
+.deucarian-workspace-host .dw-scale-dock .dw-scale .dw-button { flex-shrink: 0; }
 .deucarian-workspace.dw-overview-page .dw-title { font-size: 22px; }
 .deucarian-workspace.dw-overview-page .dw-subtitle { display: none; }
 .deucarian-workspace.dw-overview-page .dw-page-header { margin-bottom: 8px; }

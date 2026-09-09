@@ -99,11 +99,10 @@ namespace Deucarian.Editor
             Footer.Add(DeucarianEditorWorkspaceControls.Region(null, "dw-spacer"));
             Footer.Add(FooterTrailing);
             footerBar.Add(Footer);
-            uiScale = new DeucarianEditorWorkspaceScale(Root, footerBar);
             Page.Add(Tabs);
             Page.Add(Scope);
             Page.Add(Content);
-            Page.Add(footerBar);
+            uiScale = new DeucarianEditorWorkspaceScale(Root, footerBar);
             resized = evt => ApplyWidth(evt.newRect.width);
             Root.RegisterCallback(resized);
             Root.RegisterCallback<KeyDownEvent>(OnKeyDown);
