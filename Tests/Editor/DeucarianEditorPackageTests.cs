@@ -976,7 +976,7 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(0, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.top);
             Assert.AreEqual(8, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.bottom);
             Assert.AreEqual(118f, DeucarianEditorWorkbenchGUI.DetailLabelWidth);
-            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.CompactIconActionHeight);
+            Assert.AreEqual(36f, DeucarianEditorWorkbenchGUI.CompactIconActionHeight);
             Assert.AreEqual(14f, DeucarianEditorWorkbenchGUI.CompactIconSize);
             Assert.AreEqual(8f, DeucarianEditorWorkbenchGUI.CompactIconTextGap);
             Assert.AreEqual(8, DeucarianEditorStyles.ToolbarButton.padding.left);
