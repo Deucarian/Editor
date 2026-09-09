@@ -25,7 +25,8 @@ namespace Deucarian.Editor
         }
 
         public static IDeucarianEditorPage Create<T>(string toolId, Action<T> draw,
-            Action<T> deactivate = null, Action<T, string> activate = null) where T : EditorWindow
+            Action<T> deactivate = null, Action<T, string> activate = null,
+            Action<T, VisualElement> bindNavigation = null) where T : EditorWindow
         {
             if (draw == null) throw new ArgumentNullException(nameof(draw));
             IMGUIContainer container = null;
@@ -40,6 +41,7 @@ namespace Deucarian.Editor
                 container.style.flexGrow = 1;
                 container.style.minHeight = 0;
                 content.Add(container);
+                bindNavigation?.Invoke(controller, content);
             }, activate, deactivate, _ => container?.MarkDirtyRepaint());
         }
     }

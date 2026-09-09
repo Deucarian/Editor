@@ -11,6 +11,19 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianEditorNavigationTests
     {
+        [Test]
+        public void ImGuiAdapterBindsNavigationInsideItsOwnPageAndReleasesItsController()
+        {
+            VisualElement source = null;
+            WorkspaceLayoutTestWindow controller = null;
+            var page = DeucarianEditorImGuiPage.Create<WorkspaceLayoutTestWindow>(
+                "test.adapter", _ => { }, bindNavigation: (window, content) => { controller = window; source = content; });
+            Assert.That(page.Root.Contains(source), Is.True);
+            Assert.That(DeucarianEditorWindowPages.IsPageController(controller), Is.True);
+            page.Dispose();
+            Assert.That(controller == null, Is.True);
+        }
+
         [UnityTest]
         public IEnumerator ToolButtonsCardActionsAndSearchNavigateWithoutInvokingStandaloneCallbacks()
         {

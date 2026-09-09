@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
@@ -35,7 +36,12 @@ namespace Deucarian.Editor
             if (disposed) return;
             workspace.ClearNavigation();
             AddTool(workspace.Navigation, DeucarianToolIds.ControlCenter, "Overview", DeucarianEditorIconIds.Dashboard);
+            var menu = new ToolbarMenu { name = "workspace-navigation-menu", text = "Navigate…" };
+            menu.AddToClassList("dw-navigation-menu");
+            workspace.Navigation.Add(menu);
+            menu.menu.AppendAction("Overview", _ => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter));
             var scroll = DeucarianEditorWorkspaceControls.Scroll("workspace-navigation-scroll");
+            scroll.AddToClassList("dw-navigation-tree");
             workspace.Navigation.Add(scroll);
             var groups = new Dictionary<string, Foldout>(StringComparer.Ordinal);
             string query = filter ? workspace.SearchField.value?.Trim() ?? "" : "";
@@ -44,6 +50,10 @@ namespace Deucarian.Editor
                 if (tool.Id == DeucarianToolIds.ControlCenter) continue;
                 string searchable = tool.DisplayName + " " + tool.NavigationPath + " " + tool.Description + " " + string.Join(" ", tool.SearchTerms);
                 if (query.Length > 0 && searchable.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                var destination = tool;
+                menu.menu.AppendAction(tool.NavigationPath + "/" + tool.DisplayName,
+                    _ => DeucarianEditorNavigation.Open(workspace.Root, destination.Id),
+                    tool.CreatePage == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
                 VisualElement parent = scroll;
                 string path = "";
                 foreach (string part in tool.NavigationPath.Split('/'))
@@ -79,6 +89,7 @@ namespace Deucarian.Editor
             var button = workspace.AddNavigation(navigationId, label, icon,
                 () => DeucarianEditorNavigation.Open(workspace.Root, id));
             if (parent != workspace.Navigation) parent.Add(button);
+            else button.AddToClassList("dw-navigation-overview");
             bool available = DeucarianToolRegistry.TryGet(id, out var descriptor) && descriptor.CreatePage != null;
             button.SetEnabled(available);
             button.tooltip = available ? "Show " + label + " in this window. Right-click to open separately."
