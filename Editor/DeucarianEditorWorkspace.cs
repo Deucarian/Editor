@@ -34,6 +34,7 @@ namespace Deucarian.Editor
         private readonly EventCallback<GeometryChangedEvent> resized;
         private bool disposed;
         private readonly Label searchPlaceholder;
+        private readonly DeucarianEditorWorkspaceScale uiScale;
 
         public DeucarianEditorWorkspace(VisualElement root, string context, bool includeDrawer = false)
         {
@@ -96,6 +97,7 @@ namespace Deucarian.Editor
             Footer.Add(FooterLeading);
             Footer.Add(DeucarianEditorWorkspaceControls.Region(null, "dw-spacer"));
             Footer.Add(FooterTrailing);
+            uiScale = new DeucarianEditorWorkspaceScale(Root, Footer);
             Page.Add(Tabs);
             Page.Add(Scope);
             Page.Add(Content);
@@ -163,6 +165,7 @@ namespace Deucarian.Editor
         {
             if (disposed) return;
             disposed = true;
+            uiScale.Dispose();
             Root.UnregisterCallback(resized);
             Root.UnregisterCallback<KeyDownEvent>(OnKeyDown);
             if (host.Contains(Root)) host.RemoveFromClassList("deucarian-workspace-host");

@@ -36,22 +36,22 @@ namespace Deucarian.Editor
             new SummaryDefinition(
                 DeucarianControlCenterArea.Connections,
                 "deucarian.overview.connections",
-                "Connections & authentication",
-                "Effective local connection, environment, and authentication status from installed packages.",
+                "Connections",
+                "Connection and sign-in status.",
                 -900,
                 new[] { "connections", "environment", "authentication", "api" }),
             new SummaryDefinition(
                 DeucarianControlCenterArea.BuildAndPackages,
                 "deucarian.overview.build-packages",
                 "Build & packages",
-                "Installed-package, update, build-target, profile, and validation status from their owning tools.",
+                "Package and build checks.",
                 -800,
                 new[] { "packages", "updates", "build", "profile", "target" }),
             new SummaryDefinition(
                 DeucarianControlCenterArea.Diagnostics,
                 "deucarian.overview.diagnostics",
                 "Diagnostics",
-                "Aggregate sanitized health reported by installed diagnostics and logging contributions.",
+                "Local health and diagnostic checks.",
                 -700,
                 new[] { "diagnostics", "logging", "health", "severity" })
         };
@@ -138,7 +138,7 @@ namespace Deucarian.Editor
                 definition.Description,
                 "com.deucarian.editor",
                 status,
-                BuildStatusText(errors, warnings, successes, sources.Count),
+                sources.Count == 1 ? DisplayStatus(sources[0]) : BuildStatusText(errors, warnings, successes, sources.Count),
                 definition.Order,
                 details,
                 new[]
@@ -166,10 +166,10 @@ namespace Deucarian.Editor
             int successes,
             int total)
         {
-            if (errors > 0) return errors + " issue(s)";
-            if (warnings > 0) return warnings + " warning(s)";
-            if (successes == total) return total + " ready";
-            return total + " contribution(s)";
+            if (errors > 0) return errors + (errors == 1 ? " issue" : " issues");
+            if (warnings > 0) return warnings + (warnings == 1 ? " warning" : " warnings");
+            if (successes == total) return "Ready";
+            return "Review status";
         }
     }
 }

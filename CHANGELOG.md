@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.2] - 2026-09-09
+
+- Give the overview one attention-first status, concise area summaries and quieter tool rows; retain full details in sections and search.
+- Add a project-local 75–150% workspace scale slider and one-click 100% reset across shared pages and windows.
+- Reflow the layout in logical pixels when scaling, preserve drafts, and release preference subscriptions on detach or disposal.
+
 ## [1.5.1] - 2026-09-09
 
 - Flatten Control Center tool rows and remove duplicate overview headings and inset containers.

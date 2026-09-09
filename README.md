@@ -9,15 +9,21 @@ The left sidebar changes pages in the current window, keeping each page's draft 
 
 Shared responsive workspace, searchable list/detail surfaces, form bindings, stable audio navigation and Control Center migration. Visual tokens remain owned here; domain operations stay in consumers.
 
-Requires Editor 1.5.1 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
+Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.5.1`.
+Current package version: `1.5.2`.
+
+## Reading and scaling the workspace
+
+The overview starts with one project-status focus, then short area statuses and recent or pinned tools. Full source details stay in their owning sections and search; a status action navigates to the relevant check, never runs its fix automatically.
+
+Use **UI scale** in the footer to resize the complete workspace from 75% to 150%. Click the percentage to reset to 100%. The preference is local to this project, persists across editor restarts, and applies to other shared workspace pages and windows. It does not change Unity's own menus, unrelated inspectors, runtime UI, or theme assets.
 
 ## What this is
 
 `com.deucarian.editor` is an editor-only Unity package for shared Deucarian editor tooling, branded editor chrome, fixed icons, layout helpers, and UX standards.
 
-This package is not runtime theming. It is not user-customizable. Deucarian editor windows use package-owned Tideline light/dark colors, DINish interface typography, and brand resources so every Deucarian package presents the same quiet, readable editor experience. The editor treatment follows the active Unity skin.
+This package is not runtime theming. Its visual theme is package-owned. Deucarian editor windows use package-owned Tideline light/dark colors, DINish interface typography, and brand resources so every Deucarian package presents the same quiet, readable editor experience. The editor treatment follows the active Unity skin.
 
 Runtime theme assets from `com.deucarian.theming` must never control Deucarian editor windows.
 
