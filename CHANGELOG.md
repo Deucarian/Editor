@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 - 2026-09-09
+
+- Add an Editor-owned task workspace with responsive navigation, typography,
+  shared form/preview layout, keyboard-accessible choices and display-only message
+  rows, composed over the existing workbench without domain dependencies.
+- Add an isolated component specimen through Control Center's Developer area.
+  The specimen remains isolated; domain tools connect through their own adapters.
+
 ## 1.3.1 - 2026-09-09
 
 - Give workbench controls named files and compose style-cache lifetime separately from drawing. Reuse safe style copying and verify cache identity/invalidation.

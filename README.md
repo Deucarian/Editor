@@ -1,6 +1,12 @@
 # Deucarian Editor
 
-Current package version: `1.3.1`.
+## Shared workspace (1.4.0)
+
+Shared responsive workspace, searchable list/detail surfaces, form bindings, stable audio navigation and Control Center migration. Visual tokens remain owned here; domain operations stay in consumers.
+
+Requires Editor 1.4.0 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
+
+Current package version: `1.4.0`.
 
 ## What this is
 
@@ -247,6 +253,40 @@ Actions sections should contain real actions such as create, apply, scan, repair
 Do not use actions sections for selecting assets already visible in object fields.
 
 ## Troubleshooting
+
+### New workspace layout preview
+
+Open **Control Center → Developer → Open Editor UI Preview** to inspect the new
+Editor-owned task layout. It is isolated sample content, not a replacement for
+Notification Lab. Adding or resolving a row does not send application messages,
+play audio, or run notification timers. Existing tools opt in through their own
+adapters; installing Editor alone does not migrate their content.
+
+The workspace composes the existing workbench with shared navigation, heading,
+tabs, destination, form/preview and footer regions. Its stylesheet owns the
+colours, typography, spacing, responsive layout and interaction states. Consumers
+supply their content and actions; they must not duplicate these visual rules.
+
+Use `DeucarianEditorWorkspace` in an editor window, add content through its named
+regions, and dispose it before rebuilding or closing the window. Reuse
+`DeucarianEditorWorkspaceControls`, `DeucarianEditorChoiceBar` and
+`DeucarianEditorMessageRow` for shared presentation. Choice selection can be
+synchronized silently; message progress is supplied by the caller, not a timer
+owned by Editor. Do not use the internal specimen as a production adapter.
+
+For a live test tool, `DeucarianEditorLabWorkspace` owns the Test/Appearance/Audio
+pages, destination controls and keyed preview rows. Bind field values and commands
+through `DeucarianEditorWorkspaceForm`. Pass caller-selected visible and overflow
+rows as `DeucarianEditorMessageData`; Editor does not decide lifetimes, priorities,
+queue limits or runtime targeting. Refreshing row state preserves controls and
+focus instead of recreating them for every countdown tick.
+
+Migrating a live tool requires an adapter in its owning package. The adapter
+retains domain state, commands, subscriptions and cleanup; **all layout and
+styling stay in Editor**. Editor does not acquire dependencies on Notifications,
+Theming, Installer or other domain packages.
+
+### Package boundaries
 
 - If runtime code needs this package, stop and check the ownership boundary; Editor is editor-only.
 - If a package wants custom runtime colors, use the runtime theming owner instead of editor shell tokens.

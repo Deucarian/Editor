@@ -56,15 +56,7 @@ namespace Deucarian.Editor
 
         internal static void StylePanel(VisualElement element)
         {
-            Color panel = DeucarianEditorAppearance.DecorativeBackgrounds
-                ? DeucarianEditorTheme.GlassPanelSoft : DeucarianEditorVisualShell.MainPanel;
-            if (!DeucarianEditorAppearance.DecorativeBackgrounds) panel.a = 1f;
-            element.style.backgroundColor = panel;
-            element.style.borderTopWidth = 1f;
-            element.style.borderRightWidth = 1f;
-            element.style.borderBottomWidth = 1f;
-            element.style.borderLeftWidth = 1f;
-            SetBorderColor(element, DeucarianEditorTheme.BorderSubtle);
+            element.AddToClassList("dw-summary-card");
         }
 
         internal static void SetBorderColor(
