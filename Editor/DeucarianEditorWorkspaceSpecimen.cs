@@ -65,7 +65,7 @@ namespace Deucarian.Editor
             form.Text("specimen-title", "Heading", () => title, value => { title = value; heading.text = value; });
             form.Text("specimen-body", "Supporting text", () => description, value => { description = value; copy.text = value; }, true);
             form.Segments("specimen-choice", "Choice", new[] { "First", "Second" }, () => choice, value => choice = value);
-            form.Number("specimen-number", "Amount", () => amount, value => amount = value);
+            form.Slider("specimen-number", "Amount", 0, 1, () => amount, value => amount = value);
             form.Toggle("specimen-enabled", "Enable action", () => enabled, value => { enabled = value; form.Refresh(); });
             form.Action("specimen-add", "Try primary action", () => feedback.text = "Action clicked " + ++clicks + " time(s).", () => enabled, true);
             form.Action("specimen-disabled", "Unavailable action", () => { }, () => false);

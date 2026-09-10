@@ -10,6 +10,7 @@ namespace Deucarian.Editor
         private readonly VisualElement notice;
         private readonly Func<bool> isEnabled;
         private readonly Action whenDisabled;
+        private bool? previousState;
         public VisualElement Root { get; }
 
         public DeucarianEditorCapabilityGate(VisualElement controls, Func<bool> isEnabled,
@@ -36,7 +37,8 @@ namespace Deucarian.Editor
             controls.SetEnabled(enabled);
             controls.EnableInClassList("dw-capability-muted", !enabled);
             DeucarianEditorWorkspaceControls.Show(notice, !enabled);
-            if (!enabled) whenDisabled?.Invoke();
+            if (!enabled && previousState != false) whenDisabled?.Invoke();
+            previousState = enabled;
         }
     }
 }

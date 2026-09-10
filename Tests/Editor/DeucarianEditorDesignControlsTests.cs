@@ -48,6 +48,8 @@ namespace Deucarian.Editor.Tests
             Assert.That(content.enabledSelf, Is.False);
             Assert.That(gate.Root.Q<Button>("capability-open-settings").enabledInHierarchy, Is.True);
             Assert.That(stops, Is.EqualTo(1));
+            gate.Refresh();
+            Assert.That(stops, Is.EqualTo(1), "Ordinary repaint/refresh must not repeatedly stop or clear previews.");
             enabled = true;
             gate.Refresh();
             Assert.That(content.enabledSelf, Is.True);
