@@ -1775,16 +1775,17 @@
 .deucarian-editor .deucarian-workbench-toolbar__action--emphasized { background-color: var(--deucarian-blue); color: var(--deucarian-primary-text); }
 
 /* Shared controls also work in inspectors and compact tool pages. */
-.deucarian-editor .dw-slider { min-width: 0; min-height: 32px; }
+.deucarian-editor .dw-slider { min-width: 0; min-height: 40px; align-items: center; }
 .deucarian-editor .dw-slider .unity-base-slider__input { min-width: 36px; border-width: 0; padding: 0; background-color: transparent; }
 .deucarian-editor .dw-slider .unity-base-slider__tracker { height: 4px; border-width: 0; border-radius: 2px; background-color: var(--deucarian-border); }
 .deucarian-editor .dw-slider .dw-slider-fill { position: absolute; border-radius: 2px; background-color: var(--deucarian-blue); }
 .deucarian-editor .dw-slider .unity-base-slider__dragger { width: 14px; height: 14px; border-width: 0; border-radius: 7px; background-color: #ffffff; }
 .deucarian-editor .dw-slider .unity-base-slider__dragger-border { border-color: var(--deucarian-border-active); }
-.deucarian-editor .dw-slider .unity-base-slider__text-field { width: 64px; min-width: 48px; margin-left: 12px; }
+.deucarian-editor .dw-slider .unity-base-slider__text-field { width: 64px; min-width: 48px; min-height: 36px; margin-left: 12px; align-self: center; }
+.deucarian-editor .dw-slider .unity-base-slider__text-field .unity-base-field__input { min-height: 32px; height: 32px; padding: 4px 8px; }
 .deucarian-editor .dw-slider:disabled { opacity: 0.45; }
 .deucarian-editor .dw-switch { align-self: flex-start; min-height: 36px; flex-grow: 0; }
-.deucarian-editor .dw-switch .unity-toggle__input { width: 54px; min-width: 54px; height: 28px; min-height: 28px; margin: 4px 0; padding: 0; border-width: 0; border-radius: 14px; background-color: var(--deucarian-border); }
+.deucarian-editor .dw-switch .unity-toggle__input { width: 54px; min-width: 54px; max-width: 54px; flex-grow: 0; flex-shrink: 0; height: 28px; min-height: 28px; margin: 4px 0; padding: 0; border-width: 0; border-radius: 14px; background-color: var(--deucarian-border); }
 .deucarian-editor .dw-switch .unity-toggle__checkmark { position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; margin: 0; border-width: 0; border-radius: 11px; background-image: none; background-color: #ffffff; }
 .deucarian-editor .dw-switch.dw-switch-on .unity-toggle__input { background-color: var(--deucarian-blue); }
 .deucarian-editor .dw-switch.dw-switch-on .unity-toggle__checkmark { left: 29px; background-image: none; }

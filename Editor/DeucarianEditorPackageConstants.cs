@@ -4,7 +4,7 @@ namespace Deucarian.Editor
     {
         public const string PackageName = "com.deucarian.editor";
         public const string DisplayName = "Deucarian Editor";
-        public const string Version = "1.9.0";
+        public const string Version = "1.9.1";
         public const string MenuRoot = "Tools/Deucarian";
         public const string PackageToolMenuRoot = MenuRoot;
         public const string Namespace = "Deucarian.Editor";

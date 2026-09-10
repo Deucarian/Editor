@@ -57,6 +57,35 @@ namespace Deucarian.Editor.Tests
             Assert.That(gate.Root.Q("capability-disabled").style.display.value, Is.EqualTo(DisplayStyle.None));
         }
 
+        [UnityEngine.TestTools.UnityTest]
+        public System.Collections.IEnumerator SwitchAndSliderStaySizedInsideStackedAndWideForms()
+        {
+            var window = UnityEngine.ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            var root = DeucarianEditorInspector.CreateToolkit();
+            var toggle = new DeucarianEditorSwitch();
+            var slider = new DeucarianEditorSlider(0, 1) { showInputField = true };
+            root.Add(DeucarianEditorWorkspaceControls.Field("Loop", toggle));
+            root.Add(DeucarianEditorWorkspaceControls.Field("Visibility", slider));
+            try
+            {
+                window.Show();
+                window.rootVisualElement.Add(root);
+                foreach (float width in new[] { 340f, 740f })
+                {
+                    window.position = new UnityEngine.Rect(80, 80, width, 420);
+                    for (int frame = 0; frame < 8; frame++) yield return null;
+                    var track = toggle.Q(className: "unity-toggle__input");
+                    Assert.That(track.resolvedStyle.width, Is.EqualTo(54).Within(1), "A switch is not a full-column track.");
+                    var valueField = slider.Q(className: "unity-base-slider__text-field");
+                    var input = valueField.Q(className: "unity-base-field__input");
+                    Assert.That(valueField.worldBound.yMin, Is.GreaterThanOrEqualTo(slider.worldBound.yMin - 1));
+                    Assert.That(valueField.worldBound.yMax, Is.LessThanOrEqualTo(slider.worldBound.yMax + 1));
+                    Assert.That(input.worldBound.yMax, Is.LessThanOrEqualTo(valueField.worldBound.yMax + 1));
+                }
+            }
+            finally { window.Close(); }
+        }
+
         [TestCase(DeucarianEditorButtonRole.Primary, "dw-primary")]
         [TestCase(DeucarianEditorButtonRole.Secondary, "dw-button")]
         [TestCase(DeucarianEditorButtonRole.Quiet, "dw-quiet")]
