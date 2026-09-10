@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.0] - 2026-09-10
+
+- Add composed feature sections with accessible on/off controls, aligned settings, truthful connection states and responsive layouts.
+- Allow domain packages to contribute a group icon and concise submenu labels without changing tool identities or window titles.
+- Keep styling in Editor and commands in consuming packages. The existing compact default scale and fixed scale dock are unchanged.
+
 ## [1.7.0] - 2026-09-09
 
 ### Changed
