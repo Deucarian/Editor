@@ -1,18 +1,19 @@
 .deucarian-editor {
-    --deucarian-bg: #23282b;
-    --deucarian-panel: #202528;
-    --deucarian-panel-soft: #24292c;
-    --deucarian-panel-header: #24292c;
-    --deucarian-sidebar: #202528;
-    --deucarian-border: #41494e;
+    --deucarian-bg: #202b2e;
+    --deucarian-panel: #1b2528;
+    --deucarian-panel-soft: #223033;
+    --deucarian-panel-header: #223033;
+    --deucarian-sidebar: #1b2528;
+    --deucarian-border: #3d4e52;
     --deucarian-border-active: #72e1df;
     --deucarian-text: #f2f4f7;
     --deucarian-muted: #bac3cd;
     --deucarian-teal: #72e1df;
-    --deucarian-blue: #178f94;
+    --deucarian-blue: #32bdc2;
+    --deucarian-primary-text: #102124;
     --deucarian-window-overlay: rgba(27, 26, 24, 0.18);
-    --deucarian-control: #24292c;
-    --deucarian-control-hover: #30393d;
+    --deucarian-control: #223033;
+    --deucarian-control-hover: #2b3b3f;
     --deucarian-control-active: #214e52;
     --deucarian-green: #69cea0;
     --deucarian-amber: #ffcb4a;
@@ -70,6 +71,7 @@
     --deucarian-muted: #52616d;
     --deucarian-teal: #006970;
     --deucarian-blue: #087b81;
+    --deucarian-primary-text: #ffffff;
     --deucarian-window-overlay: rgba(255, 255, 255, 0.10);
     --deucarian-control: #ffffff;
     --deucarian-control-hover: #e4edf0;
@@ -105,11 +107,11 @@
 }
 
 .deucarian-editor.deucarian-quiet {
-    --deucarian-panel: #202528;
-    --deucarian-panel-soft: #24292c;
-    --deucarian-panel-header: #24292c;
-    --deucarian-sidebar: #202528;
-    --deucarian-border: #41494e;
+    --deucarian-panel: #1b2528;
+    --deucarian-panel-soft: #223033;
+    --deucarian-panel-header: #223033;
+    --deucarian-sidebar: #1b2528;
+    --deucarian-border: #3d4e52;
 }
 
 .deucarian-editor.deucarian-quiet.deucarian-theme--light {
@@ -1770,4 +1772,21 @@
 .deucarian-editor .unity-button:hover,
 .deucarian-editor .unity-button:focus { border-color: var(--deucarian-border-active); background-color: var(--deucarian-control-hover); }
 .deucarian-editor .deucarian-button--primary,
-.deucarian-editor .deucarian-workbench-toolbar__action--emphasized { background-color: var(--deucarian-blue); color: #ffffff; }
+.deucarian-editor .deucarian-workbench-toolbar__action--emphasized { background-color: var(--deucarian-blue); color: var(--deucarian-primary-text); }
+
+/* Shared controls also work in inspectors and compact tool pages. */
+.deucarian-editor .dw-slider { min-width: 0; min-height: 32px; }
+.deucarian-editor .dw-slider .unity-base-slider__input { min-width: 36px; border-width: 0; padding: 0; background-color: transparent; }
+.deucarian-editor .dw-slider .unity-base-slider__tracker { height: 4px; border-width: 0; border-radius: 2px; background-color: var(--deucarian-border); }
+.deucarian-editor .dw-slider .dw-slider-fill { position: absolute; border-radius: 2px; background-color: var(--deucarian-blue); }
+.deucarian-editor .dw-slider .unity-base-slider__dragger { width: 14px; height: 14px; border-width: 0; border-radius: 7px; background-color: #ffffff; }
+.deucarian-editor .dw-slider .unity-base-slider__dragger-border { border-color: var(--deucarian-border-active); }
+.deucarian-editor .dw-slider .unity-base-slider__text-field { width: 64px; min-width: 48px; margin-left: 12px; }
+.deucarian-editor .dw-slider:disabled { opacity: 0.45; }
+.deucarian-editor .dw-switch { align-self: flex-start; min-height: 36px; flex-grow: 0; }
+.deucarian-editor .dw-switch .unity-toggle__input { width: 54px; min-width: 54px; height: 28px; min-height: 28px; margin: 4px 0; padding: 0; border-width: 0; border-radius: 14px; background-color: var(--deucarian-border); }
+.deucarian-editor .dw-switch .unity-toggle__checkmark { position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; margin: 0; border-width: 0; border-radius: 11px; background-image: none; background-color: #ffffff; }
+.deucarian-editor .dw-switch.dw-switch-on .unity-toggle__input { background-color: var(--deucarian-blue); }
+.deucarian-editor .dw-switch.dw-switch-on .unity-toggle__checkmark { left: 29px; background-image: none; }
+.deucarian-editor .dw-switch:focus .unity-toggle__input { border-width: 1px; border-color: var(--deucarian-border-active); }
+.deucarian-editor .dw-switch:disabled { opacity: 0.45; }

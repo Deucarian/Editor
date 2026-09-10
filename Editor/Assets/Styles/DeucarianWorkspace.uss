@@ -1,15 +1,15 @@
 .deucarian-workspace-host {
-    --dw-background: #23282b;
-    --dw-sidebar: #202528;
-    --dw-field: #24292c;
-    --dw-hover: #30393d;
-    --dw-border: #41494e;
+    --dw-background: #202b2e;
+    --dw-sidebar: #1b2528;
+    --dw-field: #223033;
+    --dw-hover: #2b3b3f;
+    --dw-border: #3d4e52;
     --dw-text: #f2f4f7;
     --dw-muted: #bac3cd;
     --dw-accent: #72e1df;
     --dw-selected: #214e52;
-    --dw-primary: #178f94;
-    --dw-primary-hover: #1ba3a8;
+    --dw-primary: #32bdc2;
+    --dw-primary-hover: #53d0d3;
     --dw-warning: #ffcb4a;
     --dw-error: #ff6b70;
     --dw-info: #56baff;
@@ -54,7 +54,7 @@
 .deucarian-workspace .dw-spacer { flex-grow: 1; }
 .deucarian-workspace .dw-button {
     height: 36px; min-height: 36px; padding: 0 14px; margin: 0;
-    border-width: 1px; border-color: #69737d; border-radius: 5px;
+    border-width: 1px; border-color: var(--dw-border); border-radius: 4px;
     color: var(--dw-text); background-color: var(--dw-field);
     font-size: 16px; -unity-font-style: normal;
     -unity-text-align: middle-center;
@@ -64,7 +64,7 @@
 .deucarian-workspace .dw-button:focus { border-color: var(--dw-accent); }
 .deucarian-workspace .dw-button:active { background-color: var(--dw-selected); }
 .deucarian-workspace .dw-button:disabled { opacity: 0.45; }
-.deucarian-workspace .dw-primary { background-color: var(--dw-primary); border-color: #46c4c7; color: #ffffff; height: 42px; -unity-font-style: bold; }
+.deucarian-workspace .dw-primary { background-color: var(--dw-primary); border-color: var(--dw-primary); color: var(--deucarian-primary-text); height: 42px; -unity-font-style: bold; }
 .deucarian-workspace .dw-primary:hover { background-color: var(--dw-primary-hover); }
 .deucarian-workspace .dw-project { width: 200px; -unity-text-align: middle-left; border-color: var(--dw-border); }
 .deucarian-workspace .dw-search {
@@ -123,7 +123,7 @@
 .deucarian-workspace .dw-field { flex-direction: row; min-width: 0; margin-bottom: 12px; align-items: flex-start; flex-shrink: 0; }
 .deucarian-workspace .dw-field-label { width: 128px; padding-top: 8px; padding-right: 12px; flex-shrink: 0; white-space: normal; }
 .deucarian-workspace .dw-field-input { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; }
-.deucarian-workspace .unity-base-field__input { border-color: #59636b; border-width: 1px; border-radius: 5px; background-color: var(--dw-field); color: var(--dw-text); min-height: 36px; padding: 6px 10px; font-size: 16px; -unity-text-align: middle-left; }
+.deucarian-workspace .unity-base-field__input { border-color: var(--dw-border); border-width: 1px; border-radius: 5px; background-color: var(--dw-field); color: var(--dw-text); min-height: 36px; padding: 6px 10px; font-size: 16px; -unity-text-align: middle-left; }
 .deucarian-workspace .unity-base-field__input:focus { border-color: var(--dw-accent); }
 .deucarian-workspace .unity-base-field__label { color: var(--dw-text); }
 .deucarian-workspace .dw-multiline .unity-base-field__input { height: 96px; -unity-text-align: upper-left; white-space: normal; }

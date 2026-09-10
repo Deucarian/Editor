@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.9.0] - 2026-09-10
+
+- Unify charcoal/teal surfaces, reusable button roles, colored sliders, switches and submenu icons. Keep the compact 100% baseline and stationary scale dock.
+- Add capability-disabled presentation and optional step-based change review without owning package policy.
+
 ## [1.8.1] - 2026-09-10
 
 ### Added

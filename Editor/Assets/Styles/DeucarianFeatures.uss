@@ -25,7 +25,7 @@
 .deucarian-workspace .dw-feature-connection-icon { width: 25px; height: 25px; margin-right: 14px; padding: 4px; border-width: 2px; border-radius: 14px; border-color: var(--dw-muted); opacity: 0.4; }
 .deucarian-workspace .dw-connected .dw-feature-connection-icon { -unity-background-image-tint-color: var(--dw-success); border-color: var(--dw-success); opacity: 1; }
 .deucarian-workspace .dw-feature-actions { flex-direction: row; justify-content: flex-end; margin-top: 14px; }
-.deucarian-workspace .dw-feature-actions .dw-primary { background-color: #32bdc2; border-color: #32bdc2; color: #102124; -unity-font-style: normal; height: 40px; padding-left: 24px; padding-right: 24px; }
+.deucarian-workspace .dw-feature-actions .dw-primary { padding-left: 24px; padding-right: 24px; }
 .deucarian-workspace .dw-feature-information { flex-direction: row; align-items: center; margin-top: 4px; }
 .deucarian-workspace .dw-feature-information .dw-icon { margin-right: 18px; }
 .deucarian-workspace .dw-feature-information .unity-label { white-space: normal; flex-shrink: 1; }
@@ -44,3 +44,15 @@
 .deucarian-workspace .dw-nav-item.dw-nav-text-only { padding-left: 72px; min-height: 46px; }
 .deucarian-workspace .dw-nav-item.dw-nav-text-only .dw-icon { display: none; }
 .deucarian-workspace .dw-nav-item.dw-nav-text-only .dw-nav-label { font-size: 16px; }
+
+.deucarian-workspace .dw-button.dw-quiet { border-color: transparent; background-color: transparent; color: var(--dw-muted); }
+.deucarian-workspace .dw-button.dw-destructive { border-color: var(--dw-error); color: var(--dw-error); }
+.deucarian-workspace .dw-button.dw-icon { width: 36px; padding: 4px; }
+.deucarian-workspace .dw-nav-label { flex-grow: 1; }
+.deucarian-workspace .dw-nav-off .dw-nav-label { color: var(--dw-muted); }
+.deucarian-workspace .dw-nav-status { font-size: 12px; color: var(--dw-muted); border-width: 1px; border-color: var(--dw-border); border-radius: 4px; padding: 2px 6px; margin-left: 8px; flex-shrink: 0; }
+.deucarian-workspace .dw-capability-gate { flex-grow: 1; min-height: 0; }
+.deucarian-workspace .dw-capability-notice { flex-shrink: 0; border-width: 1px; border-color: var(--dw-border); border-radius: 4px; padding: 20px; margin-bottom: 18px; }
+.deucarian-workspace .dw-capability-notice .dw-section-title { margin-bottom: 6px; }
+.deucarian-workspace .dw-capability-notice .dw-button { align-self: flex-start; margin-top: 16px; max-width: 100%; white-space: normal; }
+.deucarian-workspace .dw-capability-muted { opacity: 0.35; }

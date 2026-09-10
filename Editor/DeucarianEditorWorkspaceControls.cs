@@ -4,6 +4,8 @@ using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
+    public enum DeucarianEditorButtonRole { Secondary, Primary, Quiet, Destructive, Icon }
+
     public static class DeucarianEditorWorkspaceControls
     {
         public static VisualElement Region(string name, string className)
@@ -21,10 +23,14 @@ namespace Deucarian.Editor
         }
 
         public static Button Button(string text, Action clicked, bool primary = false)
+            => Button(text, clicked, primary ? DeucarianEditorButtonRole.Primary : DeucarianEditorButtonRole.Secondary);
+
+        public static Button Button(string text, Action clicked, DeucarianEditorButtonRole role)
         {
             var button = new Button(clicked) { text = text ?? string.Empty };
             button.AddToClassList("dw-button");
-            if (primary) button.AddToClassList("dw-primary");
+            if (role != DeucarianEditorButtonRole.Secondary)
+                button.AddToClassList("dw-" + role.ToString().ToLowerInvariant());
             return button;
         }
 
