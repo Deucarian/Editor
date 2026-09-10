@@ -92,11 +92,12 @@ namespace Deucarian.Editor
                         group = new Foldout { text = label, value = query.Length > 0 || open,
                             name = "workspace-group-" + path };
                         group.AddToClassList("dw-navigation-group");
-                        if (!string.IsNullOrEmpty(tool.NavigationGroupIcon))
+                        string groupIcon = tool.NavigationGroupIcon ?? GroupIcon(label);
+                        if (!string.IsNullOrEmpty(groupIcon))
                         {
                             group.AddToClassList("dw-navigation-icon-group");
                             var toggle = group.Q<Toggle>();
-                            var symbol = DeucarianEditorWorkspaceControls.Icon(tool.NavigationGroupIcon);
+                            var symbol = DeucarianEditorWorkspaceControls.Icon(groupIcon);
                             symbol.AddToClassList("dw-navigation-group-icon");
                             toggle.Insert(0, symbol);
                         }
@@ -142,12 +143,34 @@ namespace Deucarian.Editor
             if (parent != workspace.Navigation) parent.Add(button);
             else button.AddToClassList("dw-navigation-overview");
             bool available = DeucarianToolRegistry.TryGet(id, out var descriptor) && descriptor.CreatePage != null;
-            if (descriptor != null && !descriptor.ShowNavigationIcon) button.AddToClassList("dw-nav-text-only");
+            if (parent != workspace.Navigation) button.AddToClassList("dw-nav-text-only");
+            if (descriptor?.IsFeatureEnabled != null && !descriptor.IsFeatureEnabled())
+            {
+                button.AddToClassList("dw-nav-off");
+                button.Add(DeucarianEditorWorkspaceControls.Label("Off", "dw-nav-status"));
+            }
             button.SetEnabled(available);
             button.tooltip = available ? "Show " + label + " in this window. Right-click to open separately."
                 : "This package needs an in-window page update.";
             if (available) button.AddManipulator(new ContextualMenuManipulator(evt =>
                 evt.menu.AppendAction("Open in new window", _ => DeucarianEditorToolWindow.Open(id))));
+        }
+
+        private static string GroupIcon(string group)
+        {
+            switch (group)
+            {
+                case "Theming": case "Appearance": return DeucarianEditorIconIds.Palette;
+                case "Audio": return DeucarianEditorIconIds.Audio;
+                case "Notifications": return DeucarianEditorIconIds.Sample;
+                case "Connections": return DeucarianEditorIconIds.Integration;
+                case "Communication": return DeucarianEditorIconIds.Network;
+                case "Diagnostics": return DeucarianEditorIconIds.Activity;
+                case "Experience": return DeucarianEditorIconIds.Monitor;
+                case "Authoring": return DeucarianEditorIconIds.FolderTree;
+                case "Developer": return DeucarianEditorIconIds.Wrench;
+                default: return DeucarianEditorIconIds.Package;
+            }
         }
 
         public void Dispose()

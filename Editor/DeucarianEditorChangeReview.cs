@@ -14,6 +14,7 @@ namespace Deucarian.Editor
         private readonly DeucarianEditorChangeHistory history;
         private readonly Label summary;
         private bool disposed;
+        private VisualElement[] sections;
 
         public DeucarianEditorChangeReview(VisualElement parent)
         {
@@ -46,6 +47,34 @@ namespace Deucarian.Editor
         public DeucarianEditorWorkspaceForm Context { get; }
         public DeucarianEditorWorkspaceForm Actions { get; }
         public DeucarianEditorWorkspaceForm Commit { get; }
+
+        public void UseSections(VisualElement tabHost)
+        {
+            ThrowIfDisposed();
+            if (tabHost == null) throw new ArgumentNullException(nameof(tabHost));
+            if (sections != null) return;
+            sections = new VisualElement[4];
+            for (int i = 0; i < sections.Length; i++)
+                sections[i] = AddRegion("review-section-" + i, "dw-review-section");
+            sections[0].Add(Context.Root);
+            sections[1].Add(Actions.Root);
+            sections[1].Add(summary);
+            sections[1].Add(Root.Q("review-split"));
+            sections[2].Add(Commit.Root);
+            sections[3].Add(Root.Q("review-history"));
+            sections[3].Insert(0, DeucarianEditorWorkspaceControls.Label("Load recent history from Changes to inspect earlier commits.", "dw-muted"));
+            var tabs = new DeucarianEditorChoiceBar(new[] { "Local source", "Changes", "Publish", "History" }, tabs: true);
+            tabs.Changed += SelectSection;
+            tabHost.Add(tabs);
+            SelectSection(0);
+        }
+
+        public void SelectSection(int index)
+        {
+            ThrowIfDisposed();
+            if (sections == null || index < 0 || index >= sections.Length) throw new ArgumentOutOfRangeException(nameof(index));
+            for (int i = 0; i < sections.Length; i++) DeucarianEditorWorkspaceControls.Show(sections[i], i == index);
+        }
 
         public void SetChanges(IReadOnlyList<DeucarianEditorChangeItem> items, string inspectedId)
         {

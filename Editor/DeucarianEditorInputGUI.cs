@@ -12,7 +12,7 @@ namespace Deucarian.Editor
         private static DeucarianEditorInputStyles Styles => DeucarianEditorWorkbenchGUI.InputStyles;
 
         public static bool Toggle(bool value, params GUILayoutOption[] options) =>
-            EditorGUI.Toggle(Row(GUIContent.none, options), value);
+            DeucarianEditorRangeGUI.Switch(Row(GUIContent.none, options), value);
         public static double DoubleField(double value, params GUILayoutOption[] options) =>
             EditorGUI.DoubleField(Row(GUIContent.none, options), value, Styles.Text);
         public static int IntField(int value, params GUILayoutOption[] options) =>
@@ -47,9 +47,9 @@ namespace Deucarian.Editor
         public static string TextArea(string value, GUIStyle style, params GUILayoutOption[] options) =>
             EditorGUILayout.TextArea(value, style, options);
         public static bool Toggle(string label, bool value, params GUILayoutOption[] options) =>
-            EditorGUI.Toggle(Row(new GUIContent(label), options), value);
+            DeucarianEditorRangeGUI.Switch(Row(new GUIContent(label), options), value);
         public static bool Toggle(GUIContent label, bool value, params GUILayoutOption[] options) =>
-            EditorGUI.Toggle(Row(label, options), value);
+            DeucarianEditorRangeGUI.Switch(Row(label, options), value);
         public static bool ToggleLeft(string label, bool value, params GUILayoutOption[] options) =>
             EditorGUI.ToggleLeft(Row(GUIContent.none, options), label, value, DeucarianEditorWorkbenchGUI.LabelStyle);
         public static bool ToggleLeft(GUIContent label, bool value, params GUILayoutOption[] options) =>
@@ -77,9 +77,9 @@ namespace Deucarian.Editor
         public static long LongField(string label, long value, params GUILayoutOption[] options) =>
             EditorGUI.LongField(Row(new GUIContent(label), options), value, Styles.Text);
         public static float Slider(string label, float value, float min, float max, params GUILayoutOption[] options) =>
-            EditorGUI.Slider(Row(new GUIContent(label), options), value, min, max);
+            DeucarianEditorRangeGUI.Slider(Row(new GUIContent(label), options), value, min, max, false);
         public static int IntSlider(string label, int value, int min, int max, params GUILayoutOption[] options) =>
-            EditorGUI.IntSlider(Row(new GUIContent(label), options), value, min, max);
+            Mathf.RoundToInt(DeucarianEditorRangeGUI.Slider(Row(new GUIContent(label), options), value, min, max, true));
         public static bool Foldout(bool value, string label, bool toggleOnLabelClick = false, params GUILayoutOption[] options) =>
             EditorGUI.Foldout(Row(GUIContent.none, options), value, label, toggleOnLabelClick, DeucarianEditorWorkbenchGUI.FoldoutStyle);
         public static bool Foldout(bool value, string label, bool toggleOnLabelClick, GUIStyle style, params GUILayoutOption[] options) =>

@@ -31,7 +31,7 @@ namespace Deucarian.Editor
             content.style.transformOrigin = new TransformOrigin(0, 0);
             var controls = DeucarianEditorWorkspaceControls.Region("workspace-scale", "dw-scale");
             controls.Add(DeucarianEditorWorkspaceControls.Label("UI scale", "dw-muted"));
-            slider = new SliderInt(75, 150) { name = "workspace-scale-slider", tooltip = "Size of this project's Deucarian workspaces (75–150%)." };
+            slider = new DeucarianEditorIntegerSlider(75, 150) { name = "workspace-scale-slider", tooltip = "Size of this project's Deucarian workspaces (75–150%)." };
             slider.RegisterValueChangedCallback(evt => DeucarianEditorAppearance.WorkspaceScalePercent = evt.newValue);
             reset = DeucarianEditorWorkspaceControls.Button("100%", () => DeucarianEditorAppearance.WorkspaceScalePercent = 100);
             reset.name = "workspace-scale-reset";

@@ -45,7 +45,28 @@ namespace Deucarian.Editor
 
         public Toggle Toggle(string id, string label, Func<bool> read, Action<bool> write)
         {
-            var field = new Toggle();
+            var field = new DeucarianEditorSwitch();
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
+        public Vector3Field Vector(string id, string label, Func<UnityEngine.Vector3> read, Action<UnityEngine.Vector3> write)
+        {
+            var field = new Vector3Field();
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
+        public Slider Slider(string id, string label, float minimum, float maximum, Func<float> read, Action<float> write)
+        {
+            var field = new DeucarianEditorSlider(minimum, maximum) { showInputField = true };
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
+        public SliderInt IntegerSlider(string id, string label, int minimum, int maximum, Func<int> read, Action<int> write)
+        {
+            var field = new DeucarianEditorIntegerSlider(minimum, maximum) { showInputField = true };
             Bind(id, label, field, read, write);
             return field;
         }
