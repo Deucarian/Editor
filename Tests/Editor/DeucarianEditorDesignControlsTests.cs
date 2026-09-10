@@ -58,6 +58,7 @@ namespace Deucarian.Editor.Tests
         }
 
         [TestCase(DeucarianEditorButtonRole.Primary, "dw-primary")]
+        [TestCase(DeucarianEditorButtonRole.Secondary, "dw-button")]
         [TestCase(DeucarianEditorButtonRole.Quiet, "dw-quiet")]
         [TestCase(DeucarianEditorButtonRole.Destructive, "dw-destructive")]
         public void ButtonRolesShareOneControlFactory(DeucarianEditorButtonRole role, string style)
@@ -65,6 +66,20 @@ namespace Deucarian.Editor.Tests
             var button = DeucarianEditorWorkspaceControls.Button("Action", () => { }, role);
             Assert.That(button.ClassListContains("dw-button"), Is.True);
             Assert.That(button.ClassListContains(style), Is.True);
+        }
+
+        [Test]
+        public void ToolkitInspectorReusesControlsWithoutWindowNavigationOrScale()
+        {
+            var root = DeucarianEditorInspector.CreateToolkit("Profile");
+            var form = new DeucarianEditorWorkspaceForm(root);
+            var value = UnityEngine.Vector3.one;
+            var field = form.Vector("offset", "Offset", () => value, next => value = next);
+            field.value = UnityEngine.Vector3.up;
+            Assert.That(value, Is.EqualTo(UnityEngine.Vector3.up));
+            Assert.That(root.ClassListContains("dw-inspector"), Is.True);
+            Assert.That(root.Q("workspace-navigation"), Is.Null);
+            Assert.That(root.Q("workspace-scale-slider"), Is.Null);
         }
     }
 }

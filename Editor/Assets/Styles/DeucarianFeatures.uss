@@ -56,3 +56,10 @@
 .deucarian-workspace .dw-capability-notice .dw-section-title { margin-bottom: 6px; }
 .deucarian-workspace .dw-capability-notice .dw-button { align-self: flex-start; margin-top: 16px; max-width: 100%; white-space: normal; }
 .deucarian-workspace .dw-capability-muted { opacity: 0.35; }
+.deucarian-workspace.dw-inspector { padding: 12px; min-width: 0; font-size: 14px; }
+.deucarian-workspace.dw-inspector .dw-title { font-size: 22px; }
+.deucarian-workspace.dw-inspector .dw-button { font-size: 14px; height: 32px; min-height: 32px; }
+.deucarian-workspace .dw-preview-stage { min-height: 210px; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-width: 1px; border-color: var(--dw-border); border-radius: 4px; background-color: var(--dw-sidebar); margin-bottom: 14px; }
+.deucarian-workspace .dw-preview-object { width: 190px; padding: 22px; align-items: center; border-width: 1px; border-color: var(--dw-primary); border-radius: 4px; background-color: var(--dw-selected); }
+.deucarian-workspace .dw-preview-object .dw-icon { margin-bottom: 10px; -unity-background-image-tint-color: var(--dw-accent); }
+.deucarian-workspace .dw-preview-object .dw-label { white-space: normal; -unity-text-align: middle-center; }

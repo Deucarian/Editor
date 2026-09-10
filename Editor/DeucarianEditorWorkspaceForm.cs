@@ -50,6 +50,13 @@ namespace Deucarian.Editor
             return field;
         }
 
+        public Vector3Field Vector(string id, string label, Func<UnityEngine.Vector3> read, Action<UnityEngine.Vector3> write)
+        {
+            var field = new Vector3Field();
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
         public Slider Slider(string id, string label, float minimum, float maximum, Func<float> read, Action<float> write)
         {
             var field = new DeucarianEditorSlider(minimum, maximum) { showInputField = true };
