@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
 namespace Deucarian.Editor.Tests
@@ -31,22 +34,33 @@ namespace Deucarian.Editor.Tests
             }
         }
 
-        [Test]
-        public void SelectionInvokesOnlyTheCurrentCallerCallbackAndNeverStagesImplicitly()
+        [UnityTest]
+        public IEnumerator SelectionInvokesOnlyTheCurrentCallerCallbackAndNeverStagesImplicitly()
         {
             int oldCalls = 0, newCalls = 0, inspectCalls = 0;
-            using (var view = new DeucarianEditorChangeReview(new VisualElement()))
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            window.Show();
+            using (var view = new DeucarianEditorChangeReview(window.rootVisualElement))
             {
-                view.SetChanges(new[] { Item("one", false, () => inspectCalls++, _ => oldCalls++) }, null);
-                var toggle = view.Root.Q<Toggle>();
-                view.SetChanges(new[] { Item("one", false, () => inspectCalls++, _ => newCalls++) }, null);
-                toggle.value = true;
-                Assert.That(oldCalls, Is.Zero);
-                Assert.That(newCalls, Is.EqualTo(1));
-                Assert.That(inspectCalls, Is.Zero);
-                view.SetChanges(new[] { Item("one", false, null, null) }, null);
-                Assert.That(toggle.value, Is.False, "The caller remains authoritative.");
-                Assert.That(toggle.enabledSelf, Is.False);
+                try
+                {
+                    yield return null;
+                    view.SetChanges(new[] { Item("one", false, () => inspectCalls++, _ => oldCalls++) }, null);
+                    var toggle = view.Root.Q<Toggle>();
+                    view.SetChanges(new[] { Item("one", false, () => inspectCalls++, _ => newCalls++) }, null);
+                    Assert.That(oldCalls + newCalls + inspectCalls, Is.Zero, "Attached refresh remains silent.");
+                    // UI Toolkit dispatches BaseField change events only on an attached panel.
+                    Assert.That(toggle.panel, Is.Not.Null);
+                    toggle.value = true;
+                    yield return null;
+                    Assert.That(oldCalls, Is.Zero);
+                    Assert.That(newCalls, Is.EqualTo(1));
+                    Assert.That(inspectCalls, Is.Zero);
+                    view.SetChanges(new[] { Item("one", false, null, null) }, null);
+                    Assert.That(toggle.value, Is.False, "The caller remains authoritative.");
+                    Assert.That(toggle.enabledSelf, Is.False);
+                }
+                finally { window.Close(); }
             }
         }
 
