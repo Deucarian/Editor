@@ -11,7 +11,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.7.0`.
+Current package version: `1.8.0`.
 
 All editor surfaces share the workspace's charcoal/teal palette and DINish typography. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
 
@@ -170,6 +170,8 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 
 ## Public API map
 
+- `DeucarianEditorChangeReview`, `DeucarianEditorChangeItem`, and `DeucarianEditorHistoryItem`: shared review layout, caller-selected staged/unstaged rows, read-only diff, contextual forms/actions, and compact optional history. Added in 1.8.0; contains no Git commands or package state.
+
 - `DeucarianControlCenterWindow`, `DeucarianControlCenterRegistry`, and `DeucarianToolRegistry`: the responsive ecosystem shell, explicit status contributions, stable navigation IDs, search, and deep links.
 
 - `DeucarianEditorChrome`: fixed package headers, section headers, section boxes, inline help, and footer version text.
@@ -316,6 +318,42 @@ Theming, Installer or other domain packages.
 - If a UI Toolkit asset is package-specific, keep it in the owning package rather than moving it here.
 
 ## Validation
+
+### Change review in a Control Center page
+
+Create `DeucarianEditorChangeReview(workspace.Content)` once in a plain
+`IDeucarianEditorPage`. Bind repository identity and explicit actions through
+`Context` and `Actions`, and draft/commit fields through `Commit`; each is a
+`DeucarianEditorWorkspaceForm`. The existing workspace owns navigation and the
+fixed UI scale footer. The review owns no window or additional scale control.
+
+`SetChanges(items, inspectedId)` updates stable keyed rows in caller order.
+Each `DeucarianEditorChangeItem` supplies `id`, `path`, `status`, `staged`,
+`selected`, an `inspect` callback, a `select(bool)` callback, optional
+`relatedPath` text (such as a rename or Unity meta partner), and
+`selectionEnabled`. Selecting a checkbox only asks the caller to change the
+review selection; staging must remain an explicit domain action. Use distinct
+IDs when a file has both staged and unstaged changes. Refreshes do not call
+commands or recreate surviving controls. Preserve selection in the caller's
+session and call `RefreshForms()` to synchronize form values.
+
+`SetSummary(text)` shows the owner's staged/selected summary.
+`SetDiff(title, content, binary, truncated)` displays plain, copyable, read-only
+text, with an explicit notice for binary changes or incomplete output.
+`SetHistory(items)` updates a collapsed, display-only recent-history list.
+All text supplied by the caller must already be sanitized; Editor performs no
+repository discovery, source parsing, credential removal, or validation.
+
+The review renders at most 500 change rows, 65,536 diff characters, and 20
+history entries, and reports display truncation visibly. Callers should bound
+their own I/O and support filtering or an external-client handoff. Row captions
+are also bounded and never interpreted as rich text. Layout changes preserve
+drafts, checkbox state and unchanged diff selection; narrow columns stack the
+list and diff inside the page's scroll area. Dispose the review with its page.
+
+EditMode tests cover duplicate IDs, refresh/no-command behavior, caller-owned
+selection, changed callback binding, display limits, binary notices, disposal,
+and live normal/narrow/scaled layout with focus and draft preservation.
 
 Run the shared package validator from the repository root:
 
