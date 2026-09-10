@@ -10,7 +10,7 @@ namespace Deucarian.Editor
         public DeucarianEditorSlider(float minimum, float maximum) : base(minimum, maximum)
         {
             fill = new DeucarianEditorSliderFill(this);
-            RegisterValueChangedCallback(_ => RefreshFill());
+            this.RegisterValueChangedCallback(_ => RefreshFill());
             RegisterCallback<GeometryChangedEvent>(_ => RefreshFill());
             RefreshFill();
         }
@@ -31,7 +31,7 @@ namespace Deucarian.Editor
         public DeucarianEditorIntegerSlider(int minimum, int maximum) : base(minimum, maximum)
         {
             fill = new DeucarianEditorSliderFill(this);
-            RegisterValueChangedCallback(_ => RefreshFill());
+            this.RegisterValueChangedCallback(_ => RefreshFill());
             RegisterCallback<GeometryChangedEvent>(_ => RefreshFill());
             RefreshFill();
         }

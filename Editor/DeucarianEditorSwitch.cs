@@ -7,7 +7,7 @@ namespace Deucarian.Editor
         public DeucarianEditorSwitch()
         {
             AddToClassList("dw-switch");
-            RegisterValueChangedCallback(evt => EnableInClassList("dw-switch-on", evt.newValue));
+            this.RegisterValueChangedCallback(evt => EnableInClassList("dw-switch-on", evt.newValue));
         }
 
         public override void SetValueWithoutNotify(bool newValue)
