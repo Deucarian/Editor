@@ -68,18 +68,26 @@ namespace Deucarian.Editor.Tests
             Assert.That(button.ClassListContains(style), Is.True);
         }
 
-        [Test]
-        public void ToolkitInspectorReusesControlsWithoutWindowNavigationOrScale()
+        [UnityEngine.TestTools.UnityTest]
+        public System.Collections.IEnumerator ToolkitInspectorReusesControlsWithoutWindowNavigationOrScale()
         {
             var root = DeucarianEditorInspector.CreateToolkit("Profile");
             var form = new DeucarianEditorWorkspaceForm(root);
             var value = UnityEngine.Vector3.one;
             var field = form.Vector("offset", "Offset", () => value, next => value = next);
-            field.value = UnityEngine.Vector3.up;
-            Assert.That(value, Is.EqualTo(UnityEngine.Vector3.up));
-            Assert.That(root.ClassListContains("dw-inspector"), Is.True);
-            Assert.That(root.Q("workspace-navigation"), Is.Null);
-            Assert.That(root.Q("workspace-scale-slider"), Is.Null);
+            var window = UnityEngine.ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            try
+            {
+                window.Show();
+                window.rootVisualElement.Add(root);
+                yield return null;
+                field.value = UnityEngine.Vector3.up;
+                Assert.That(value, Is.EqualTo(UnityEngine.Vector3.up));
+                Assert.That(root.ClassListContains("dw-inspector"), Is.True);
+                Assert.That(root.Q("workspace-navigation"), Is.Null);
+                Assert.That(root.Q("workspace-scale-slider"), Is.Null);
+            }
+            finally { window.Close(); }
         }
     }
 }
