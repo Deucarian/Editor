@@ -43,7 +43,10 @@ namespace Deucarian.Editor
             IEnumerable<string> searchTerms = null,
             int order = 0,
             Func<IDeucarianEditorPage> createPage = null,
-            string navigationPath = null)
+            string navigationPath = null,
+            string navigationGroupIcon = null,
+            string navigationLabel = null,
+            bool showNavigationIcon = true)
         {
             Id = DeucarianControlCenterAction.Require(id, nameof(id));
             DisplayName = DeucarianControlCenterAction.Require(
@@ -66,6 +69,9 @@ namespace Deucarian.Editor
             CreatePage = createPage;
             NavigationPath = string.IsNullOrWhiteSpace(navigationPath)
                 ? DeucarianControlCenterAreaIds.GetDisplayName(area) : navigationPath.Trim();
+            NavigationGroupIcon = navigationGroupIcon;
+            NavigationLabel = string.IsNullOrWhiteSpace(navigationLabel) ? DisplayName : navigationLabel.Trim();
+            ShowNavigationIcon = showNavigationIcon;
         }
 
         public string Id { get; }
@@ -78,6 +84,9 @@ namespace Deucarian.Editor
         public int Order { get; }
         public Func<IDeucarianEditorPage> CreatePage { get; }
         public string NavigationPath { get; }
+        public string NavigationGroupIcon { get; }
+        public string NavigationLabel { get; }
+        public bool ShowNavigationIcon { get; }
         public void Open()
         {
             open();

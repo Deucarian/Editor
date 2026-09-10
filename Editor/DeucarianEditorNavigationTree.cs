@@ -92,13 +92,21 @@ namespace Deucarian.Editor
                         group = new Foldout { text = label, value = query.Length > 0 || open,
                             name = "workspace-group-" + path };
                         group.AddToClassList("dw-navigation-group");
+                        if (!string.IsNullOrEmpty(tool.NavigationGroupIcon))
+                        {
+                            group.AddToClassList("dw-navigation-icon-group");
+                            var toggle = group.Q<Toggle>();
+                            var symbol = DeucarianEditorWorkspaceControls.Icon(tool.NavigationGroupIcon);
+                            symbol.AddToClassList("dw-navigation-group-icon");
+                            toggle.Insert(0, symbol);
+                        }
                         group.RegisterValueChangedCallback(evt => { if (evt.target == group) state.SetExpanded(groupPath, evt.newValue); });
                         groups.Add(path, group);
                         parent.Add(group);
                     }
                     parent = group;
                 }
-                AddTool(parent, tool.Id, tool.DisplayName, tool.IconKey);
+                AddTool(parent, tool.Id, tool.NavigationLabel, tool.IconKey);
             }
             var advanced = workspace.AddNavigation("advanced", "Advanced", DeucarianEditorIconIds.Settings,
                 () => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter, "developer"), true);
@@ -134,6 +142,7 @@ namespace Deucarian.Editor
             if (parent != workspace.Navigation) parent.Add(button);
             else button.AddToClassList("dw-navigation-overview");
             bool available = DeucarianToolRegistry.TryGet(id, out var descriptor) && descriptor.CreatePage != null;
+            if (descriptor != null && !descriptor.ShowNavigationIcon) button.AddToClassList("dw-nav-text-only");
             button.SetEnabled(available);
             button.tooltip = available ? "Show " + label + " in this window. Right-click to open separately."
                 : "This package needs an in-window page update.";

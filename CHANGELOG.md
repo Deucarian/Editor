@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.1] - 2026-09-10
+
+### Added
+
+- Shared change-review controls for existing Control Center pages: contextual forms, explicit actions, selected staged/unstaged rows, read-only diffs, and optional compact history.
+- Keyed refresh preserves surviving controls and focus without running commands; display bounds, binary/partial-diff notices and responsive layout stay owned by Editor.
+- Contract and live layout coverage for selection, refresh, narrow/scaled rendering and disposal. Domain owners retain Git, validation, source switching and session state.
+## [1.8.0] - 2026-09-10
+
+- Add composed feature sections with accessible on/off controls, aligned settings, truthful connection states and responsive layouts.
+- Allow domain packages to contribute a group icon and concise submenu labels without changing tool identities or window titles.
+- Keep styling in Editor and commands in consuming packages. The existing compact default scale and fixed scale dock are unchanged.
+
 ## [1.7.0] - 2026-09-09
 
 ### Changed

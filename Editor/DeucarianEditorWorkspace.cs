@@ -47,6 +47,7 @@ namespace Deucarian.Editor
             Root.AddToClassList("deucarian-workspace");
             root.AddToClassList("deucarian-workspace-host");
             DeucarianEditorUIResources.TryAddStyleSheet(root, StyleSheetPath);
+            DeucarianEditorUIResources.TryAddStyleSheet(root, DeucarianEditorUIResources.StylesPath + "/DeucarianFeatures.uss");
             var header = DeucarianEditorWorkspaceControls.Region("workspace-header", "dw-header");
             var brand = DeucarianEditorWorkspaceControls.Region("workspace-brand", "dw-brand");
             brand.Add(DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Package));
