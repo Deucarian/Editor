@@ -188,6 +188,8 @@ namespace Deucarian.Editor
                 action,
                 actionText);
             actionButton.AddToClassList(FooterActionClass);
+            actionButton.AddToClassList("dw-button");
+            actionButton.AddToClassList("dw-quiet");
             actions.Add(actionButton);
 
             var versionLabel = new Label(version ?? string.Empty);
@@ -234,6 +236,8 @@ namespace Deucarian.Editor
                 action,
                 tooltip);
             button.AddToClassList(FooterActionClass);
+            button.AddToClassList("dw-button");
+            button.AddToClassList("dw-quiet");
             button.AddToClassList(DeucarianEditorWorkbenchToolbar.IconActionClass);
             button.style.width = safeWidth;
             button.style.minWidth = safeWidth;

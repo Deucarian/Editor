@@ -51,6 +51,19 @@
 .deucarian-workspace .dw-nav-label { flex-grow: 1; }
 .deucarian-workspace .dw-nav-off .dw-nav-label { color: var(--dw-muted); }
 .deucarian-workspace .dw-nav-status { font-size: 12px; color: var(--dw-muted); border-width: 1px; border-color: var(--dw-border); border-radius: 4px; padding: 2px 6px; margin-left: 8px; flex-shrink: 0; }
+.deucarian-workspace .dw-sidebar { width: 256px; min-width: 256px; }
+.deucarian-workspace .dw-brand { width: 256px; }
+.deucarian-workspace.dw-compact .dw-sidebar { width: 220px; min-width: 220px; }
+.deucarian-workspace.dw-compact .dw-brand { width: 220px; }
+.deucarian-workspace.dw-compact .dw-nav-item.dw-nav-text-only { padding-left: 56px; }
+.deucarian-workspace.dw-compact .dw-nav-item.dw-nav-text-only .dw-nav-label { font-size: 14px; }
+.deucarian-workspace.dw-narrow .dw-sidebar { width: auto; min-width: 0; }
+.deucarian-workspace .dw-footer .deucarian-workbench-operation-footer { flex-grow: 1; min-width: 0; height: 32px; min-height: 32px; max-height: 32px; border-width: 0; background-color: transparent; padding: 0; }
+.deucarian-workspace .dw-footer .deucarian-workbench-operation-footer__summary,
+.deucarian-workspace .dw-footer .deucarian-workbench-operation-footer__version { display: none; }
+.deucarian-workspace .dw-footer .deucarian-workbench-operation-footer__status { flex-shrink: 1; overflow: hidden; }
+.deucarian-workspace .dw-footer .deucarian-workbench-operation-footer__spacer { flex-grow: 1; width: auto; max-width: none; }
+.deucarian-workspace .dw-footer .dw-button { height: 28px; min-height: 28px; font-size: 13px; margin-left: 8px; }
 .deucarian-workspace .dw-capability-gate { flex-grow: 1; min-height: 0; }
 .deucarian-workspace .dw-capability-notice { flex-shrink: 0; border-width: 1px; border-color: var(--dw-border); border-radius: 4px; padding: 20px; margin-bottom: 18px; }
 .deucarian-workspace .dw-capability-notice .dw-section-title { margin-bottom: 6px; }
