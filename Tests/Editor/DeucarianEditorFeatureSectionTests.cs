@@ -25,8 +25,8 @@ namespace Deucarian.Editor.Tests
             Assert.That(commands, Is.Zero);
             var unknown = DeucarianEditorFeatureSection.Connection("unknown", "Keyboard", false, "Not observed");
             Assert.That(unknown.ClassListContains("dw-connected"), Is.False);
-            Assert.That(unknown.Q(className: "dw-feature-connection-icon").style.backgroundImage.keyword,
-                Is.EqualTo(StyleKeyword.None));
+            Assert.That(unknown.Q(className: "dw-feature-connection-icon").style.backgroundImage.value.texture,
+                Is.Null);
         }
 
         [UnityTest]
