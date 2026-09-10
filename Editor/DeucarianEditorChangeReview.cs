@@ -7,6 +7,8 @@ namespace Deucarian.Editor
     /// <summary>Shared review presentation inside an existing workspace. The caller owns commands and state.</summary>
     public sealed class DeucarianEditorChangeReview : IDisposable
     {
+        public static int MaximumVisibleChanges => DeucarianEditorChangeRows.MaximumVisibleItems;
+
         private readonly DeucarianEditorChangeRows changes;
         private readonly DeucarianEditorChangeDiff diff;
         private readonly DeucarianEditorChangeHistory history;
