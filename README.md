@@ -11,7 +11,9 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.8.0`.
+Current package version: `1.8.1`.
+
+Feature setup pages compose `DeucarianEditorFeatureSection`: the shared section owns switch, status, details, actions and responsive styling; the domain supplies saved state and commands. `SetState` never invokes a command. Unknown connections use an empty ring, not a success checkmark. Register concise `navigationLabel` values and an optional `navigationGroupIcon` while preserving stable tool IDs and full display names.
 
 All editor surfaces share the workspace's charcoal/teal palette and DINish typography. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
 
@@ -170,7 +172,7 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 
 ## Public API map
 
-- `DeucarianEditorChangeReview`, `DeucarianEditorChangeItem`, and `DeucarianEditorHistoryItem`: shared review layout, caller-selected staged/unstaged rows, read-only diff, contextual forms/actions, and compact optional history. Added in 1.8.0; contains no Git commands or package state.
+- `DeucarianEditorChangeReview`, `DeucarianEditorChangeItem`, and `DeucarianEditorHistoryItem`: shared review layout, caller-selected staged/unstaged rows, read-only diff, contextual forms/actions, and compact optional history. Added in 1.8.1; contains no Git commands or package state.
 
 - `DeucarianControlCenterWindow`, `DeucarianControlCenterRegistry`, and `DeucarianToolRegistry`: the responsive ecosystem shell, explicit status contributions, stable navigation IDs, search, and deep links.
 

@@ -102,7 +102,8 @@ namespace Deucarian.Editor
             next.Root.style.minHeight = 0;
             pageHost.Add(next.Root);
             ActiveToolId = toolId;
-            if (toolId == homeId) window.titleContent = new UnityEngine.GUIContent(homeTitle);
+            if (toolId == homeId || homeId == DeucarianToolIds.ControlCenter)
+                window.titleContent = new UnityEngine.GUIContent(homeTitle);
             else if (DeucarianToolRegistry.TryGet(toolId, out var tool))
                 window.titleContent = new UnityEngine.GUIContent(tool.DisplayName, homeTitle.image);
             DeucarianToolHistory.RecordOpened(toolId);

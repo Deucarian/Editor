@@ -73,6 +73,33 @@ namespace Deucarian.Editor.Tests
             }
         }
 
+        [TestCase(DeucarianEditorIconIds.Audio)]
+        [TestCase(DeucarianEditorIconIds.Palette)]
+        public void FeatureIcons_ImportAsWhiteGlyphsThatCanBeTinted(string iconId)
+        {
+            Texture2D icon = DeucarianEditorIcons.GetIcon(iconId);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture target = RenderTexture.GetTemporary(32, 32, 0, RenderTextureFormat.ARGB32);
+            var readable = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+            try
+            {
+                Graphics.Blit(icon, target);
+                RenderTexture.active = target;
+                readable.ReadPixels(new Rect(0, 0, 32, 32), 0, 0);
+                readable.Apply();
+                Color[] glyph = readable.GetPixels().Where(pixel => pixel.a > 0.9f).ToArray();
+                Assert.Greater(glyph.Length, 10, iconId + " has no visible glyph");
+                Assert.IsTrue(glyph.All(pixel => pixel.r > 0.9f && pixel.g > 0.9f && pixel.b > 0.9f),
+                    iconId + " must import white before the editor applies its tint");
+            }
+            finally
+            {
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(target);
+                UnityEngine.Object.DestroyImmediate(readable);
+            }
+        }
+
         [TestCase("../package")]
         [TestCase("folder/open")]
         [TestCase("folder\\open")]

@@ -70,6 +70,18 @@ namespace Deucarian.Editor.Tests
         }
 
         [Test]
+        public void ControlCenterKeepsItsWindowIdentityWhileThePageHeadingChanges()
+        {
+            session.Dispose();
+            session = new DeucarianEditorPageSession(window, DeucarianToolIds.ControlCenter, _ => { });
+            string title = window.titleContent.text;
+            registration = Register(() => new DeucarianEditorPage(new VisualElement()));
+            session.Navigate(ToolId);
+            Assert.That(session.ActiveToolId, Is.EqualTo(ToolId));
+            Assert.That(window.titleContent.text, Is.EqualTo(title));
+        }
+
+        [Test]
         public void ClickingTheActivePageDoesNotReactivateItButExplicitRoutesStillWork()
         {
             int activations = 0;

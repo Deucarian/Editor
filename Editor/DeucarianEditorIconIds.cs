@@ -4,6 +4,7 @@ namespace Deucarian.Editor
     public static class DeucarianEditorIconIds
     {
         public const string Activity = "activity";
+        public const string Audio = "headphones";
         public const string ActualSize = "scan";
         public const string Available = "circle-arrow-up";
         public const string Back = "chevron-left";
