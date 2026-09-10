@@ -96,6 +96,21 @@ namespace Deucarian.Editor
 
     public static class DeucarianEditorChrome
     {
+        public static void DrawPackageHeader(EditorWindow owner, string title, string subtitle)
+        {
+            if (!DeucarianEditorWindowPages.IsPageController(owner)) DrawPackageHeader(title, subtitle);
+        }
+
+        public static void DrawPackageHeader(EditorWindow owner, string packageKey, string title, string subtitle)
+        {
+            if (!DeucarianEditorWindowPages.IsPageController(owner)) DrawPackageHeader(packageKey, title, subtitle);
+        }
+
+        public static void DrawFooterVersion(EditorWindow owner, string packageName)
+        {
+            if (!DeucarianEditorWindowPages.IsPageController(owner)) DrawFooterVersion(packageName);
+        }
+
         public static void DrawPackageHeader(string title, string subtitle, Texture2D icon = null)
         {
             DrawPackageHeader(title, subtitle, icon, DeucarianEditorPackageHeader.IconSize);
@@ -128,10 +143,6 @@ namespace Deucarian.Editor
             bool preserveIconColor)
         {
             Rect headerRect = EditorGUILayout.BeginVertical(DeucarianEditorStyles.PackageHeaderBox);
-            DeucarianEditorWorkbenchGUI.DrawSurface(
-                headerRect,
-                Opaque(DeucarianEditorWorkbenchGUI.HeaderPanelBackgroundColor),
-                DeucarianEditorWorkbenchGUI.PanelBorderColor);
             EditorGUILayout.BeginHorizontal();
 
             if (icon != null)
@@ -263,7 +274,7 @@ namespace Deucarian.Editor
                 return;
             }
 
-            EditorGUILayout.HelpBox(message, type);
+            DeucarianEditorTextGUI.HelpBox(message, type);
         }
 
         private static void DrawBrandedLabel(string text, GUIStyle sourceStyle, Color textColor)

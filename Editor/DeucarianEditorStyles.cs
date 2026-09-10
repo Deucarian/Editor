@@ -132,27 +132,27 @@ namespace Deucarian.Editor
                 0,
                 0,
                 DeucarianEditorLayoutMetrics.PackageHeaderBottomMargin);
-            packageHeaderBox.normal.background = TextureForColor("header", DeucarianEditorColors.HeaderBackground);
+            packageHeaderBox.normal.background = null;
 
             packageHeaderTitle = CopyStyle(() => EditorStyles.boldLabel);
-            packageHeaderTitle.fontSize = 18;
+            packageHeaderTitle.fontSize = 24;
             DeucarianEditorTypography.ApplyDisplay(packageHeaderTitle);
             packageHeaderTitle.wordWrap = true;
             packageHeaderTitle.alignment = TextAnchor.MiddleLeft;
             packageHeaderTitle.normal.textColor = DeucarianEditorColors.TitleText;
 
             packageHeaderSubtitle = CopyStyle(() => EditorStyles.label);
-            packageHeaderSubtitle.fontSize = 11;
+            packageHeaderSubtitle.fontSize = 14;
             DeucarianEditorTypography.ApplyBody(packageHeaderSubtitle);
             packageHeaderSubtitle.wordWrap = true;
             packageHeaderSubtitle.alignment = TextAnchor.MiddleLeft;
             packageHeaderSubtitle.normal.textColor = DeucarianEditorColors.MutedText;
 
             sectionTitle = CopyStyle(() => EditorStyles.boldLabel);
-            sectionTitle.fontSize = 12;
+            sectionTitle.fontSize = 18;
             DeucarianEditorTypography.ApplyStrong(sectionTitle);
             sectionTitle.wordWrap = true;
-            sectionTitle.margin = new RectOffset(0, 0, 8, 4);
+            sectionTitle.margin = new RectOffset(0, 0, 16, 8);
             sectionTitle.normal.textColor = DeucarianEditorColors.TitleText;
 
             sectionBox = CopyStyle(() => EditorStyles.helpBox);
@@ -171,6 +171,7 @@ namespace Deucarian.Editor
             mutedLabel = CopyStyle(() => EditorStyles.label);
             DeucarianEditorTypography.ApplyBody(mutedLabel);
             mutedLabel.wordWrap = true;
+            mutedLabel.fontSize = 14;
             mutedLabel.normal.textColor = DeucarianEditorColors.MutedText;
 
             statusBadge = CopyStyle(() => EditorStyles.miniBoldLabel);
@@ -194,6 +195,7 @@ namespace Deucarian.Editor
             DeucarianEditorTypography.ApplyBody(footerVersionText);
             footerVersionText.alignment = TextAnchor.MiddleRight;
             footerVersionText.wordWrap = true;
+            footerVersionText.fontSize = 12;
             footerVersionText.margin = new RectOffset(0, 0, 6, 0);
             footerVersionText.normal.textColor = DeucarianEditorColors.MutedText;
         }

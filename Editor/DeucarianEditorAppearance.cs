@@ -8,8 +8,21 @@ namespace Deucarian.Editor
     public static class DeucarianEditorAppearance
     {
         private const string DecorativeKey = "Editor.DecorativeBackgrounds";
+        internal const string ScaleKey = "Editor.WorkspaceScalePercent.CompactBaseline";
         private static readonly ConditionalWeakTable<VisualElement, Binding> Bindings = new ConditionalWeakTable<VisualElement, Binding>();
         public static event Action Changed;
+
+        public static int WorkspaceScalePercent
+        {
+            get => UnityEngine.Mathf.Clamp(DeucarianEditorProjectPreferences.GetInt(ScaleKey, 100), 75, 150);
+            set
+            {
+                int percent = UnityEngine.Mathf.Clamp(value, 75, 150);
+                if (WorkspaceScalePercent == percent) return;
+                DeucarianEditorProjectPreferences.SetInt(ScaleKey, percent);
+                Changed?.Invoke();
+            }
+        }
 
         public static bool DecorativeBackgrounds
         {

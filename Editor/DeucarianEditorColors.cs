@@ -50,35 +50,17 @@ namespace Deucarian.Editor
             get { return IsDark ? FromRgb(188, 184, 176) : FromRgb(121, 118, 111); }
         }
 
-        public static Color HeaderBackground
-        {
-            get { return IsDark ? FromRgb(42, 41, 38) : FromRgb(255, 255, 255); }
-        }
+        public static Color HeaderBackground => DeucarianEditorSurfacePalette.Field;
 
-        public static Color SectionBackground
-        {
-            get { return IsDark ? FromRgb(48, 46, 42) : FromRgb(242, 239, 231); }
-        }
+        public static Color SectionBackground => DeucarianEditorSurfacePalette.Field;
 
-        public static Color Border
-        {
-            get { return IsDark ? FromRgb(74, 82, 79) : FromRgb(205, 201, 192); }
-        }
+        public static Color Border => DeucarianEditorSurfacePalette.Border;
 
-        public static Color TitleText
-        {
-            get { return IsDark ? Salt : MineralInk; }
-        }
+        public static Color TitleText => DeucarianEditorSurfacePalette.Text;
 
-        public static Color BodyText
-        {
-            get { return IsDark ? FromRgb(225, 221, 212) : FromRgb(47, 46, 43); }
-        }
+        public static Color BodyText => DeucarianEditorSurfacePalette.Text;
 
-        public static Color MutedText
-        {
-            get { return IsDark ? FromRgb(170, 166, 158) : FromRgb(121, 118, 111); }
-        }
+        public static Color MutedText => DeucarianEditorSurfacePalette.Muted;
 
         public static Color BadgeText
         {

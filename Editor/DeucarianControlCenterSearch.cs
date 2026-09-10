@@ -21,7 +21,9 @@ namespace Deucarian.Editor
             string description,
             int score,
             Action invoke,
-            bool requiresConfirmation)
+            bool requiresConfirmation,
+            string navigationToolId = null,
+            string navigationRoute = null)
         {
             Kind = kind;
             Area = area;
@@ -31,6 +33,8 @@ namespace Deucarian.Editor
             Score = score;
             this.invoke = invoke;
             RequiresConfirmation = requiresConfirmation;
+            NavigationToolId = navigationToolId;
+            NavigationRoute = navigationRoute;
         }
 
         private readonly Action invoke;
@@ -42,6 +46,8 @@ namespace Deucarian.Editor
         public int Score { get; }
         public bool CanInvoke => invoke != null;
         public bool RequiresConfirmation { get; }
+        public string NavigationToolId { get; }
+        public string NavigationRoute { get; }
         public void Invoke() => invoke?.Invoke();
     }
 
@@ -109,7 +115,7 @@ namespace Deucarian.Editor
                         tool.DisplayName,
                         tool.Description,
                         tool.OwningPackage,
-                        tool.SearchTerms));
+                        tool.SearchTerms), tool.Id);
             }
 
             results.Sort(Compare);
@@ -157,7 +163,7 @@ namespace Deucarian.Editor
                         action.Description,
                         card.Title,
                         new[] { card.OwningPackage },
-                        action.SearchTerms));
+                        action.SearchTerms), action.NavigationToolId, action.NavigationRoute);
             }
         }
 
@@ -171,7 +177,9 @@ namespace Deucarian.Editor
             string description,
             Action invoke,
             bool requiresConfirmation,
-            IEnumerable<string> searchable)
+            IEnumerable<string> searchable,
+            string navigationToolId = null,
+            string navigationRoute = null)
         {
             string text = string.Join(" ", searchable).ToLowerInvariant();
             foreach (string term in terms)
@@ -194,7 +202,7 @@ namespace Deucarian.Editor
                 description ?? string.Empty,
                 score,
                 invoke,
-                requiresConfirmation));
+                requiresConfirmation, navigationToolId, navigationRoute));
         }
 
         private static IEnumerable<string> Combine(

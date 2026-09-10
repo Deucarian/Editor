@@ -15,7 +15,9 @@ namespace Deucarian.Editor
             "Tools/Deucarian/Advanced/Legacy Shortcuts...";
 
         private const int SnapshotIntervalMilliseconds = 15000;
-        private DeucarianEditorWorkbench workbench;
+        private DeucarianEditorPageSession navigation;
+        private VisualElement pageRoot;
+        private DeucarianEditorWorkspace workspace;
         private DeucarianControlCenterView view;
         private DeucarianControlCenterSnapshot snapshot;
         private IVisualElementScheduledItem periodicRefresh;
@@ -61,12 +63,13 @@ namespace Deucarian.Editor
             DeucarianControlCenterArea area)
         {
             DeucarianControlCenterWindow window =
-                GetWindow<DeucarianControlCenterWindow>(
+                DeucarianEditorWindowPages.GetStandalone<DeucarianControlCenterWindow>(
                     "Deucarian Control Center");
+            window.navigation?.Navigate(DeucarianToolIds.ControlCenter, area == DeucarianControlCenterArea.Developer ? "developer" : null);
             window.selectedArea = area;
             window.focusedTargetId = null;
             window.SetSearch(string.Empty);
-            window.minSize = new Vector2(420f, 360f);
+            DeucarianEditorWorkspace.ConfigureWindow(window);
             window.Show();
             window.Focus();
             window.Render();
@@ -87,55 +90,55 @@ namespace Deucarian.Editor
 
         public void CreateGUI()
         {
-            DisposeVisualTree();
-            rootVisualElement.Clear();
-            workbench = DeucarianEditorWorkbench.Create(
-                rootVisualElement,
-                new DeucarianEditorWorkbenchOptions
-                {
-                    IncludeHeader = true,
-                    IncludeToolbar = true,
-                    IncludeFooter = true,
-                    HeaderPackageKey = "editor",
-                    HeaderTitle = "Deucarian Control Center",
-                    HeaderSubtitle =
-                        "Project readiness, installed capabilities, and trusted shortcuts.",
-                    ToolbarLayout =
-                        DeucarianEditorWorkbenchToolbarLayout.Responsive
-                });
+            navigation?.Dispose();
+            navigation = new DeucarianEditorPageSession(this, DeucarianToolIds.ControlCenter,
+                BuildPage, ActivatePage);
+        }
 
-            DeucarianEditorCommandBarLanes lanes =
-                DeucarianEditorCommandBar.CreateLanes(workbench.Toolbar);
-            searchField = DeucarianEditorSearchField.Create("Search tools · Ctrl/Cmd+K", value =>
-            {
-                searchQuery = value ?? string.Empty;
-                Render();
-            }, searchQuery);
+        internal static IDeucarianEditorPage CreatePage() =>
+            DeucarianEditorWindowPages.Create<DeucarianControlCenterWindow>(
+                (window, root) => window.BuildPage(root), (window, route) => window.ActivatePage(route));
+
+        private void ActivatePage(string route)
+        {
+            if (string.IsNullOrEmpty(route)) return;
+            var area = DeucarianControlCenterArea.Overview;
+            foreach (DeucarianControlCenterArea candidate in Enum.GetValues(typeof(DeucarianControlCenterArea)))
+                if (DeucarianControlCenterAreaIds.GetId(candidate) == route) { area = candidate; break; }
+            if (selectedArea != area || !string.IsNullOrEmpty(searchQuery) || focusedTargetId != null) Navigate(area, null);
+            workspace?.SelectNavigation(route == "developer" ? "advanced" : DeucarianToolIds.ControlCenter);
+        }
+
+        private void BuildPage(VisualElement root)
+        {
+            DisposeVisualTree();
+            pageRoot = root;
+            pageRoot.Clear();
+            workspace = new DeucarianEditorWorkspace(pageRoot, Application.productName);
+            workspace.Title.text = "Control Center";
+            workspace.Subtitle.text = "Project readiness and your installed tools.";
+            DeucarianEditorWorkspaceNavigation.Populate(workspace, DeucarianToolIds.ControlCenter, filterNavigation: false);
+            workspace.SetSearchPrompt("Search tools and checks…");
+            searchField = workspace.SearchField;
             searchField.name = "control-center-search";
-            searchField.tooltip = "Search tools and project checks. Ctrl/Cmd+K to search; arrows to choose; Enter to open.";
-            searchField.style.minWidth = 200f;
-            searchField.style.flexGrow = 1f;
-            lanes.Leading.style.flexGrow = 1f;
-            lanes.Leading.Add(searchField);
-            summary = lanes.Summary;
-            summary.RemoveFromHierarchy();
-            Button refresh = DeucarianEditorCommandBar.CreateAction(
-                DeucarianEditorIconIds.Refresh,
-                "Refresh",
-                () => Refresh(true),
-                tooltip: "Capture a fresh bounded status snapshot.");
+            searchField.SetValueWithoutNotify(searchQuery);
+            searchField.RegisterValueChangedCallback(evt => { searchQuery = evt.newValue ?? string.Empty; Render(); });
+            summary = workspace.FooterTrailing;
+            var refresh = DeucarianEditorWorkspaceControls.Button("Refresh", () => Refresh(true));
             refresh.name = "control-center-refresh";
-            lanes.Trailing.Add(refresh);
+            workspace.PageActions.Add(refresh);
+            DeucarianEditorWorkspaceControls.Show(workspace.Scope, false);
+            DeucarianEditorWorkspaceControls.Show(workspace.Tabs, false);
 
             view = new DeucarianControlCenterView(
                 Navigate,
                 () => Refresh(false));
-            workbench.Content.Add(view.Root);
+            workspace.Content.Add(view.Root);
             ConfigureFooter();
-            rootVisualElement.RegisterCallback<GeometryChangedEvent>(
+            pageRoot.RegisterCallback<GeometryChangedEvent>(
                 OnGeometryChanged);
-            rootVisualElement.RegisterCallback<KeyDownEvent>(OnSearchKeyDown);
-            periodicRefresh = rootVisualElement.schedule
+            pageRoot.RegisterCallback<KeyDownEvent>(OnSearchKeyDown);
+            periodicRefresh = pageRoot.schedule
                 .Execute(() => Refresh(false))
                 .Every(SnapshotIntervalMilliseconds);
             Subscribe();
@@ -151,6 +154,8 @@ namespace Deucarian.Editor
 
         private void OnDisable()
         {
+            navigation?.Dispose();
+            navigation = null;
             DeucarianEditorProjectPreferences.SetInt("control-center.area", (int)selectedArea);
             DeucarianEditorProjectPreferences.SetString("control-center.search", searchQuery);
             Unsubscribe();
@@ -185,13 +190,13 @@ namespace Deucarian.Editor
 
         private void QueueRefresh()
         {
-            if (refreshQueued || rootVisualElement == null)
+            if (refreshQueued || pageRoot == null)
             {
                 return;
             }
 
             refreshQueued = true;
-            rootVisualElement.schedule.Execute(() =>
+            pageRoot.schedule.Execute(() =>
             {
                 refreshQueued = false;
                 Refresh(false);
@@ -262,6 +267,7 @@ namespace Deucarian.Editor
                 selectedArea,
                 focusedTargetId,
                 searchQuery);
+            workspace.Root.EnableInClassList("dw-overview-page", selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery));
             if (summary != null)
             {
                 summary.text = snapshot.CapturedAtUtc.ToLocalTime()
@@ -271,40 +277,25 @@ namespace Deucarian.Editor
 
         private void ConfigureFooter()
         {
-            if (workbench.Footer == null)
-            {
-                return;
-            }
-
-            var label = new Label("Project status · refreshes automatically");
-            label.style.color = DeucarianEditorTheme.MutedText;
-            label.style.marginLeft = 10f;
-            label.style.flexGrow = 1f;
-            label.style.whiteSpace = WhiteSpace.Normal;
-            workbench.Footer.style.flexWrap = Wrap.Wrap;
-            workbench.Footer.Add(label);
-            workbench.Footer.Add(summary);
+            workspace.FooterLeading.text = "Local project · refreshes automatically";
         }
 
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
-            DeucarianEditorLayoutMode mode =
-                workbench?.ApplyResponsiveLayout(evt.newRect.width) ??
-                DeucarianEditorResponsiveLayout.ResolveMode(evt.newRect.width);
-            view?.SetLayoutMode(mode);
+            view?.SetLayoutMode(DeucarianEditorResponsiveLayout.ResolveMode(workspace?.Content.resolvedStyle.width ?? evt.newRect.width));
         }
 
         private void DisposeVisualTree()
         {
             periodicRefresh?.Pause();
             periodicRefresh = null;
-            rootVisualElement?.UnregisterCallback<GeometryChangedEvent>(
+            pageRoot?.UnregisterCallback<GeometryChangedEvent>(
                 OnGeometryChanged);
-            rootVisualElement?.UnregisterCallback<KeyDownEvent>(OnSearchKeyDown);
+            pageRoot?.UnregisterCallback<KeyDownEvent>(OnSearchKeyDown);
             view?.Dispose();
             view = null;
-            workbench?.Dispose();
-            workbench = null;
+            workspace?.Dispose();
+            workspace = null;
         }
 
         private void OnSearchKeyDown(KeyDownEvent evt)
@@ -315,7 +306,7 @@ namespace Deucarian.Editor
                 searchField?.SelectAll();
             }
             else if (string.IsNullOrWhiteSpace(searchQuery)) return;
-            else if (!(rootVisualElement.focusController?.focusedElement is VisualElement focused) ||
+            else if (!(pageRoot.focusController?.focusedElement is VisualElement focused) ||
                 (focused != searchField && !searchField.Contains(focused))) return;
             else if (evt.keyCode == KeyCode.DownArrow) view?.MoveSearchSelection(1);
             else if (evt.keyCode == KeyCode.UpArrow) view?.MoveSearchSelection(-1);

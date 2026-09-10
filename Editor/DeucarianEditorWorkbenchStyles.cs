@@ -30,6 +30,7 @@ namespace Deucarian.Editor
 
         internal DeucarianEditorWorkbenchStyles()
         {
+            InputStyles = new DeucarianEditorInputStyles();
             windowStyle = new GUIStyle
             {
                 padding = new RectOffset(
@@ -89,25 +90,31 @@ namespace Deucarian.Editor
             labelStyle = CopyStyle(() => EditorStyles.label);
             DeucarianEditorTypography.ApplyBody(labelStyle);
             labelStyle.normal.textColor = DeucarianEditorVisualShell.Text;
+            labelStyle.fontSize = 16;
+            labelStyle.wordWrap = true;
 
             boldLabelStyle = CopyStyle(() => EditorStyles.boldLabel);
             DeucarianEditorTypography.ApplyStrong(boldLabelStyle);
             boldLabelStyle.normal.textColor = DeucarianEditorVisualShell.Text;
+            boldLabelStyle.fontSize = 16;
+            boldLabelStyle.wordWrap = true;
 
             wordWrappedMiniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
             DeucarianEditorTypography.ApplyBody(wordWrappedMiniLabelStyle);
             wordWrappedMiniLabelStyle.normal.textColor = DeucarianEditorVisualShell.MutedText;
             wordWrappedMiniLabelStyle.wordWrap = true;
+            wordWrappedMiniLabelStyle.fontSize = 14;
 
             miniLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
             DeucarianEditorTypography.ApplyBody(miniLabelStyle);
             miniLabelStyle.normal.textColor = DeucarianEditorVisualShell.Text;
             miniLabelStyle.wordWrap = true;
             miniLabelStyle.clipping = TextClipping.Overflow;
+            miniLabelStyle.fontSize = 14;
 
             mutedMiniLabelStyle = CopyStyle(() => DeucarianEditorStyles.MutedLabel);
             DeucarianEditorTypography.ApplyBody(mutedMiniLabelStyle);
-            mutedMiniLabelStyle.fontSize = GetWordWrappedMiniLabelFontSize();
+            mutedMiniLabelStyle.fontSize = 14;
             mutedMiniLabelStyle.wordWrap = true;
             mutedMiniLabelStyle.clipping = TextClipping.Overflow;
 
@@ -116,18 +123,21 @@ namespace Deucarian.Editor
             rowTitleStyle.normal.textColor = DeucarianEditorVisualShell.Text;
             rowTitleStyle.wordWrap = true;
             rowTitleStyle.clipping = TextClipping.Clip;
+            rowTitleStyle.fontSize = 16;
 
             rowSubLabelStyle = CopyStyle(() => EditorStyles.wordWrappedMiniLabel);
             DeucarianEditorTypography.ApplyBody(rowSubLabelStyle);
             rowSubLabelStyle.normal.textColor = DeucarianEditorVisualShell.MutedText;
             rowSubLabelStyle.wordWrap = true;
             rowSubLabelStyle.clipping = TextClipping.Clip;
+            rowSubLabelStyle.fontSize = 14;
 
             rowStatusStyle = CopyStyle(() => EditorStyles.miniLabel);
             DeucarianEditorTypography.ApplyBody(rowStatusStyle);
             rowStatusStyle.normal.textColor = DeucarianEditorVisualShell.Text;
             rowStatusStyle.alignment = TextAnchor.MiddleLeft;
             rowStatusStyle.clipping = TextClipping.Clip;
+            rowStatusStyle.fontSize = 14;
 
             markerStyle = CopyStyle(() => EditorStyles.miniBoldLabel);
             DeucarianEditorTypography.ApplyStrong(markerStyle);
@@ -142,13 +152,8 @@ namespace Deucarian.Editor
             foldoutStyle.hover.textColor = DeucarianEditorVisualShell.Text;
             foldoutStyle.onHover.textColor = DeucarianEditorVisualShell.Text;
 
-            primaryButtonStyle = CopyStyle(() => EditorStyles.miniButton);
-            DeucarianEditorTypography.ApplyStrong(primaryButtonStyle);
-            primaryButtonStyle.fixedHeight = DeucarianEditorLayoutMetrics.CommandControlHeight;
-
-            secondaryButtonStyle = CopyStyle(() => DeucarianEditorStyles.ToolbarButton);
-            DeucarianEditorTypography.ApplyStrong(secondaryButtonStyle);
-            secondaryButtonStyle.fixedHeight = DeucarianEditorLayoutMetrics.CommandControlHeight;
+            primaryButtonStyle = CopyStyle(() => DeucarianEditorButtons.PrimaryStyle);
+            secondaryButtonStyle = CopyStyle(() => DeucarianEditorButtons.SecondaryStyle);
 
             compactIconActionLabelStyle = CopyStyle(() => EditorStyles.label);
             DeucarianEditorTypography.ApplyStrong(compactIconActionLabelStyle);
@@ -159,6 +164,7 @@ namespace Deucarian.Editor
         }
 
         internal GUIStyle WindowStyle => windowStyle;
+        internal DeucarianEditorInputStyles InputStyles { get; }
         internal GUIStyle EmbeddedPageStyle => embeddedPageStyle;
         internal GUIStyle SidebarStyle => sidebarStyle;
         internal GUIStyle DetailsStyle => detailsStyle;

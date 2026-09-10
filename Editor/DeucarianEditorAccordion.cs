@@ -284,10 +284,10 @@ namespace Deucarian.Editor
             {
                 if (titleStyle == null)
                 {
-                    titleStyle = new GUIStyle(EditorStyles.boldLabel)
+                    titleStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.BoldLabelStyle)
                     {
                         wordWrap = true,
-                        fontSize = 13,
+                        fontSize = 16,
                         fontStyle = FontStyle.Bold
                     };
                     titleStyle.normal.textColor = DeucarianEditorTheme.Text;
@@ -303,7 +303,7 @@ namespace Deucarian.Editor
             {
                 if (summaryStyle == null)
                 {
-                    summaryStyle = new GUIStyle(EditorStyles.miniLabel)
+                    summaryStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle)
                     {
                         wordWrap = true
                     };
@@ -320,7 +320,7 @@ namespace Deucarian.Editor
             {
                 if (indicatorStyle == null)
                 {
-                    indicatorStyle = new GUIStyle(EditorStyles.boldLabel)
+                    indicatorStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.BoldLabelStyle)
                     {
                         alignment = TextAnchor.MiddleCenter,
                         fontSize = 13

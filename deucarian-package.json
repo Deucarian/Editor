@@ -19,6 +19,11 @@
   "requiredDependencies": [],
   "optionalVersionDefinedDependencies": [],
   "allowedDirectDebugCalls": [],
-  "allowedDirectUnityObjectLifetimeCalls": [],
+  "allowedDirectUnityObjectLifetimeCalls": [
+    {
+      "file": "Editor/DeucarianEditorWindowPages.cs",
+      "reason": "Editor-only compatibility controllers have never been shown, so EditorWindow.Close has no native parent in Unity 2021. Their owner must release them synchronously even during Play Mode; runtime delayed destruction is not applicable. This bridge never accepts arbitrary runtime objects."
+    }
+  ],
   "expectedSamplesRoot": "Samples~"
 }

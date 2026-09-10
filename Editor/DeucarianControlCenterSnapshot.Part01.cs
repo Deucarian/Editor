@@ -136,7 +136,8 @@ namespace Deucarian.Editor
                             "deucarian.readiness.open-project",
                             "Review project checks",
                             () => DeucarianControlCenterWindow.Open(
-                                DeucarianControlCenterArea.Project))
+                                DeucarianControlCenterArea.Project),
+                            navigationToolId: DeucarianToolIds.ControlCenter, navigationRoute: "project")
                     },
                     new[] { "project", "readiness", "validation", "blockers" }),
                 cards,
@@ -188,7 +189,7 @@ namespace Deucarian.Editor
                 cardId,
                 "open-setup",
                 "Open setup",
-                issue.OpenSetup);
+                issue.OpenSetup, issue.SetupToolId, issue.SetupRoute);
             var details = new List<string>();
             if (!string.IsNullOrWhiteSpace(issue.AffectedPath))
             {
@@ -214,14 +215,14 @@ namespace Deucarian.Editor
             string cardId,
             string suffix,
             string label,
-            Action action)
+            Action action, string toolId = null, string route = null)
         {
             if (action != null)
             {
                 actions.Add(new DeucarianControlCenterAction(
                     cardId + "." + suffix,
                     label,
-                    action));
+                    action, navigationToolId: toolId, navigationRoute: route));
             }
         }
 

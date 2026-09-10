@@ -23,16 +23,16 @@ namespace Deucarian.Editor
 
         private static void Draw()
         {
-            EditorGUILayout.LabelField("Editor appearance", EditorStyles.boldLabel);
-            DeucarianEditorAppearance.DecorativeBackgrounds = EditorGUILayout.Toggle(
+            DeucarianEditorChrome.DrawSectionHeader("Editor appearance");
+            DeucarianEditorAppearance.DecorativeBackgrounds = DeucarianEditorInputGUI.Toggle(
                 "Decorative backgrounds", DeucarianEditorAppearance.DecorativeBackgrounds);
             using (new EditorGUI.DisabledScope(!DeucarianEditorAppearance.DecorativeBackgrounds))
             {
                 var previous = DeucarianEditorAmbientMotionSettings.CurrentMode;
-                var next = (DeucarianEditorAmbientMotionMode)EditorGUILayout.EnumPopup("Background motion", previous);
+                var next = (DeucarianEditorAmbientMotionMode)DeucarianEditorInputGUI.EnumPopup("Background motion", previous);
                 if (next != previous) DeucarianEditorAmbientMotionSettings.SetMode(next);
             }
-            EditorGUILayout.LabelField("Applies to Deucarian tools in this project.", EditorStyles.wordWrappedMiniLabel);
+            DeucarianEditorTextGUI.LabelField("Applies to Deucarian tools in this project.", DeucarianEditorWorkbenchGUI.WordWrappedMiniLabelStyle);
             EditorGUILayout.Space();
             IReadOnlyList<DeucarianProjectIssue> issues =
                 DeucarianProjectValidationRegistry.Evaluate();
@@ -45,12 +45,12 @@ namespace Deucarian.Editor
                 }
             }
 
-            EditorGUILayout.HelpBox(
+            DeucarianEditorTextGUI.HelpBox(
                 blockers == 0
                     ? "All contributed project checks pass."
                     : blockers + " blocking project issue(s) remain.",
                 blockers == 0 ? MessageType.Info : MessageType.Error);
-            if (GUILayout.Button("Open Deucarian Control Center"))
+            if (DeucarianEditorActionGUI.Button("Open Deucarian Control Center"))
             {
                 DeucarianControlCenterWindow.Open(
                     DeucarianControlCenterArea.Project);

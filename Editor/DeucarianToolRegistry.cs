@@ -41,7 +41,9 @@ namespace Deucarian.Editor
             string owningPackage,
             string iconKey = null,
             IEnumerable<string> searchTerms = null,
-            int order = 0)
+            int order = 0,
+            Func<IDeucarianEditorPage> createPage = null,
+            string navigationPath = null)
         {
             Id = DeucarianControlCenterAction.Require(id, nameof(id));
             DisplayName = DeucarianControlCenterAction.Require(
@@ -61,6 +63,9 @@ namespace Deucarian.Editor
             IconKey = DeucarianControlCenterAction.Clean(iconKey);
             SearchTerms = DeucarianControlCenterAction.Copy(searchTerms);
             Order = order;
+            CreatePage = createPage;
+            NavigationPath = string.IsNullOrWhiteSpace(navigationPath)
+                ? DeucarianControlCenterAreaIds.GetDisplayName(area) : navigationPath.Trim();
         }
 
         public string Id { get; }
@@ -71,6 +76,8 @@ namespace Deucarian.Editor
         public string IconKey { get; }
         public IReadOnlyList<string> SearchTerms { get; }
         public int Order { get; }
+        public Func<IDeucarianEditorPage> CreatePage { get; }
+        public string NavigationPath { get; }
         public void Open()
         {
             open();

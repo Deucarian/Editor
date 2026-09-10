@@ -16,6 +16,10 @@ namespace Deucarian.Editor
 
         static DeucarianControlCenterBuiltIns()
         {
+            DeucarianToolRegistry.Register(new DeucarianToolDescriptor("deucarian.editor.workspace-preview",
+                "Editor Component Gallery", "Explore shared fields, buttons and status styles. No application settings.",
+                DeucarianControlCenterArea.Developer, DeucarianEditorWorkspacePreviewWindow.Open, PackageName,
+                createPage: DeucarianEditorWorkspacePreviewWindow.CreatePage));
             ProviderRegistration =
                 DeucarianControlCenterRegistry.RegisterCardProvider(Provider);
             ToolRegistration = DeucarianToolRegistry.Register(
@@ -28,7 +32,7 @@ namespace Deucarian.Editor
                     PackageName,
                     DeucarianEditorIconIds.Dashboard,
                     new[] { "project", "setup", "dashboard", "tools" },
-                    -1000));
+                    -1000, createPage: DeucarianControlCenterWindow.CreatePage));
         }
 
         public string Id => "deucarian.editor.control-center";
@@ -50,12 +54,18 @@ namespace Deucarian.Editor
                     "deucarian.tools.discovery",
                     DeucarianControlCenterArea.Developer,
                     "Developer tool discovery",
-                    "Registered tools remain owned by their packages and open as standalone workflows.",
+                    "Registered package tools open as pages in this workspace.",
                     PackageName,
                     DeucarianControlCenterStatus.Info,
                     tools.Count + " tool(s)",
                     -1000,
                     details,
+                    actions: new[]
+                    {
+                        new DeucarianControlCenterAction("deucarian.editor.workspace-preview", "Open Component Gallery",
+                            DeucarianEditorWorkspacePreviewWindow.Open,
+                            "Inspect the shared editor layout using isolated sample content.", navigationToolId: "deucarian.editor.workspace-preview")
+                    },
                     searchTerms: new[]
                     {
                         "developer", "legacy", "shortcuts", "tools", "registry"
