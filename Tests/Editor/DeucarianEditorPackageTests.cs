@@ -715,13 +715,13 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(10, DeucarianEditorLayoutMetrics.FooterHorizontalPadding);
             Assert.AreEqual(0, DeucarianEditorLayoutMetrics.FooterVerticalPadding);
             Assert.AreEqual(34, DeucarianEditorLayoutMetrics.FooterHeight);
-            Assert.AreEqual(28, DeucarianEditorLayoutMetrics.CommandControlHeight);
+            Assert.AreEqual(36, DeucarianEditorLayoutMetrics.CommandControlHeight);
             Assert.AreEqual(8, DeucarianEditorLayoutMetrics.CommandControlHorizontalPadding);
             Assert.AreEqual(18, DeucarianEditorLayoutMetrics.TextLineHeight);
             Assert.AreEqual(14, DeucarianEditorLayoutMetrics.IconSize);
             Assert.AreEqual(8, DeucarianEditorLayoutMetrics.IconTextGap);
-            Assert.AreEqual(46, DeucarianEditorLayoutMetrics.CommandBarSingleRowHeight);
-            Assert.AreEqual(78, DeucarianEditorLayoutMetrics.CommandBarTwoRowHeight);
+            Assert.AreEqual(54, DeucarianEditorLayoutMetrics.CommandBarSingleRowHeight);
+            Assert.AreEqual(94, DeucarianEditorLayoutMetrics.CommandBarTwoRowHeight);
 
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.CommandControlHeight,
@@ -935,12 +935,12 @@ namespace Deucarian.Editor.Tests
         {
             DeucarianEditorWorkbenchGUI.ClearCache();
 
-            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
+            Assert.AreEqual(42f, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fixedHeight);
             Assert.AreEqual(FontStyle.Normal, DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.fontStyle);
             Assert.AreEqual(
                 DeucarianEditorTypography.Strong.name,
                 DeucarianEditorWorkbenchGUI.PrimaryButtonStyle.font.name);
-            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
+            Assert.AreEqual(36f, DeucarianEditorWorkbenchGUI.SecondaryButtonStyle.fixedHeight);
             Assert.AreEqual(
                 DeucarianEditorLayoutMetrics.PageHorizontalPadding,
                 DeucarianEditorWorkbenchGUI.WindowStyle.padding.left);
@@ -976,7 +976,7 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(0, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.top);
             Assert.AreEqual(8, DeucarianEditorWorkbenchGUI.SampleRowStyle.margin.bottom);
             Assert.AreEqual(118f, DeucarianEditorWorkbenchGUI.DetailLabelWidth);
-            Assert.AreEqual(28f, DeucarianEditorWorkbenchGUI.CompactIconActionHeight);
+            Assert.AreEqual(36f, DeucarianEditorWorkbenchGUI.CompactIconActionHeight);
             Assert.AreEqual(14f, DeucarianEditorWorkbenchGUI.CompactIconSize);
             Assert.AreEqual(8f, DeucarianEditorWorkbenchGUI.CompactIconTextGap);
             Assert.AreEqual(8, DeucarianEditorStyles.ToolbarButton.padding.left);
@@ -1010,18 +1010,9 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.BoldLabelStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.TextColor, DeucarianEditorWorkbenchGUI.SectionTitleStyle.normal.textColor);
             Assert.AreEqual(DeucarianEditorWorkbenchGUI.MutedTextColor, DeucarianEditorWorkbenchGUI.WordWrappedMiniLabelStyle.normal.textColor);
-            Assert.AreEqual(
-                DeucarianEditorTheme.IsDark ? 0.46f : 0.56f,
-                DeucarianEditorWorkbenchGUI.RowBackgroundColor.a,
-                0.001f);
-            Assert.AreEqual(
-                DeucarianEditorTheme.IsDark ? 0.66f : 0.16f,
-                DeucarianEditorWorkbenchGUI.RowHoverColor.a,
-                0.001f);
-            Assert.AreEqual(
-                DeucarianEditorTheme.IsDark ? 0.52f : 0.25f,
-                DeucarianEditorWorkbenchGUI.RowSelectedColor.a,
-                0.001f);
+            Assert.AreEqual(DeucarianEditorSurfacePalette.Field, DeucarianEditorWorkbenchGUI.RowBackgroundColor);
+            Assert.AreEqual(DeucarianEditorSurfacePalette.Hover, DeucarianEditorWorkbenchGUI.RowHoverColor);
+            Assert.AreEqual(DeucarianEditorSurfacePalette.Selected, DeucarianEditorWorkbenchGUI.RowSelectedColor);
         }
 
         [Test]
@@ -1141,7 +1132,7 @@ namespace Deucarian.Editor.Tests
             StringAssert.Contains(".dpi-operation-drawer", uss);
             StringAssert.Contains(".deucarian-workbench-operation-footer__action:active", uss);
             StringAssert.Contains(".dpi-operation-footer__details-button:active", uss);
-            StringAssert.Contains("--deucarian-workbench-operation-footer-height: 34px;", uss);
+            StringAssert.Contains("--deucarian-workbench-operation-footer-height: 46px;", uss);
         }
 
         [Test]
@@ -1161,9 +1152,9 @@ namespace Deucarian.Editor.Tests
             Assert.AreEqual(14f, DeucarianEditorIconTextButton.IconSize);
 
             string rootRule = GetStyleRule(uss, ".deucarian-icon-text-button");
-            StringAssert.Contains("height: 28px;", rootRule);
-            StringAssert.Contains("min-height: 28px;", rootRule);
-            StringAssert.Contains("max-height: 28px;", rootRule);
+            StringAssert.Contains("height: 36px;", rootRule);
+            StringAssert.Contains("min-height: 36px;", rootRule);
+            StringAssert.Contains("max-height: 36px;", rootRule);
             StringAssert.Contains("padding-left: 8px;", rootRule);
             StringAssert.Contains("padding-right: 8px;", rootRule);
             StringAssert.Contains("padding-top: 0;", rootRule);
@@ -1188,7 +1179,7 @@ namespace Deucarian.Editor.Tests
             StringAssert.Contains("min-width: 8px;", gapRule);
             StringAssert.Contains("max-width: 8px;", gapRule);
             StringAssert.Contains("align-content: center;", uss);
-            StringAssert.Contains("height: 28px;", uss);
+            StringAssert.Contains("height: 36px;", uss);
             StringAssert.DoesNotContain("padding-left: 6px;", uss);
             StringAssert.DoesNotContain("padding-right: 6px;", uss);
         }
@@ -1413,16 +1404,16 @@ namespace Deucarian.Editor.Tests
 
             string uss = ReadSharedStyleSheet();
             string toolbarRule = GetStyleRule(uss, ".deucarian-toolbar-row");
-            StringAssert.Contains("height: 46px;", toolbarRule);
-            StringAssert.Contains("min-height: 46px;", toolbarRule);
-            StringAssert.Contains("max-height: 46px;", toolbarRule);
+            StringAssert.Contains("height: 54px;", toolbarRule);
+            StringAssert.Contains("min-height: 54px;", toolbarRule);
+            StringAssert.Contains("max-height: 54px;", toolbarRule);
             StringAssert.Contains("align-items: center;", toolbarRule);
             StringAssert.Contains("align-content: center;", toolbarRule);
 
             string laneRule = GetStyleRule(uss, ".deucarian-command-bar__navigation,");
-            StringAssert.Contains("height: 28px;", laneRule);
-            StringAssert.Contains("min-height: 28px;", laneRule);
-            StringAssert.Contains("max-height: 28px;", laneRule);
+            StringAssert.Contains("height: 36px;", laneRule);
+            StringAssert.Contains("min-height: 36px;", laneRule);
+            StringAssert.Contains("max-height: 36px;", laneRule);
             StringAssert.Contains("align-items: center;", laneRule);
 
             string summaryRule = GetStyleRule(uss, ".deucarian-command-bar__summary");
@@ -1434,18 +1425,18 @@ namespace Deucarian.Editor.Tests
             string stackedRule = GetStyleRule(
                 uss,
                 ".deucarian-responsive--narrow .deucarian-workbench-toolbar--stable-action-lanes,");
-            StringAssert.Contains("height: 78px;", stackedRule);
-            StringAssert.Contains("min-height: 78px;", stackedRule);
-            StringAssert.Contains("max-height: 78px;", stackedRule);
+            StringAssert.Contains("height: 94px;", stackedRule);
+            StringAssert.Contains("min-height: 94px;", stackedRule);
+            StringAssert.Contains("max-height: 94px;", stackedRule);
             StringAssert.Contains("flex-direction: column;", stackedRule);
             StringAssert.Contains("justify-content: center;", stackedRule);
 
             string compactRule = GetStyleRule(
                 uss,
                 ".deucarian-responsive--narrow .deucarian-workbench-toolbar--compact-single-line,");
-            StringAssert.Contains("height: 46px;", compactRule);
-            StringAssert.Contains("min-height: 46px;", compactRule);
-            StringAssert.Contains("max-height: 46px;", compactRule);
+            StringAssert.Contains("height: 54px;", compactRule);
+            StringAssert.Contains("min-height: 54px;", compactRule);
+            StringAssert.Contains("max-height: 54px;", compactRule);
             StringAssert.Contains("align-items: center;", compactRule);
             StringAssert.Contains("align-content: center;", compactRule);
         }

@@ -39,13 +39,11 @@ namespace Deucarian.Editor
                 return;
             }
 
-            DeucarianEditorCards.DrawInlineCard(() =>
+            foreach (string message in messages)
             {
-                foreach (string message in messages)
-                {
-                    EditorGUILayout.LabelField(message ?? string.Empty, MessageStyle);
-                }
-            });
+                if (!string.IsNullOrWhiteSpace(message))
+                    DeucarianEditorTextGUI.LabelField(message, DeucarianEditorWorkbenchGUI.WordWrappedMiniLabelStyle);
+            }
         }
 
         private static GUIStyle messageStyle;
@@ -84,9 +82,10 @@ namespace Deucarian.Editor
             {
                 if (statusBarStyle == null)
                 {
-                    statusBarStyle = new GUIStyle(EditorStyles.miniLabel)
+                    statusBarStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle)
                     {
                         alignment = TextAnchor.MiddleLeft,
+                        fontSize = 12,
                         padding = new RectOffset(10, 10, 0, 0)
                     };
                     statusBarStyle.normal.textColor = DeucarianEditorTheme.MutedText;

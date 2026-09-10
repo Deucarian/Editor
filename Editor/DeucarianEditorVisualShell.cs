@@ -6,32 +6,20 @@ namespace Deucarian.Editor
 {
     public static class DeucarianEditorVisualShell
     {
-        public const float SurfaceRadius = 8f;
+        public const float SurfaceRadius = 5f;
 
         private const string LegacyBackgroundAssetFileName = "DeucarianInstallerBackground.png";
 
         private static bool? cachedBackgroundDark;
         private static Texture2D backgroundTexture;
 
-        public static Color DeepBackground
-        {
-            get { return DeucarianEditorTheme.IsDark ? DeucarianEditorColors.MineralInk : new Color(248f / 255f, 246f / 255f, 241f / 255f, 1f); }
-        }
+        public static Color DeepBackground => DeucarianEditorSurfacePalette.Background;
 
-        public static Color MainPanel
-        {
-            get { return DeucarianEditorTheme.IsDark ? new Color(37f / 255f, 36f / 255f, 33f / 255f, 0.88f) : new Color(1f, 1f, 1f, 0.90f); }
-        }
+        public static Color MainPanel => DeucarianEditorSurfacePalette.Sidebar;
 
-        public static Color NestedSurface
-        {
-            get { return DeucarianEditorTheme.IsDark ? new Color(48f / 255f, 46f / 255f, 42f / 255f, 0.82f) : new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.88f); }
-        }
+        public static Color NestedSurface => DeucarianEditorSurfacePalette.Field;
 
-        public static Color HeaderPanel
-        {
-            get { return DeucarianEditorTheme.IsDark ? new Color(42f / 255f, 41f / 255f, 38f / 255f, 0.92f) : new Color(1f, 1f, 1f, 0.94f); }
-        }
+        public static Color HeaderPanel => DeucarianEditorSurfacePalette.Field;
 
         public static Color Border
         {
@@ -42,25 +30,13 @@ namespace Deucarian.Editor
             }
         }
 
-        public static Color SubtleBorder
-        {
-            get { return DeucarianEditorTheme.IsDark ? new Color(242f / 255f, 239f / 255f, 231f / 255f, 0.12f) : new Color(27f / 255f, 26f / 255f, 24f / 255f, 0.09f); }
-        }
+        public static Color SubtleBorder => DeucarianEditorSurfacePalette.Border;
 
-        public static Color InteractiveBorder
-        {
-            get { return DeucarianEditorTheme.IsDark ? new Color(98f / 255f, 186f / 255f, 182f / 255f, 0.62f) : new Color(15f / 255f, 98f / 255f, 106f / 255f, 0.58f); }
-        }
+        public static Color InteractiveBorder => DeucarianEditorSurfacePalette.Accent;
 
-        public static Color Text
-        {
-            get { return DeucarianEditorTheme.IsDark ? DeucarianEditorColors.Salt : DeucarianEditorColors.MineralInk; }
-        }
+        public static Color Text => DeucarianEditorSurfacePalette.Text;
 
-        public static Color MutedText
-        {
-            get { return DeucarianEditorTheme.IsDark ? new Color(170f / 255f, 166f / 255f, 158f / 255f, 1f) : new Color(121f / 255f, 118f / 255f, 111f / 255f, 1f); }
-        }
+        public static Color MutedText => DeucarianEditorSurfacePalette.Muted;
 
         public static VisualElement CreateWindowShell(VisualElement root, Texture2D background = null)
         {

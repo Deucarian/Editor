@@ -19,7 +19,7 @@ namespace Deucarian.Editor
             refresh = refreshAction ??
                 throw new ArgumentNullException(nameof(refreshAction));
             Root = new VisualElement { name = "control-center-view" };
-            Root.style.flexGrow = 1f;
+            Root.AddToClassList("dw-control-center");
         }
 
         internal VisualElement Root { get; }
@@ -43,20 +43,10 @@ namespace Deucarian.Editor
             if (layout == null)
             {
             layout = new VisualElement { name = "control-center-layout" };
-            layout.style.flexGrow = 1f;
-            layout.style.paddingTop = 8f;
-            layout.style.paddingBottom = 8f;
-            layout.style.paddingLeft = 8f;
-            layout.style.paddingRight = 8f;
+            layout.AddToClassList("dw-control-layout");
             Root.Add(layout);
 
-            content = new ScrollView(ScrollViewMode.Vertical)
-            {
-                name = "control-center-content"
-            };
-            content.style.flexGrow = 1f;
-            content.style.paddingLeft = 10f;
-            content.style.paddingRight = 6f;
+            content = DeucarianEditorWorkspaceControls.Scroll("control-center-content");
             layout.Add(content);
             }
             sidebar?.RemoveFromHierarchy();
@@ -101,27 +91,17 @@ namespace Deucarian.Editor
             }
 
             bool narrow = mode == DeucarianEditorLayoutMode.Narrow;
-            layout.style.flexDirection =
-                narrow ? FlexDirection.Column : FlexDirection.Row;
-            StyleLength sidebarWidth = narrow
-                ? new StyleLength(StyleKeyword.Auto)
-                : new StyleLength(190f);
-            sidebar.style.width = sidebarWidth;
-            sidebar.style.minWidth = sidebarWidth;
-            sidebar.style.marginBottom = narrow ? 8f : 0f;
-            sidebar.style.marginRight = narrow ? 0f : 8f;
-            sidebar.style.flexDirection = narrow ? FlexDirection.Row : FlexDirection.Column;
-            sidebar.style.flexWrap = narrow ? Wrap.Wrap : Wrap.NoWrap;
-            foreach (VisualElement item in sidebar.Children()) item.style.marginRight = narrow ? 4 : 0;
+            layout.style.flexDirection = FlexDirection.Column;
+            sidebar.style.flexDirection = FlexDirection.Row;
+            sidebar.style.flexWrap = Wrap.Wrap;
             foreach (VisualElement host in cardHosts)
             {
-                host.style.flexDirection =
-                    narrow ? FlexDirection.Column : FlexDirection.Row;
+                host.style.flexDirection = narrow ? FlexDirection.Column : FlexDirection.Row;
                 foreach (VisualElement card in host.Children())
                 {
-                    card.style.flexBasis = narrow ? new StyleLength(StyleKeyword.Auto) : new StyleLength(300f);
+                    card.style.flexBasis = narrow ? new StyleLength(StyleKeyword.Auto) : new StyleLength(280f);
                     card.style.flexGrow = narrow ? 0f : 1f;
-                    card.style.minWidth = narrow ? 0f : 250f;
+                    card.style.minWidth = 0f;
                 }
             }
         }
@@ -141,35 +121,14 @@ namespace Deucarian.Editor
             {
                 name = "control-center-sidebar"
             };
-            DeucarianControlCenterVisuals.StylePanel(result);
-            result.style.paddingTop = 6f;
-            result.style.paddingBottom = 6f;
-            result.style.paddingLeft = 6f;
-            result.style.paddingRight = 6f;
+            result.AddToClassList("dw-control-sections");
             foreach (DeucarianControlCenterArea area in snapshot.Areas)
             {
                 DeucarianControlCenterArea captured = area;
-                var button = new Button(() => navigate(captured, null))
-                {
-                    text = DeucarianControlCenterAreaIds.GetDisplayName(area),
-                    name = "control-center-area-" +
-                        DeucarianControlCenterAreaIds.GetId(area)
-                };
-                button.style.unityTextAlign = TextAnchor.MiddleLeft;
-                button.style.height = 30f;
-                button.style.marginBottom = 3f;
-                button.style.borderLeftWidth = 3f;
-                button.style.borderLeftColor = Color.clear;
-                if (area == selectedArea)
-                {
-                    button.style.backgroundColor =
-                        DeucarianEditorTheme.GlassPanelStrong;
-                    button.style.color = DeucarianEditorTheme.Text;
-                    button.style.borderLeftColor = DeucarianEditorTheme.Accent;
-                    button.style.unityFontStyleAndWeight = FontStyle.Bold;
-                    button.tooltip = "Current section";
-                }
-
+                var button = DeucarianEditorWorkspaceControls.Button(
+                    DeucarianControlCenterAreaIds.GetDisplayName(area), () => navigate(captured, null));
+                button.name = "control-center-area-" + DeucarianControlCenterAreaIds.GetId(area);
+                button.EnableInClassList("dw-selected", area == selectedArea);
                 result.Add(button);
             }
 
@@ -182,17 +141,21 @@ namespace Deucarian.Editor
             DeucarianControlCenterArea area,
             string focusedTargetId)
         {
-            DeucarianControlCenterVisuals.AddPageHeading(
-                content,
-                DeucarianControlCenterAreaIds.GetDisplayName(area),
-                GetAreaDescription(area));
+            if (area != DeucarianControlCenterArea.Overview)
+                DeucarianControlCenterVisuals.AddPageHeading(content,
+                    DeucarianControlCenterAreaIds.GetDisplayName(area), GetAreaDescription(area));
+            else
+                content.Add(DeucarianControlCenterOverviewPresentation.CreateFocus(snapshot, navigate));
             VisualElement cards = CreateCardHost();
             content.Add(cards);
             foreach (DeucarianControlCenterCard card in snapshot.Cards)
             {
                 if (card.Area == area)
                 {
-                    cards.Add(DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
+                    if (area == DeucarianControlCenterArea.Overview && card.Id == "deucarian.readiness.overview") continue;
+                    cards.Add(area == DeucarianControlCenterArea.Overview && DeucarianControlCenterOverviewPresentation.TryGetSummaryArea(card.Id, out _)
+                        ? DeucarianControlCenterOverviewPresentation.CreateSummary(card, navigate)
+                        : DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
                 }
             }
 
@@ -250,7 +213,7 @@ namespace Deucarian.Editor
             DeucarianControlCenterVisuals.AddSectionHeading(
                 content,
                 area == DeucarianControlCenterArea.Overview ? "Your tools" : "Tools",
-                "Open the owning package's full workflow.");
+                string.Empty);
             foreach (DeucarianToolDescriptor tool in matching)
             {
                 DeucarianToolDescriptor captured = tool;
@@ -258,32 +221,29 @@ namespace Deucarian.Editor
                 {
                     name = "control-center-tool-" + tool.Id
                 };
-                DeucarianControlCenterVisuals.StylePanel(row);
-                row.style.marginBottom = 6f;
-                row.style.paddingLeft = 10f;
-                row.style.paddingRight = 8f;
-                row.style.paddingTop = 8f;
-                row.style.paddingBottom = 8f;
-                row.Add(DeucarianControlCenterVisuals.CreateLabel(tool.DisplayName, true));
-                if (tool.Description.Length > 0)
+                row.AddToClassList("dw-tool-row");
+                DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-tool-stacked", 520);
+                var text = DeucarianEditorWorkspaceControls.Region(null, "dw-tool-text");
+                text.Add(DeucarianControlCenterVisuals.CreateLabel(tool.DisplayName, true));
+                row.tooltip = tool.Description;
+                if (area != DeucarianControlCenterArea.Overview && tool.Description.Length > 0)
                 {
-                    row.Add(DeucarianControlCenterVisuals.CreateMutedLabel(tool.Description));
+                    text.Add(DeucarianControlCenterVisuals.CreateMutedLabel(tool.Description));
                 }
 
-                var button = new Button(
-                    () => InvokeSafely(captured.DisplayName, captured.Open))
-                {
-                    text = "Open"
-                };
-                button.style.marginTop = 6f;
-                row.Add(button);
+                row.Add(text);
+                var button = DeucarianEditorWorkspaceControls.Button("Open",
+                    () => DeucarianEditorNavigation.Open(Root, captured.Id));
+                button.name = "control-center-open-" + tool.Id;
                 bool favorite = DeucarianToolHistory.IsFavorite(tool.Id);
-                var pin = new Button(() =>
+                var pin = DeucarianEditorWorkspaceControls.Button(favorite ? "Unpin" : "Pin", () =>
                 {
                     DeucarianToolHistory.SetFavorite(captured.Id, !DeucarianToolHistory.IsFavorite(captured.Id));
                     refresh();
-                }) { text = favorite ? "Unpin" : "Pin", tooltip = "Keep this tool on the overview for this project." };
-                row.Add(pin);
+                });
+                pin.name = "control-center-pin-" + tool.Id;
+                pin.tooltip = "Keep this tool on the overview for this project.";
+                row.Add(DeucarianEditorWorkspaceControls.Actions(button, pin));
                 content.Add(row);
             }
         }
@@ -356,6 +316,12 @@ namespace Deucarian.Editor
                 return;
             }
 
+            if (!string.IsNullOrEmpty(result.NavigationToolId))
+            {
+                DeucarianEditorNavigation.Open(Root, result.NavigationToolId, result.NavigationRoute);
+                return;
+            }
+
             if (Confirm(result.Title, result.RequiresConfirmation))
             {
                 InvokeSafely(result.Title, result.Invoke);
@@ -364,7 +330,9 @@ namespace Deucarian.Editor
 
         private void ExecuteCardAction(DeucarianControlCenterAction action)
         {
-            if (Confirm(action.Label, action.RequiresConfirmation)) InvokeSafely(action.Label, action.Invoke);
+            if (!string.IsNullOrEmpty(action.NavigationToolId))
+                DeucarianEditorNavigation.Open(Root, action.NavigationToolId, action.NavigationRoute);
+            else if (Confirm(action.Label, action.RequiresConfirmation)) InvokeSafely(action.Label, action.Invoke);
         }
 
         private VisualElement CreateCardHost()

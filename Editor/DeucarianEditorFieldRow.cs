@@ -13,63 +13,55 @@ namespace Deucarian.Editor
         public static string TextField(string label, string value, string hint = null)
         {
             string result = value ?? string.Empty;
-            Draw(label, () => result = EditorGUILayout.TextField(result), hint);
+            Draw(label, () => result = DeucarianEditorInputGUI.TextField(result), hint);
             return result;
         }
 
         public static string TextArea(string label, string value, string hint = null)
         {
             string result = value ?? string.Empty;
-            Draw(label, () => result = EditorGUILayout.TextArea(result, GUILayout.MinHeight(42f)), hint);
+            Draw(label, () => result = DeucarianEditorInputGUI.TextArea(result, GUILayout.MinHeight(64f)), hint);
             return result;
         }
 
         public static int IntField(string label, int value, string hint = null)
         {
             int result = value;
-            Draw(label, () => result = EditorGUILayout.IntField(result), hint);
+            Draw(label, () => result = DeucarianEditorInputGUI.IntField(result), hint);
             return result;
         }
 
         public static float FloatField(string label, float value, string hint = null)
         {
             float result = value;
-            Draw(label, () => result = EditorGUILayout.FloatField(result), hint);
+            Draw(label, () => result = DeucarianEditorInputGUI.FloatField(result), hint);
             return result;
         }
 
         public static double DoubleField(string label, double value, string hint = null)
         {
             double result = value;
-            Draw(label, () => result = EditorGUILayout.DoubleField(result), hint);
+            Draw(label, () => result = DeucarianEditorInputGUI.DoubleField(result), hint);
             return result;
         }
 
         public static bool Toggle(string label, bool value, string hint = null)
         {
             bool result = value;
-            Draw(label, () => result = EditorGUILayout.Toggle(result), hint);
+            Draw(label, () => result = DeucarianEditorInputGUI.Toggle(result), hint);
             return result;
         }
 
         public static T EnumPopup<T>(string label, T value, string hint = null) where T : Enum
         {
             T result = value;
-            Draw(label, () => result = (T)EditorGUILayout.EnumPopup(result), hint);
+            Draw(label, () => result = (T)DeucarianEditorInputGUI.EnumPopup(result), hint);
             return result;
         }
 
         public static void Draw(string label, Action drawField, string hint = null, bool enabled = true)
         {
-            Rect rect = EditorGUILayout.BeginVertical(RowStyle);
-            if (Event.current != null && Event.current.type == EventType.Repaint)
-            {
-                DeucarianEditorVisualShell.DrawInsetSurface(
-                    rect,
-                    new Color(0.06f, 0.12f, 0.16f, 0.50f),
-                    DeucarianEditorTheme.BorderSubtle,
-                    6f);
-            }
+            EditorGUILayout.BeginVertical(RowStyle);
 
             using (new EditorGUILayout.HorizontalScope())
             using (new EditorGUI.DisabledScope(!enabled))
@@ -94,7 +86,7 @@ namespace Deucarian.Editor
                 {
                     rowStyle = new GUIStyle(GUIStyle.none)
                     {
-                        padding = new RectOffset(8, 8, 5, 6),
+                        padding = new RectOffset(0, 0, 5, 6),
                         margin = new RectOffset(0, 0, 2, 5)
                     };
                 }
@@ -109,7 +101,7 @@ namespace Deucarian.Editor
             {
                 if (labelStyle == null)
                 {
-                    labelStyle = new GUIStyle(EditorStyles.miniBoldLabel)
+                    labelStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.LabelStyle)
                     {
                         wordWrap = true,
                         alignment = TextAnchor.MiddleLeft
@@ -127,7 +119,7 @@ namespace Deucarian.Editor
             {
                 if (hintStyle == null)
                 {
-                    hintStyle = new GUIStyle(EditorStyles.miniLabel)
+                    hintStyle = new GUIStyle(DeucarianEditorWorkbenchGUI.MutedMiniLabelStyle)
                     {
                         wordWrap = true,
                         margin = new RectOffset(148, 0, 2, 0)

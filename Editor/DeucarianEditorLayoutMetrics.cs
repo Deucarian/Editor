@@ -19,11 +19,11 @@ namespace Deucarian.Editor
         public const int SurfaceSpacing = 8;
         public const int FooterHorizontalPadding = 10;
         public const int FooterVerticalPadding = 0;
-        public const int CommandControlHeight = 28;
+        public const int CommandControlHeight = 36;
         public const int CommandControlHorizontalPadding = 8;
         public const int TextLineHeight = 18;
-        public const int CommandBarSingleRowHeight = 46;
-        public const int CommandBarTwoRowHeight = 78;
+        public const int CommandBarSingleRowHeight = 54;
+        public const int CommandBarTwoRowHeight = 94;
         public const int FooterHeight = 34;
         public const int ControlHeight = CommandControlHeight;
         public const int CommandBarHeight = CommandBarSingleRowHeight;

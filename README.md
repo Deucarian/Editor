@@ -1,12 +1,33 @@
 # Deucarian Editor
 
-Current package version: `1.3.1`.
+## In-window navigation
+
+The left sidebar changes pages in the current window, keeping each page's draft and session alive. Right-click a sidebar item and choose **Open in new window** for an independent workspace. Closing a workspace releases its pages; ordinary page changes do not reset lab messages or stop package operations.
+
+
+## Shared workspace
+
+Shared responsive workspace, searchable list/detail surfaces, form bindings, stable audio navigation and Control Center migration. Visual tokens remain owned here; domain operations stay in consumers.
+
+Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
+
+Current package version: `1.7.0`.
+
+All editor surfaces share the workspace's charcoal/teal palette and DINish typography. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
+
+Custom inspectors can return `DeucarianEditorInspector.Create(OnInspectorGUI)` from `CreateInspectorGUI`. This adds shared presentation without a second sidebar and preserves native serialized property editing. Embedded legacy windows pass their owner to the header, footer and settings-page helpers so the workspace remains the only page header.
+
+## Reading and scaling the workspace
+
+The overview starts with one project-status focus, then short area statuses and recent or pinned tools. Full source details stay in their owning sections and search; a status action navigates to the relevant check, never runs its fix automatically.
+
+Use **UI scale** in the footer to resize the complete workspace from 75% to 150%. The new 100% is the compact size previously labelled 75%. Click the percentage to reset to that default. The slider stays in a fixed, unscaled footer while the workspace resizes. Existing scale preferences start at the new default once, then retain subsequent choices. The preference is local to this project, persists across editor restarts, and applies to other shared workspace pages and windows. It does not change Unity's own menus, unrelated inspectors, runtime UI, or theme assets.
 
 ## What this is
 
 `com.deucarian.editor` is an editor-only Unity package for shared Deucarian editor tooling, branded editor chrome, fixed icons, layout helpers, and UX standards.
 
-This package is not runtime theming. It is not user-customizable. Deucarian editor windows use package-owned Tideline light/dark colors, DINish interface typography, and brand resources so every Deucarian package presents the same quiet, readable editor experience. The editor treatment follows the active Unity skin.
+This package is not runtime theming. Its visual theme is package-owned. Deucarian editor windows use package-owned Tideline light/dark colors, DINish interface typography, and brand resources so every Deucarian package presents the same quiet, readable editor experience. The editor treatment follows the active Unity skin.
 
 Runtime theme assets from `com.deucarian.theming` must never control Deucarian editor windows.
 
@@ -166,7 +187,7 @@ This package only includes editor helpers. See `Samples~/README.md` for notes on
 - `DeucarianEditorResponsiveLayout`: legacy preview calculations plus the exact Wide/Compact/Narrow workbench resolver and idempotent UI Toolkit class application.
 - `DeucarianEditorWorkbenchToolbar` and `DeucarianEditorWorkbenchSurfaces`: domain-neutral toolbar, drawer, row, and footer factories backed by shared USS contracts.
 - `DeucarianEditorIconToolbar`: IMGUI icon-only actions backed exclusively by vendored Lucide IDs.
-- `DeucarianEditorWorkbenchGUI`: shared 24 px IMGUI actions, surface colors, panel scopes, separators, key/value rows, legacy marker rows, and Lucide status rows.
+- `DeucarianEditorWorkbenchGUI`: shared IMGUI styles, surface colors, panel scopes, separators, key/value rows, legacy marker rows, and Lucide status rows. Standard actions are 36 px; primary actions are 42 px and form rows are 32 px before workspace scaling.
 - `DeucarianEditorDialog`: branded responsive callback-based utility dialogs with a Lucide icon, wrapped message/details content, icon-bearing actions, and deterministic Enter/Escape/window-close completion.
 - `DeucarianEditorCardScope`, `DeucarianEditorFoldoutScope`, and `DeucarianEditorWorkbenchPanelScope`: exception-safe layout scopes for composable drawing.
 
@@ -248,6 +269,47 @@ Do not use actions sections for selecting assets already visible in object field
 
 ## Troubleshooting
 
+### Editor Component Gallery
+
+Open **Control Center → Developer → Editor Component Gallery** to try shared
+fields, buttons, disclosures, status styles and empty states. Its local examples
+save nothing and expose no application settings. Notification testing has one
+home: **Notifications → Notification Lab**, contributed by Notifications.
+
+Each Control Center window owns its sidebar expansion and scroll state. Cached
+pages retain their controls and drafts; clicking the current page does nothing
+unless the action supplies an explicit route. Page activation must refresh bound
+data without rebuilding controls or replacing user selections. The old page is
+deactivated before the next page activates; failed activation is cleaned up and
+the previous page reactivated. Page adapters must make these lifecycle operations
+safe to repeat and release their owned resources when disposed.
+
+The workspace composes the existing workbench with shared navigation, heading,
+tabs, destination, form/preview and footer regions. Its stylesheet owns the
+colours, typography, spacing, responsive layout and interaction states. Consumers
+supply their content and actions; they must not duplicate these visual rules.
+
+Use `DeucarianEditorWorkspace` in an editor window, add content through its named
+regions, and dispose it before rebuilding or closing the window. Reuse
+`DeucarianEditorWorkspaceControls`, `DeucarianEditorChoiceBar` and
+`DeucarianEditorMessageRow` for shared presentation. Choice selection can be
+synchronized silently; message progress is supplied by the caller, not a timer
+owned by Editor. Do not use the internal specimen as a production adapter.
+
+For a live test tool, `DeucarianEditorLabWorkspace` owns the Test/Appearance/Audio
+pages, destination controls and keyed preview rows. Bind field values and commands
+through `DeucarianEditorWorkspaceForm`. Pass caller-selected visible and overflow
+rows as `DeucarianEditorMessageData`; Editor does not decide lifetimes, priorities,
+queue limits or runtime targeting. Refreshing row state preserves controls and
+focus instead of recreating them for every countdown tick.
+
+Migrating a live tool requires an adapter in its owning package. The adapter
+retains domain state, commands, subscriptions and cleanup; **all layout and
+styling stay in Editor**. Editor does not acquire dependencies on Notifications,
+Theming, Installer or other domain packages.
+
+### Package boundaries
+
 - If runtime code needs this package, stop and check the ownership boundary; Editor is editor-only.
 - If a package wants custom runtime colors, use the runtime theming owner instead of editor shell tokens.
 - Register package-specific tools with a stable `DeucarianToolRegistry` ID and contribute them to Control Center; add a global menu entry only when `menu-policy.json` explicitly approves it.
@@ -278,3 +340,13 @@ git diff --check
 ## License
 
 MIT. See [LICENSE.md](LICENSE.md).
+
+## In-window navigation and submenus
+
+Every registered tool contributes a fresh `IDeucarianEditorPage` through `createPage`. Its factory must not call `Show`, `GetWindow`, or run a domain command. Page sessions cache instances per native window and dispose them with that window.
+
+Use `navigationPath` for readable submenu groups, for example `"Experience/Audio"`. Omitting it uses the tool's registered area. The shared sidebar discovers installed registrations, preserves parent groups during filtering, and offers an explicit **Open in new window** context action. Runtime-only packages do not need artificial menus.
+
+A page button calls `DeucarianEditorNavigation.Open(sourceElement, toolId, route)`. Card actions declare `navigationToolId` and optional `navigationRoute`; project checks declare `setupToolId` and optional `setupRoute`. Search carries the same destination. Non-navigation actions retain explicit execution and confirmation behavior. Do not use a global current-window lookup.
+
+Older IMGUI tools can compose `DeucarianEditorImGuiPage` while retaining their domain renderer. New tools should use plain composed pages and shared workspace controls. Native file pickers, confirmations, and deliberately external documentation links remain explicit external interactions.

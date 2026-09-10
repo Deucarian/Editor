@@ -25,7 +25,8 @@ namespace Deucarian.Editor
         {
             Label heading = CreateLabel(title, true);
             heading.style.fontSize = 15f;
-            heading.style.marginTop = 10f;
+            heading.style.marginTop = 20f;
+            heading.style.marginBottom = 8f;
             parent.Add(heading);
             if (!string.IsNullOrWhiteSpace(description))
             {
@@ -36,7 +37,7 @@ namespace Deucarian.Editor
         internal static Label CreateLabel(string text, bool strong)
         {
             var label = new Label(text ?? string.Empty);
-            label.style.color = DeucarianEditorTheme.Text;
+            label.AddToClassList("dw-label");
             label.style.whiteSpace = WhiteSpace.Normal;
             if (strong)
             {
@@ -49,22 +50,14 @@ namespace Deucarian.Editor
         internal static Label CreateMutedLabel(string text)
         {
             Label label = CreateLabel(text, false);
-            label.style.color = DeucarianEditorTheme.MutedText;
+            label.AddToClassList("dw-muted");
             label.style.marginBottom = 4f;
             return label;
         }
 
         internal static void StylePanel(VisualElement element)
         {
-            Color panel = DeucarianEditorAppearance.DecorativeBackgrounds
-                ? DeucarianEditorTheme.GlassPanelSoft : DeucarianEditorVisualShell.MainPanel;
-            if (!DeucarianEditorAppearance.DecorativeBackgrounds) panel.a = 1f;
-            element.style.backgroundColor = panel;
-            element.style.borderTopWidth = 1f;
-            element.style.borderRightWidth = 1f;
-            element.style.borderBottomWidth = 1f;
-            element.style.borderLeftWidth = 1f;
-            SetBorderColor(element, DeucarianEditorTheme.BorderSubtle);
+            element.AddToClassList("dw-summary-card");
         }
 
         internal static void SetBorderColor(
