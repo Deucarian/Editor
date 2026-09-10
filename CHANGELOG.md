@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.9.1] - 2026-09-10
+
+- Keep shared switches compact in stretched form columns and give slider value fields enough height to remain readable.
+- Cover resolved control geometry in narrow and wide attached Inspector layouts.
+
 ## [1.9.0] - 2026-09-10
 
 - Unify charcoal/teal surfaces, reusable button roles, colored sliders, switches and submenu icons. Keep the compact 100% baseline and stationary scale dock.
