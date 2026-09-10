@@ -1,5 +1,5 @@
 .deucarian-workspace .dw-feature-scroll { flex-grow: 1; min-height: 0; }
-.deucarian-workspace .dw-feature-page { max-width: 1200px; padding-right: 8px; padding-bottom: 16px; }
+.deucarian-workspace .dw-feature-page { padding-right: 8px; padding-bottom: 16px; }
 .deucarian-workspace .dw-feature { border-width: 1px; border-color: var(--dw-border); border-radius: 4px; padding: 26px 28px; margin-bottom: 22px; flex-shrink: 0; }
 .deucarian-workspace .dw-feature-header { flex-direction: row; align-items: flex-start; }
 .deucarian-workspace .dw-feature-icon { width: 42px; height: 42px; margin-right: 30px; margin-top: 2px; }
@@ -36,7 +36,7 @@
 .deucarian-workspace .dw-feature-compact .dw-feature-description { font-size: 15px; }
 .deucarian-workspace .dw-feature-compact .dw-feature-switch-row { margin-left: 12px; }
 .deucarian-workspace .dw-feature-compact .dw-feature-switch-label { margin-left: 8px; }
-.deucarian-workspace .dw-navigation-icon-group > .unity-toggle { flex-direction: row; min-height: 54px; padding-left: 26px; padding-right: 20px; color: var(--dw-text); }
+.deucarian-workspace .dw-navigation-icon-group > .unity-toggle { flex-direction: row; align-items: center; min-height: 54px; padding-left: 26px; padding-right: 20px; color: var(--dw-text); }
 .deucarian-workspace .dw-navigation-icon-group > .unity-toggle .unity-toggle__input { flex-grow: 1; flex-direction: row-reverse; }
 .deucarian-workspace .dw-navigation-icon-group > .unity-toggle .unity-toggle__text { flex-grow: 1; margin-left: 0; font-size: 17px; }
 .deucarian-workspace .dw-navigation-icon-group .dw-navigation-group-icon { margin-right: 24px; width: 26px; height: 26px; }
