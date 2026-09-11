@@ -10,15 +10,21 @@ namespace Deucarian.Editor
         internal const string SettingsPath = "Project/Deucarian/Control Center";
 
         [SettingsProvider]
-        private static SettingsProvider CreateSettingsProvider() => new SettingsProvider(SettingsPath, SettingsScope.Project)
+        private static SettingsProvider CreateSettingsProvider()
         {
-            label = "Control Center",
-            activateHandler = (_, root) =>
+            DeucarianEditorProjectSettingsPage page = null;
+            return new SettingsProvider(SettingsPath, SettingsScope.Project)
             {
-                var content = DeucarianEditorInspector.CreateToolkit("Editor appearance");
-                Build(content); root.Add(content);
-            }
-        };
+                label = "Control Center",
+                activateHandler = (_, root) =>
+                {
+                    page?.Dispose();
+                    page = new DeucarianEditorProjectSettingsPage(root, "Control Center", "Set the appearance of Deucarian editor tools in this project.");
+                    Build(page.Content);
+                },
+                deactivateHandler = () => { page?.Dispose(); page = null; }
+            };
+        }
 
         internal static void Build(VisualElement root)
         {

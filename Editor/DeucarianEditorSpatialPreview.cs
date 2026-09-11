@@ -13,6 +13,21 @@ namespace Deucarian.Editor
         private readonly bool solidCube;
         private readonly Label[] axes;
         private Camera projectionCamera;
+        private Image renderedImage;
+
+        /// <summary>Displays a caller-owned render texture in place of the illustrative geometry.</summary>
+        public void SetRenderedTexture(Texture texture)
+        {
+            if (renderedImage == null)
+            {
+                renderedImage = new Image { name = "scene-render", pickingMode = PickingMode.Ignore, scaleMode = ScaleMode.StretchToFill };
+                renderedImage.StretchToParentSize();
+                Add(renderedImage);
+                if (axes != null) foreach (var axis in axes) axis.style.display = DisplayStyle.None;
+            }
+            renderedImage.image = texture;
+            MarkDirtyRepaint();
+        }
 
         /// <summary>The caller retains camera ownership. Passing null restores the illustrative view.</summary>
         public void SetCamera(Camera camera)
@@ -54,7 +69,7 @@ namespace Deucarian.Editor
 
         private void PositionAxes()
         {
-            if (axes == null || contentRect.width < 1) return;
+            if (renderedImage != null || axes == null || contentRect.width < 1) return;
             for (int i = 0; i < 3; i++)
             {
                 var end = Vector3.zero;
@@ -70,7 +85,7 @@ namespace Deucarian.Editor
 
         private void Draw(MeshGenerationContext context)
         {
-            if (contentRect.width < 1 || contentRect.height < 1) return;
+            if (renderedImage != null || contentRect.width < 1 || contentRect.height < 1) return;
             BuildGeometry(contentRect, out var vertices, out var indices);
             var mesh = context.Allocate(vertices.Length, indices.Length);
             mesh.SetAllVertices(vertices);

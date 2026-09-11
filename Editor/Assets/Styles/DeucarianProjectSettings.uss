@@ -1,0 +1,29 @@
+.deucarian-workspace.dw-project-settings { flex-grow: 1; min-height: 0; padding: 0; font-size: 14px; }
+.dw-project-settings .dw-project-settings-page { padding: 24px; max-width: 900px; flex-shrink: 0; min-width: 0; }
+.dw-project-settings .dw-project-settings-title { font-size: 24px; -unity-font-style: bold; margin-bottom: 8px; white-space: normal; }
+.dw-project-settings .dw-project-settings-description { font-size: 14px; color: var(--dw-muted); margin-bottom: 24px; white-space: normal; }
+.dw-project-settings .dw-project-settings-content { min-width: 0; }
+.deucarian-workspace.dw-project-settings .dw-field { margin-bottom: 16px; }
+.deucarian-workspace.dw-project-settings .dw-field-label { width: 180px; min-width: 0; padding: 7px 16px 0 0; font-size: 14px; }
+.deucarian-workspace.dw-project-settings .unity-base-field__input { min-height: 32px; padding: 4px 10px; font-size: 14px; }
+.deucarian-workspace.dw-project-settings .dw-single-line, .deucarian-workspace.dw-project-settings .dw-single-line > .unity-base-field__input { height: 34px; min-height: 34px; }
+.deucarian-workspace.dw-project-settings .unity-base-popup-field__text, .deucarian-workspace.dw-project-settings .unity-text-field__input { font-size: 14px; }
+.deucarian-workspace.dw-project-settings .dw-button { height: 34px; min-height: 34px; font-size: 14px; padding: 4px 14px; margin: 0 8px 8px 0; }
+.deucarian-workspace.dw-project-settings .dw-muted, .deucarian-workspace.dw-project-settings .dw-label { font-size: 14px; white-space: normal; }
+.deucarian-workspace.dw-project-settings .dw-section-title { font-size: 18px; }
+.deucarian-workspace.dw-project-settings .dw-feature { padding: 0; margin-bottom: 20px; border-width: 0; }
+.deucarian-workspace.dw-project-settings .dw-feature-header { align-items: center; }
+.deucarian-workspace.dw-project-settings .dw-feature-header > .dw-icon { width: 32px; height: 32px; margin-right: 16px; }
+.deucarian-workspace.dw-project-settings .dw-feature-title { font-size: 18px; }
+.deucarian-workspace.dw-project-settings .dw-feature-description { font-size: 14px; }
+.deucarian-workspace.dw-project-settings .dw-feature-switch { width: 54px; min-width: 54px; height: 28px; }
+.deucarian-workspace.dw-project-settings .dw-feature-switch > .unity-base-field__input { width: 54px; min-width: 54px; height: 28px; min-height: 28px; padding: 0; border-radius: 14px; }
+.deucarian-workspace.dw-project-settings .dw-feature-switch .unity-toggle__checkmark { width: 22px; height: 22px; left: 2px; top: 2px; border-radius: 11px; }
+.deucarian-workspace.dw-project-settings .dw-feature-switch-on .unity-toggle__checkmark { left: 28px; }
+.deucarian-workspace.dw-project-settings .dw-feature-switch-label { width: 30px; margin-left: 10px; font-size: 14px; }
+.deucarian-workspace.dw-project-settings .dw-feature-details { padding: 16px 0 0; margin: 0; }
+.deucarian-workspace.dw-project-settings .dw-feature-actions { margin: 12px 0 0; padding: 0; }
+.deucarian-workspace.dw-project-settings .dw-code-example { padding: 12px; font-size: 13px; white-space: normal; }
+.deucarian-workspace.dw-project-settings .dw-divider { margin-top: 12px; margin-bottom: 16px; }
+.deucarian-workspace.dw-project-settings .dw-switch-label { font-size: 14px; margin-left: 10px; width: 30px; }
+.deucarian-workspace.dw-project-settings .dw-field.dw-field-stacked > .dw-field-label { width: auto; padding: 0; margin-bottom: 6px; }

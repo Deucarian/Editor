@@ -153,6 +153,9 @@
 .deucarian-workspace .dw-spatial-specimen .dw-preview-toolbar { flex-wrap: nowrap; margin-top: 8px; margin-bottom: 0; }
 .deucarian-workspace .dw-spatial-specimen .dw-preview-toolbar > .dw-button { flex-grow: 1; flex-basis: 0; min-width: 0; padding: 0; margin: 0; border-radius: 0; }
 .deucarian-workspace .dw-spatial-specimen .dw-preview-toolbar .dw-icon { margin: 0; }
+.deucarian-workspace .dw-scene-preview-toolbar { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; margin: 14px -4px 0; padding: 0; }
+.deucarian-workspace .dw-scene-preview-toolbar > .dw-button { flex-grow: 1; flex-basis: 128px; min-width: 112px; min-height: 52px; height: 52px; padding: 0 12px; margin: 4px; font-size: 20px; }
+.deucarian-workspace .dw-scene-preview-toolbar .dw-icon { width: 24px; height: 24px; margin-right: 10px; }
 .deucarian-workspace .dw-spatial-split > .dw-form-pane { width: 65%; border-width: 0; padding: 0 48px 0 0; }
 .deucarian-workspace .dw-spatial-split > .dw-preview-pane { width: 35%; padding: 0; flex-grow: 0; }
 .deucarian-workspace .dw-asset-preview-split > .dw-form-pane { width: 69%; }
