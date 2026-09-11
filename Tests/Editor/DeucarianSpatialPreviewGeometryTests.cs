@@ -5,6 +5,33 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianSpatialPreviewGeometryTests
     {
+        [TestCase(-6f)]
+        [TestCase(0f)]
+        [TestCase(6f)]
+        public void CameraProjectedGeometryClipsNearPlaneAndNeverProducesInvalidVertices(float cameraZ)
+        {
+            var owner = new GameObject("Projection test");
+            try
+            {
+                var camera = owner.AddComponent<Camera>(); camera.enabled = false;
+                camera.transform.position = new Vector3(0, 0, cameraZ);
+                camera.nearClipPlane = .01f;
+                var preview = new DeucarianEditorSpatialPreview(); preview.SetCamera(camera);
+                var bounds = new Rect(0, 0, 360, 280);
+                preview.BuildGeometry(bounds, out var vertices, out var indices);
+                foreach (var vertex in vertices)
+                {
+                    Assert.IsFalse(float.IsNaN(vertex.position.x) || float.IsInfinity(vertex.position.x));
+                    Assert.IsFalse(float.IsNaN(vertex.position.y) || float.IsInfinity(vertex.position.y));
+                    Assert.IsTrue(bounds.Contains(vertex.position));
+                }
+                preview.SetCamera(null);
+                preview.BuildGeometry(bounds, out vertices, out indices);
+                Assert.Greater(vertices.Length, 0);
+            }
+            finally { Object.DestroyImmediate(owner); }
+        }
+
         [TestCase(0.2f, false)]
         [TestCase(1f, false)]
         [TestCase(3f, false)]
