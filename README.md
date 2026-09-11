@@ -1,5 +1,21 @@
 # Deucarian Editor
 
+## Generated typed definition keys
+
+The shared key tools turn project-authored definitions into named C# values and Inspector dropdown choices. `.g.cs` means generated C#: domain providers read source assets under `Assets`, and the editor generates and compiles ordinary runtime key classes. Callers use the same typed identity in code or a serialized field without retaining the source asset.
+
+| Package | Source asset | Generated code set |
+| --- | --- | --- |
+| Theming | `DeucarianAudioRole` | `Deucarian.Generated.ProjectAudioRoles` |
+| UI-FLow | `UIFlowRoute` | `Deucarian.Generated.ProjectScreens` |
+| Weapon-Systems | `WeaponDefinitionAsset` | `Deucarian.Generated.ProjectWeapons` |
+| Attacks | `AttackDefinitionAsset` | `Deucarian.Generated.ProjectAttacks` |
+| Run-Upgrades | `RunUpgradeDefinitionAsset` | `Deucarian.Generated.ProjectUpgrades` |
+
+Generation is editor-only. Domain packages retain runtime definition, state and lifecycle ownership. Code-first key sets can use the same pickers without source generation. Compile-time identity/type checks still require the runtime host and catalog to be configured.
+
+The [typed key guide](Documentation~/TypedKeys.md) explains the asset-to-code workflow, stable IDs, code/Inspector interchange, assembly references, regeneration, source control and validation. Edit source definitions and commit the generated output with them.
+
 ## In-window navigation
 
 The left sidebar changes pages in the current window, keeping each page's draft and session alive. Right-click a sidebar item and choose **Open in new window** for an independent workspace. Closing a workspace releases its pages; ordinary page changes do not reset lab messages or stop package operations.
