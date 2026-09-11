@@ -4,7 +4,20 @@ namespace Deucarian.Editor
     public static class DeucarianEditorIconIds
     {
         public const string Activity = "activity";
+        public const string Home = "house";
+        public const string Notifications = "bell";
+        public const string Communication = "message-square";
+        public const string Authoring = "pencil";
+        public const string Developer = "code-xml";
+        public const string Gamepad = "gamepad-2";
+        public const string Orbit = "orbit";
+        public const string Users = "users-round";
+        public const string User = "circle-user-round";
+        public const string Document = "file-text";
         public const string Audio = "headphones";
+        public const string Keyboard = "keyboard";
+        public const string Pointer = "mouse-pointer-2";
+        public const string Press = "mouse-pointer-click";
         public const string ActualSize = "scan";
         public const string Available = "circle-arrow-up";
         public const string Back = "chevron-left";
@@ -34,6 +47,7 @@ namespace Deucarian.Editor
         public const string PackageOpen = "package-open";
         public const string PackageSearch = "package-search";
         public const string Play = "play";
+        public const string Send = "send";
         public const string Puzzle = "puzzle";
         public const string Remove = "trash-2";
         public const string Sample = "flask-conical";

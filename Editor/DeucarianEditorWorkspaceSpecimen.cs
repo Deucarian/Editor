@@ -1,77 +1,67 @@
 using System;
 using UnityEngine.UIElements;
+using Controls = Deucarian.Editor.DeucarianEditorWorkspaceControls;
 
 namespace Deucarian.Editor
 {
-    /// <summary>Interactive examples of shared editor components, with no domain commands or settings.</summary>
-    internal sealed class DeucarianEditorWorkspaceSpecimen
+    internal sealed class DeucarianEditorWorkspaceSpecimen : IDisposable
     {
         private readonly DeucarianEditorWorkspace workspace;
-
-        internal DeucarianEditorWorkspaceSpecimen(DeucarianEditorWorkspace workspace)
-        {
+        internal DeucarianEditorWorkspaceSpecimen(DeucarianEditorWorkspace workspace) =>
             this.workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
-        }
 
         internal void Build()
         {
-            workspace.Title.text = "Editor Component Gallery";
-            workspace.Subtitle.text = "Explore the shared controls used by every package editor.";
+            workspace.Title.text = "Shared controls";
+            workspace.Subtitle.text = "One visual language. Everywhere.";
             DeucarianEditorWorkspaceNavigation.Populate(workspace, "deucarian.editor.workspace-preview");
-            DeucarianEditorWorkspaceControls.Show(workspace.Scope, false);
-            var tabs = new DeucarianEditorChoiceBar(new[] { "Controls", "Status & empty states" }, tabs: true);
-            workspace.Tabs.Add(tabs);
-            var page = DeucarianEditorWorkspaceControls.Scroll("workspace-specimen-scroll");
-            var formRoot = DeucarianEditorWorkspaceControls.Region(null, "dw-specimen-form");
-            var preview = DeucarianEditorWorkspaceControls.Region(null, "dw-specimen-preview");
-            BuildControls(formRoot, preview);
-            page.Add(DeucarianEditorWorkspaceControls.Split(formRoot, preview));
-            workspace.Content.Add(page);
-            var statuses = DeucarianEditorWorkspaceControls.Scroll("specimen-statuses");
-            statuses.Add(DeucarianEditorWorkspaceControls.Label("Status styles", "dw-section-title"));
-            var examples = DeucarianEditorWorkspaceControls.Region("specimen-message-rows", "dw-message-rows");
-            examples.Add(new DeucarianEditorMessageRow("Information", "Supporting context for a task.", DeucarianEditorStatus.Info, "Sample"));
-            examples.Add(new DeucarianEditorMessageRow("Ready", "The action completed successfully.", DeucarianEditorStatus.Success, "Sample"));
-            examples.Add(new DeucarianEditorMessageRow("Needs attention", "Explain what needs checking and why.", DeucarianEditorStatus.Warning, "Sample"));
-            examples.Add(new DeucarianEditorMessageRow("Action failed", "Explain what happened and the next useful step.", DeucarianEditorStatus.Error, "Sample"));
-            statuses.Add(examples);
-            statuses.Add(DeucarianEditorWorkspaceControls.Label("Empty state", "dw-section-title"));
-            statuses.Add(DeucarianEditorWorkspaceControls.Label("Nothing selected. Choose an item to see its details.", "dw-empty"));
-            DeucarianEditorWorkspaceControls.Show(statuses, false);
-            workspace.Content.Add(statuses);
-            tabs.Changed += index =>
-            {
-                DeucarianEditorWorkspaceControls.Show(page, index == 0);
-                DeucarianEditorWorkspaceControls.Show(statuses, index == 1);
-            };
-            workspace.FooterLeading.text = "Component examples only · Nothing is saved";
-            workspace.FooterTrailing.text = "Editor-owned design system";
+            var page = Controls.Scroll("workspace-specimen-scroll"); workspace.Content.Add(page);
+            page.Add(Controls.Divider());
+            page.Add(Controls.Label("Buttons", "dw-section-title"));
+            int clicks = 0;
+            var feedback = Controls.Label(string.Empty, "dw-note"); Controls.Show(feedback, false);
+            Action clicked = () => { feedback.text = "Example action · " + ++clicks; Controls.Show(feedback, true); };
+            var primary = Controls.Button("Primary", clicked, true); primary.name = "specimen-add";
+            var disabled = Controls.Button("Disabled", () => { }); disabled.SetEnabled(false);
+            var buttons = Controls.Actions(primary, Controls.Button("Secondary", clicked),
+                Controls.Button("Quiet text", clicked, DeucarianEditorButtonRole.Quiet), disabled,
+                Controls.IconButton(string.Empty, "cog", clicked));
+            buttons[4].tooltip = "Example icon action";
+            buttons.AddToClassList("dw-gallery-buttons"); page.Add(buttons); page.Add(feedback);
+            page.Add(Controls.Divider()); page.Add(Controls.Label("Fields", "dw-section-title"));
+            var left = new VisualElement(); var right = new VisualElement();
+            var fields = Controls.Split(left, right); fields.AddToClassList("dw-gallery-fields"); page.Add(fields);
+            int choice = 0; string input = "Example"; bool on = true, off = false;
+            var form = new DeucarianEditorWorkspaceForm(left);
+            form.Choice("specimen-choice", "Dropdown", new[] { "Default", "Alternate" }, () => choice, value => choice = value);
+            form.Text("specimen-title", "Input", () => input, value => input = value);
+            var switches = new DeucarianEditorWorkspaceForm(right);
+            switches.Toggle("specimen-switch-on", "Switch (On)", () => on, value => on = value);
+            switches.Toggle("specimen-switch-off", "Switch (Off)", () => off, value => off = value);
+            page.Add(Controls.Divider()); page.Add(Controls.Label("Sliders", "dw-section-title"));
+            var sliderRoot = Controls.Region(null, "dw-gallery-sliders"); page.Add(sliderRoot);
+            var sliders = new DeucarianEditorWorkspaceForm(sliderRoot);
+            int volume = 50; float duration = .25f;
+            sliders.IntegerSlider("specimen-number", "Volume (%)", 0, 100, () => volume, value => volume = value);
+            sliders.Slider("specimen-duration", "Duration (s)", 0, 1, () => duration, value => duration = value);
+            page.Add(Controls.Divider()); page.Add(Controls.Label("Statuses", "dw-section-title"));
+            var statuses = Controls.Region("specimen-message-rows", "dw-gallery-statuses"); page.Add(statuses);
+            AddStatus(statuses, "Ready", DeucarianEditorStatus.Success, DeucarianEditorIconIds.Success);
+            AddStatus(statuses, "Attention", DeucarianEditorStatus.Warning, DeucarianEditorIconIds.Warning);
+            AddStatus(statuses, "Error", DeucarianEditorStatus.Error, DeucarianEditorIconIds.Error);
+            AddStatus(statuses, "Inactive", DeucarianEditorStatus.Disabled, "circle");
+            var more = new DeucarianEditorWorkspaceForm(page).Section("More examples", true);
+            more.Root.Add(new DeucarianEditorSteps("Choose", "Configure", "Review").Root);
+            more.Root.Add(new DeucarianEditorControlSpecimen());
+            workspace.FooterLeading.text = string.Empty;
+            workspace.FooterTrailing.text = string.Empty;
         }
-
-        private static void BuildControls(VisualElement root, VisualElement preview)
+        private static void AddStatus(VisualElement root, string label, DeucarianEditorStatus status, string icon)
         {
-            var form = new DeucarianEditorWorkspaceForm(root);
-            string title = "Example title", description = "Supporting text that explains the next step.";
-            bool enabled = true;
-            float amount = 0.5f;
-            int choice = 0, clicks = 0;
-            var heading = DeucarianEditorWorkspaceControls.Label(title, "dw-section-title");
-            var copy = DeucarianEditorWorkspaceControls.Label(description, "dw-muted");
-            var feedback = DeucarianEditorWorkspaceControls.Label("Try a control on the left.", "dw-note");
-            preview.Add(DeucarianEditorWorkspaceControls.Label("Live component preview", "dw-muted"));
-            preview.Add(heading);
-            preview.Add(copy);
-            preview.Add(feedback);
-            form.Text("specimen-title", "Heading", () => title, value => { title = value; heading.text = value; });
-            form.Text("specimen-body", "Supporting text", () => description, value => { description = value; copy.text = value; }, true);
-            form.Segments("specimen-choice", "Choice", new[] { "First", "Second" }, () => choice, value => choice = value);
-            form.Slider("specimen-number", "Amount", 0, 1, () => amount, value => amount = value);
-            form.Toggle("specimen-enabled", "Enable action", () => enabled, value => { enabled = value; form.Refresh(); });
-            form.Action("specimen-add", "Try primary action", () => feedback.text = "Action clicked " + ++clicks + " time(s).", () => enabled, true);
-            form.Action("specimen-disabled", "Unavailable action", () => { }, () => false);
-            var section = form.Section("Optional details", true);
-            section.Note(() => "Use a disclosure for less frequently needed settings.");
-            form.Refresh();
+            var row = Controls.Region(null, "dw-gallery-status");
+            var symbol = Controls.Icon(icon); symbol.AddToClassList("dw-status-" + status.ToString().ToLowerInvariant());
+            row.Add(symbol); row.Add(Controls.Label(label)); root.Add(row);
         }
+        public void Dispose() { }
     }
 }

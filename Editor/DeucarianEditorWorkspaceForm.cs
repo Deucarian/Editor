@@ -36,9 +36,63 @@ namespace Deucarian.Editor
             return field;
         }
 
+        public DeucarianEditorColorField Color(string id, string label, Func<UnityEngine.Color> read, Action<UnityEngine.Color> write)
+        {
+            var field = new DeucarianEditorColorField();
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
+        public DoubleField Decimal(string id, string label, Func<double> read, Action<double> write)
+        {
+            var field = new DoubleField();
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
+        public PopupField<string> Enum<T>(string id, string label, Func<T> read, Action<T> write) where T : struct, System.Enum
+        {
+            var values = (T[])System.Enum.GetValues(typeof(T));
+            return Choice(id, label, Array.ConvertAll(values, value => UnityEditor.ObjectNames.NicifyVariableName(value.ToString())),
+                () => Array.IndexOf(values, read()), index => write(values[index]));
+        }
+
         public IntegerField Integer(string id, string label, Func<int> read, Action<int> write)
         {
             var field = new IntegerField();
+            Bind(id, label, field, read, write);
+            return field;
+        }
+
+        public FloatField NumberWithSlider(string id, string label, float dragMinimum, float dragMaximum, Func<float> read, Action<float> write)
+        {
+            var field = new FloatField();
+            BindSlider(id, label, field, new DeucarianEditorSlider(dragMinimum, dragMaximum), read, write);
+            return field;
+        }
+
+        public IntegerField IntegerWithSlider(string id, string label, int dragMinimum, int dragMaximum, Func<int> read, Action<int> write)
+        {
+            var field = new IntegerField();
+            BindSlider(id, label, field, new DeucarianEditorIntegerSlider(dragMinimum, dragMaximum), read, write);
+            return field;
+        }
+
+        private void BindSlider<T>(string id, string label, BaseField<T> field, BaseField<T> slider, Func<T> read, Action<T> write)
+        {
+            var pair = DeucarianEditorWorkspaceControls.Region(null, "dw-range-pair");
+            field.name = id; slider.name = id + "-slider";
+            field.tooltip = "Enter any value; the slider provides a convenient drag range.";
+            pair.Add(slider); pair.Add(field); Root.Add(DeucarianEditorWorkspaceControls.Field(label, pair));
+            synchronizers.Add(() => { field.SetValueWithoutNotify(read()); slider.SetValueWithoutNotify(read()); });
+            field.RegisterValueChangedCallback(evt => { write(evt.newValue); slider.SetValueWithoutNotify(read()); });
+            slider.RegisterValueChangedCallback(evt => { write(evt.newValue); field.SetValueWithoutNotify(read()); });
+            Refresh();
+        }
+
+        public DeucarianEditorStepper Stepper(string id, string label, int minimum, int maximum, Func<int> read, Action<int> write)
+        {
+            var field = new DeucarianEditorStepper(minimum, maximum);
             Bind(id, label, field, read, write);
             return field;
         }
@@ -47,6 +101,7 @@ namespace Deucarian.Editor
         {
             var field = new DeucarianEditorSwitch();
             Bind(id, label, field, read, write);
+            field.parent.AddToClassList("dw-switch-field");
             return field;
         }
 
@@ -78,11 +133,29 @@ namespace Deucarian.Editor
             return field;
         }
 
-        public PopupField<string> Choice(string id, string label, IReadOnlyList<string> choices, Func<int> read, Action<int> write)
+        public PopupField<string> Choice(string id, string label, IReadOnlyList<string> choices, Func<int> read, Action<int> write,
+            IReadOnlyList<string> icons = null)
         {
+            if (choices == null || choices.Count == 0) throw new ArgumentException("At least one choice is required.", nameof(choices));
+            if (icons != null && icons.Count != choices.Count) throw new ArgumentException("Icons must correspond to choices.", nameof(icons));
             var field = new PopupField<string>(new List<string>(choices), 0) { name = id };
             Root.Add(DeucarianEditorWorkspaceControls.Field(label, field));
             synchronizers.Add(() => field.SetValueWithoutNotify(choices[Clamp(read(), choices.Count)]));
+            if (icons != null)
+            {
+                var icon = DeucarianEditorWorkspaceControls.Icon(icons[Clamp(read(), choices.Count)]);
+                icon.AddToClassList("dw-choice-icon");
+                field.Q(className: "unity-base-field__input").Insert(0, icon);
+                synchronizers.Add(() =>
+                {
+                    string selected = icons[Clamp(read(), choices.Count)];
+                    icon.style.backgroundImage = new StyleBackground(DeucarianEditorIcons.GetIcon(selected));
+                    icon.EnableInClassList("dw-status-warning", selected == DeucarianEditorIconIds.Warning);
+                    icon.EnableInClassList("dw-status-error", selected == DeucarianEditorIconIds.Error);
+                    icon.EnableInClassList("dw-status-info", selected == DeucarianEditorIconIds.Info);
+                    icon.EnableInClassList("dw-status-success", selected == DeucarianEditorIconIds.Success);
+                });
+            }
             field.RegisterValueChangedCallback(_ => write(field.index));
             Refresh();
             return field;

@@ -40,6 +40,7 @@ namespace Deucarian.Editor
             split.AddToClassList("dw-review-split");
             Root.Add(split);
             Commit = new DeucarianEditorWorkspaceForm(AddRegion("review-commit", "dw-review-commit"));
+            Publish = new DeucarianEditorWorkspaceForm(AddRegion("review-publish", "dw-review-publish"));
             history = new DeucarianEditorChangeHistory(Root);
         }
 
@@ -47,25 +48,38 @@ namespace Deucarian.Editor
         public DeucarianEditorWorkspaceForm Context { get; }
         public DeucarianEditorWorkspaceForm Actions { get; }
         public DeucarianEditorWorkspaceForm Commit { get; }
+        public DeucarianEditorWorkspaceForm Publish { get; }
+        public event Action<int> SectionChanged;
+        private DeucarianEditorChoiceBar sectionTabs;
 
-        public void UseSections(VisualElement tabHost)
+        public void UseSections(VisualElement tabHost, bool integratedPublishing = false)
         {
             ThrowIfDisposed();
             if (tabHost == null) throw new ArgumentNullException(nameof(tabHost));
             if (sections != null) return;
-            sections = new VisualElement[4];
+            Root.EnableInClassList("dw-review-integrated", integratedPublishing);
+            sections = new VisualElement[integratedPublishing ? 3 : 4];
             for (int i = 0; i < sections.Length; i++)
                 sections[i] = AddRegion("review-section-" + i, "dw-review-section");
             sections[0].Add(Context.Root);
             sections[1].Add(Actions.Root);
             sections[1].Add(summary);
             sections[1].Add(Root.Q("review-split"));
-            sections[2].Add(Commit.Root);
-            sections[3].Add(Root.Q("review-history"));
-            sections[3].Insert(0, DeucarianEditorWorkspaceControls.Label("Load recent history from Changes to inspect earlier commits.", "dw-muted"));
-            var tabs = new DeucarianEditorChoiceBar(new[] { "Local source", "Changes", "Publish", "History" }, tabs: true);
-            tabs.Changed += SelectSection;
-            tabHost.Add(tabs);
+            if (integratedPublishing)
+            {
+                sections[1].Add(Commit.Root);
+                history.UsePanel();
+                var split = DeucarianEditorWorkspaceControls.Split(Root.Q("review-history"), Publish.Root);
+                split.AddToClassList("dw-review-history-split"); sections[2].Add(split);
+            }
+            else
+            {
+                sections[2].Add(Commit.Root); sections[2].Add(Publish.Root);
+                sections[3].Add(Root.Q("review-history"));
+            }
+            sectionTabs = new DeucarianEditorChoiceBar(integratedPublishing ? new[] { "Workspace", "Changes", "History" } : new[] { "Local source", "Changes", "Publish", "History" }, tabs: true);
+            sectionTabs.Changed += SelectSection;
+            tabHost.Add(sectionTabs);
             SelectSection(0);
         }
 
@@ -74,6 +88,8 @@ namespace Deucarian.Editor
             ThrowIfDisposed();
             if (sections == null || index < 0 || index >= sections.Length) throw new ArgumentOutOfRangeException(nameof(index));
             for (int i = 0; i < sections.Length; i++) DeucarianEditorWorkspaceControls.Show(sections[i], i == index);
+            sectionTabs.SetValueWithoutNotify(index);
+            SectionChanged?.Invoke(index);
         }
 
         public void SetChanges(IReadOnlyList<DeucarianEditorChangeItem> items, string inspectedId)
@@ -103,7 +119,7 @@ namespace Deucarian.Editor
         public void RefreshForms()
         {
             ThrowIfDisposed();
-            Context.Refresh(); Actions.Refresh(); Commit.Refresh();
+            Context.Refresh(); Actions.Refresh(); Commit.Refresh(); Publish.Refresh();
         }
 
         public void Dispose()

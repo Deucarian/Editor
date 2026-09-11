@@ -85,9 +85,13 @@ namespace Deucarian.Editor.Tests
                             Assert.That(workspace.Footer.worldBound.yMax, Is.LessThanOrEqualTo(page.worldBound.yMax + 2), context);
                             Assert.That(slider.worldBound.xMax, Is.LessThanOrEqualTo(page.worldBound.xMax + 2), context);
                             Assert.That(workspace.Content.resolvedStyle.height, Is.GreaterThan(30), context);
-                            if (workspace.Root.resolvedStyle.width < 760)
-                                Assert.That(page.Q("workspace-navigation-menu").resolvedStyle.display,
-                                    Is.EqualTo(DisplayStyle.Flex), context + " uses a bounded navigation menu");
+                            if (workspace.Root.resolvedStyle.width < 1470)
+                            {
+                                Assert.That(page.Q("workspace-navigation-rail").resolvedStyle.display,
+                                    Is.EqualTo(DisplayStyle.Flex), context + " uses the compact icon rail");
+                                Assert.That(workspace.Sidebar.resolvedStyle.width, Is.EqualTo(110).Within(1), context);
+                                Assert.That(page.Q("workspace-navigation-scroll").resolvedStyle.display, Is.EqualTo(DisplayStyle.None), context);
+                            }
                             var resetButton = page.Q<Button>("workspace-scale-reset");
                             if (sliderBounds.HasValue)
                             {
@@ -99,7 +103,7 @@ namespace Deucarian.Editor.Tests
                             resetBounds = resetButton.worldBound;
                             Assert.That(viewport.worldBound.yMax, Is.LessThanOrEqualTo(slider.worldBound.yMin + 1), context + " the fixed dock must not cover content");
                             Assert.That(input.value, Is.EqualTo("Keep this draft"));
-                            Assert.That(workspace.Root.ClassListContains("dw-compact"), Is.EqualTo(workspace.Root.resolvedStyle.width < 1100), context);
+                            Assert.That(workspace.Root.ClassListContains("dw-compact"), Is.EqualTo(workspace.Root.resolvedStyle.width < 1470), context);
                         }
                     }
                     page.RemoveFromHierarchy();

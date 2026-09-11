@@ -19,6 +19,8 @@ namespace Deucarian.Editor
         private VisualElement pageRoot;
         private DeucarianEditorWorkspace workspace;
         private DeucarianControlCenterView view;
+        private VisualElement settingsPage;
+        private bool showSettings;
         private DeucarianControlCenterSnapshot snapshot;
         private IVisualElementScheduledItem periodicRefresh;
         private TextField searchField;
@@ -65,6 +67,7 @@ namespace Deucarian.Editor
             DeucarianControlCenterWindow window =
                 DeucarianEditorWindowPages.GetStandalone<DeucarianControlCenterWindow>(
                     "Deucarian Control Center");
+            window.showSettings = false;
             window.navigation?.Navigate(DeucarianToolIds.ControlCenter, area == DeucarianControlCenterArea.Developer ? "developer" : null);
             window.selectedArea = area;
             window.focusedTargetId = null;
@@ -102,11 +105,15 @@ namespace Deucarian.Editor
         private void ActivatePage(string route)
         {
             if (string.IsNullOrEmpty(route)) return;
+            bool wasSettings = showSettings;
+            showSettings = route == "settings";
+            if (showSettings) { if (!wasSettings) SetSearch(string.Empty); return; }
             var area = DeucarianControlCenterArea.Overview;
             foreach (DeucarianControlCenterArea candidate in Enum.GetValues(typeof(DeucarianControlCenterArea)))
                 if (DeucarianControlCenterAreaIds.GetId(candidate) == route) { area = candidate; break; }
-            if (selectedArea != area || !string.IsNullOrEmpty(searchQuery) || focusedTargetId != null) Navigate(area, null);
-            workspace?.SelectNavigation(route == "developer" ? "advanced" : DeucarianToolIds.ControlCenter);
+            if (wasSettings || selectedArea != area || !string.IsNullOrEmpty(searchQuery) || focusedTargetId != null) Navigate(area, null);
+            workspace?.SelectNavigation(area == DeucarianControlCenterArea.Developer || area == DeucarianControlCenterArea.Project
+                ? "advanced" : DeucarianToolIds.ControlCenter);
         }
 
         private void BuildPage(VisualElement root)
@@ -116,7 +123,7 @@ namespace Deucarian.Editor
             pageRoot.Clear();
             workspace = new DeucarianEditorWorkspace(pageRoot, Application.productName);
             workspace.Title.text = "Control Center";
-            workspace.Subtitle.text = "Project readiness and your installed tools.";
+            workspace.Subtitle.text = "Your project, at a glance.";
             DeucarianEditorWorkspaceNavigation.Populate(workspace, DeucarianToolIds.ControlCenter, filterNavigation: false);
             workspace.SetSearchPrompt("Search tools and checks…");
             searchField = workspace.SearchField;
@@ -132,8 +139,11 @@ namespace Deucarian.Editor
 
             view = new DeucarianControlCenterView(
                 Navigate,
-                () => Refresh(false));
+                () => Refresh(true));
             workspace.Content.Add(view.Root);
+            settingsPage = DeucarianEditorWorkspaceControls.Scroll("control-center-settings");
+            DeucarianControlCenterSettings.Build(settingsPage);
+            workspace.Content.Add(settingsPage);
             ConfigureFooter();
             pageRoot.RegisterCallback<GeometryChangedEvent>(
                 OnGeometryChanged);
@@ -238,6 +248,7 @@ namespace Deucarian.Editor
             DeucarianControlCenterArea area,
             string targetId)
         {
+            showSettings = false;
             selectedArea = area;
             focusedTargetId = targetId;
             SetSearch(string.Empty);
@@ -262,12 +273,33 @@ namespace Deucarian.Editor
                 return;
             }
 
+            DeucarianEditorWorkspaceControls.Show(view.Root, !showSettings);
+            DeucarianEditorWorkspaceControls.Show(settingsPage, showSettings);
+            workspace.Root.Q("workspace-project-settings")?.EnableInClassList("dw-selected", showSettings);
+            if (showSettings)
+            {
+                workspace.Root.EnableInClassList("dw-overview-page", false);
+                workspace.Title.text = "Project settings";
+                workspace.Subtitle.text = "Make the workspace yours.";
+                workspace.SelectNavigation("settings");
+                DeucarianEditorWorkspaceControls.Show(workspace.PageActions, false);
+                DeucarianEditorWorkspaceControls.Show(workspace.Footer, false);
+                return;
+            }
+
             view.Render(
                 snapshot,
                 selectedArea,
                 focusedTargetId,
                 searchQuery);
             workspace.Root.EnableInClassList("dw-overview-page", selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery));
+            bool overview = selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery);
+            bool advanced = selectedArea == DeucarianControlCenterArea.Project || selectedArea == DeucarianControlCenterArea.Developer;
+            workspace.Title.text = advanced ? "Advanced" : "Control Center";
+            workspace.Subtitle.text = advanced ? "Less-used tools, when you need them." : "Your project, at a glance.";
+            workspace.SelectNavigation(advanced ? "advanced" : DeucarianToolIds.ControlCenter);
+            DeucarianEditorWorkspaceControls.Show(workspace.PageActions, !overview && !advanced);
+            DeucarianEditorWorkspaceControls.Show(workspace.Footer, !overview && !advanced);
             if (summary != null)
             {
                 summary.text = snapshot.CapturedAtUtc.ToLocalTime()

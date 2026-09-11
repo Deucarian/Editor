@@ -1,5 +1,53 @@
 # Changelog
 
+## [1.10.6] - 2026-09-11
+
+- Match loading skeletons, package change rows, commit placement and history cards to the design references.
+- Keep long file paths and status text separated, use shared checkbox styling, and retain commit drafts below both review panes.
+- Add an inline presentation for existing workflow steps and responsive review geometry coverage.
+
+## [1.10.5] - 2026-09-11
+
+- Preserve per-window navigation expansion, selection visibility and scroll position across pages, search and UI scales.
+- Keep compact page titles, project-name ellipsis, read-only baselines and disabled icon-button colors consistent.
+- Constrain notification preview columns and scope spatial toolbar styling to its own component; cover 28 responsive size/scale combinations.
+- Clarify Advanced checks without duplicating domain tools, and finish native Inspector, authoring, gallery and sample presentation.
+- Extend shared controls with dark/light contrast, attached geometry, source-aware collection and spatial-preview regressions.
+
+## [1.10.4] - 2026-09-11
+
+- Match centered session panels, side-by-side navigation previews and anchored collection actions to the approved designs.
+- Clip spatial-preview meshes to their own viewport and correct face winding, with zoom and geometry regression checks.
+- Keep contextual operation activity out of the stationary scale dock and add the licensed Lucide user-session icon.
+
+## [1.10.3] - 2026-09-11
+
+- Align native filters, paneled collections, trailing switches and action rows with the approved reference compositions.
+- Give code examples and change reviews a bundled, licensed monospace font.
+- Keep empty descriptions out of status/list layouts and correct compact operation-footer button typography.
+
+## [1.10.2] - 2026-09-11
+
+- Preserve Overview content on repeated navigation and keep form/preview columns at their intended widths.
+- Keep keyboard-focused controls visible inside scaled scrolling forms, including narrow layouts.
+- Refine palette context, color-field proportions and spacing using the shared visual system.
+- Keep notification playback with its owning package; the shared lab exposes a preview region and tab event.
+
+## [1.10.1] - 2026-09-11
+
+- Keep wrapped headings and context filters scrollable without starving page content at large UI scales.
+- Replace the unsupported last-child style selector with an explicit navigation-arrow class.
+- Avoid hiding Unity's built-in slider fill member with the shared fill renderer.
+
+## [1.10.0] - 2026-09-11
+
+- Recompose the shared workspace and native forms around the approved visual references: charcoal gradient, typography, Lucide icons, reusable buttons and fixed colored scale dock.
+- Add native serialized Inspector styling with source/Undo/multi-selection coverage; retain legacy adapters for compatibility.
+- Keep project settings and page navigation inside the current Control Center, with persistent Advanced expansion state.
+- Support integrated Workspace / Changes / History composition, literal colored diffs, explicit staging and caller-owned publishing controls.
+
+Visual acceptance and the portfolio consumer rollout are tracked separately; this package does not own domain actions.
+
 ## [1.9.1] - 2026-09-10
 
 - Keep shared switches compact in stretched form columns and give slider value fields enough height to remain readable.

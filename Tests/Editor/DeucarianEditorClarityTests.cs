@@ -10,12 +10,68 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorClarityTests
     {
         [Test]
+        public void AdvancedUsesActionableCheckNamesAndRespectsNavigationOwnership()
+        {
+            var issue = new DeucarianControlCenterCard("deucarian.readiness.issue.TEST-01",
+                DeucarianControlCenterArea.Project, "TEST-01", "Assign the project camera.", "com.deucarian.editor");
+            var diagnostic = new DeucarianToolDescriptor("test.diagnostics", "Diagnostic settings", "Settings",
+                DeucarianControlCenterArea.Developer, () => { }, "com.deucarian.editor", navigationPath: "Diagnostics");
+            var developer = new DeucarianToolDescriptor("test.developer", "Developer tool", "Tool",
+                DeucarianControlCenterArea.Developer, () => { }, "com.deucarian.editor", navigationPath: "Developer/Testing");
+            var snapshot = new DeucarianControlCenterSnapshot(System.DateTime.UtcNow, new[] { issue },
+                System.Array.Empty<DeucarianControlCenterSection>(), new[] { diagnostic, developer });
+            using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))
+            {
+                view.Render(snapshot, DeucarianControlCenterArea.Project, null, "");
+                var row = view.Root.Q<Button>("control-center-check-" + issue.Id);
+                Assert.That(row.Q<Label>(className: "dw-navigation-title").text, Is.EqualTo(issue.Description));
+                Assert.That(row.tooltip, Is.EqualTo(issue.Title));
+                Assert.That(view.Root.Q("control-center-open-test.diagnostics"), Is.Null);
+                Assert.That(view.Root.Q("control-center-open-test.developer"), Is.Not.Null);
+            }
+        }
+
+        [Test]
         public void SearchDoesNotOfferToOpenTheControlCenterFromInsideItself()
         {
             var snapshot = DeucarianControlCenterSnapshotBuilder.Capture();
             foreach (var result in DeucarianControlCenterSearch.Search(snapshot, "Control Center"))
                 Assert.That(result.Kind != DeucarianControlCenterSearchResultKind.Tool ||
                     result.TargetId != DeucarianToolIds.ControlCenter, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator LongCheckExplanationsWrapWithoutOverlappingStatus()
+        {
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Test"))
+            using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))
+            {
+                var issue = new DeucarianControlCenterCard("deucarian.readiness.issue.TEST-LONG",
+                    DeucarianControlCenterArea.Project, "TEST-LONG",
+                    "No project-default development context is assigned. Choose a context before starting your preview.",
+                    "com.deucarian.editor", DeucarianControlCenterStatus.Error, "Error");
+                var snapshot = new DeucarianControlCenterSnapshot(System.DateTime.UtcNow, new[] { issue },
+                    System.Array.Empty<DeucarianControlCenterSection>(), System.Array.Empty<DeucarianToolDescriptor>());
+                workspace.Content.Add(view.Root);
+                view.Render(snapshot, DeucarianControlCenterArea.Project, null, "");
+                try
+                {
+                    window.Show();
+                    foreach (float width in new[] { 620f, 1586f })
+                    {
+                        window.position = new Rect(40, 40, width, 940);
+                        for (int frame = 0; frame < 12; frame++) yield return null;
+                        var row = view.Root.Q<Button>("control-center-check-" + issue.Id);
+                        var title = row.Q<Label>(className: "dw-navigation-title");
+                        var status = row.Q<Label>(className: "dw-navigation-status");
+                        Assert.That(title.worldBound.xMax, Is.LessThanOrEqualTo(status.worldBound.xMin));
+                        Assert.That(title.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax));
+                        Assert.That(title.resolvedStyle.whiteSpace, Is.EqualTo(WhiteSpace.Normal));
+                    }
+                }
+                finally { window.Close(); }
+            }
         }
 
         [Test]
@@ -58,12 +114,12 @@ namespace Deucarian.Editor.Tests
         {
             using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))
             {
-                var card = new DeucarianControlCenterCard("deucarian.overview.build-packages",
-                    DeucarianControlCenterArea.Overview, "Build & packages", "Review installed packages.",
+                var card = new DeucarianControlCenterCard("deucarian.project.example",
+                    DeucarianControlCenterArea.Project, "Project check", "Review this project check.",
                     "com.deucarian.editor", DeucarianControlCenterStatus.Success, "Ready");
                 var snapshot = new DeucarianControlCenterSnapshot(System.DateTime.UtcNow, new[] { card },
                     System.Array.Empty<DeucarianControlCenterSection>(), System.Array.Empty<DeucarianToolDescriptor>());
-                view.Render(snapshot, DeucarianControlCenterArea.Overview, null, "");
+                view.Render(snapshot, DeucarianControlCenterArea.Project, null, "");
                 view.SetLayoutMode(DeucarianEditorLayoutMode.Narrow);
                 int checkedCards = 0;
                 view.Root.Query<VisualElement>().ForEach(element =>

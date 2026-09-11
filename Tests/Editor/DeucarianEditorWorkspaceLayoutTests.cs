@@ -12,8 +12,47 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorWorkspaceLayoutTests
     {
         [UnityTest]
+        public IEnumerator WrappedContextNeverStarvesTheWorkingPageAtAnyScale()
+        {
+            int previous = DeucarianEditorAppearance.WorkspaceScalePercent;
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            window.Show();
+            using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Review fixture"))
+            {
+                try
+                {
+                    workspace.Title.text = "Package Development";
+                    workspace.Subtitle.text = "Work on a package. Test it here. Share it when ready.";
+                    workspace.Tabs.Add(new DeucarianEditorChoiceBar(new[] { "Workspace", "Changes", "History" }, tabs: true));
+                    var scope = new DeucarianEditorWorkspaceForm(workspace.Scope);
+                    scope.Choice("layout-package", "Package", new[] { "Package with a longer display name" }, () => 0, _ => { });
+                    scope.ReadOnly("layout-branch", "Branch", () => "codex/a-long-but-valid-feature-branch");
+                    var body = DeucarianEditorWorkspaceControls.Scroll("layout-body"); workspace.Content.Add(body);
+                    for (int i = 0; i < 20; i++) body.Add(new Label("Working page content " + i));
+                    foreach (var size in new[] { new Vector2(1586, 940), new Vector2(820, 650), new Vector2(620, 650) })
+                    foreach (int scale in new[] { 75, 100, 125, 150 })
+                    {
+                        Resize(window, size); DeucarianEditorAppearance.WorkspaceScalePercent = scale;
+                        for (int i = 0; i < 12; i++) yield return null;
+                        string context = size + " at " + scale + "%";
+                        var heading = workspace.Root.Q<ScrollView>("workspace-context-scroll");
+                        Assert.That(heading.worldBound.height, Is.GreaterThan(40), context);
+                        Assert.That(body.worldBound.height, Is.GreaterThan(80), context);
+                        Assert.That(body.worldBound.yMin, Is.GreaterThanOrEqualTo(heading.worldBound.yMax - 1), context);
+                        Assert.That(body.worldBound.yMax, Is.LessThanOrEqualTo(window.rootVisualElement.Q("workspace-scale").worldBound.yMin + 1), context);
+                        heading.ScrollTo(workspace.Scope);
+                        for (int i = 0; i < 3; i++) yield return null;
+                        Assert.That(workspace.Scope.worldBound.yMin, Is.LessThan(heading.worldBound.yMax), context);
+                    }
+                }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previous; window.Close(); }
+            }
+        }
+
+        [UnityTest]
         public IEnumerator LabControlsAdaptToTheirColumnAndRemainReachableAfterResizing()
         {
+            int previousScale = DeucarianEditorAppearance.WorkspaceScalePercent;
             var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
             window.Show();
             using (var lab = new DeucarianEditorLabWorkspace(window.rootVisualElement, "Test", "Notifications", "Create a test message.", () => { }, _ => { }))
@@ -29,8 +68,10 @@ namespace Deucarian.Editor.Tests
                     var add = lab.Composer.Action("layout-add", "Add test message", () => { }, primary: true);
                     lab.SetMessages(new[] { new DeucarianEditorMessageData("layout-message", "A longer warning title", "Please resolve this test message to simulate recovery.", DeucarianEditorStatus.Warning, "Until resolved", null, "Resolve", () => { }) }, Array.Empty<DeucarianEditorMessageData>(), 0);
                     foreach (var size in Sizes())
+                    foreach (int scale in new[] { 75, 100, 125, 150 })
                     {
                         Resize(window, size);
+                        DeucarianEditorAppearance.WorkspaceScalePercent = scale;
                         for (int i = 0; i < 8; i++) yield return null;
                         var composer = lab.Workspace.Root.Q(className: "dw-lab-composer");
                         foreach (var field in composer.Query(className: "dw-field").ToList())
@@ -42,18 +83,27 @@ namespace Deucarian.Editor.Tests
                         }
                         foreach (var button in choice.Query<Button>().ToList()) AssertInside(button, choice, size.ToString());
                         AssertInside(add, composer, size.ToString());
-                        var composerScroll = (ScrollView)composer;
-                        var previewScroll = lab.Workspace.Root.Q<ScrollView>("lab-preview-scroll");
-                        Assert.That(composerScroll.resolvedStyle.height, Is.GreaterThan(70));
-                        Assert.That(previewScroll.resolvedStyle.height, Is.GreaterThan(70));
-                        var previousPreviewOffset = previewScroll.scrollOffset;
-                        float actionY = add.worldBound.yMin;
-                        composerScroll.scrollOffset = new Vector2(0, 100);
+                        var pageScroll = lab.Workspace.Root.Q<ScrollView>("lab-page-0");
+                        var preview = lab.Workspace.Root.Q("lab-preview-scroll");
+                        string context = size + " at " + scale + "%";
+                        AssertInside(preview, pageScroll.contentViewport, context);
+                        var toolbar = preview.Q(className: "dw-preview-toolbar");
+                        AssertInside(toolbar, preview, context);
+                        foreach (var control in toolbar.Children()) AssertInside(control, toolbar, context);
+                        var clear = toolbar.Q<Button>("lab-clear");
+                        Assert.That(clear.resolvedStyle.width, Is.LessThan(220), "A text action must not inherit the spatial toolbar's equal-width buttons.");
+                        Assert.That(clear.Q<Label>().worldBound.xMin, Is.GreaterThan(clear.Q(className: "dw-icon").worldBound.xMax));
+                        Assert.That(composer.resolvedStyle.height, Is.GreaterThan(70));
+                        Assert.That(preview.resolvedStyle.height, Is.GreaterThan(70));
+                        choice.Q<Button>("choice-0").Focus();
                         yield return null;
-                        Assert.That(previewScroll.scrollOffset, Is.EqualTo(previousPreviewOffset));
-                        Assert.That(add.worldBound.yMin, Is.EqualTo(actionY).Within(1), "The primary action does not scroll away.");
-                        Assert.That(composerScroll.Contains(add), Is.False);
-                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1));
+                        add.Focus();
+                        for (int i = 0; i < 8; i++) yield return null;
+                        Assert.That(composer.Contains(add), Is.True, "The action belongs to the form and follows its fields.");
+                        Assert.That(add.focusController.focusedElement, Is.SameAs(add));
+                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1),
+                            size + " scale=" + DeucarianEditorAppearance.WorkspaceScalePercent + " offset=" + pageScroll.scrollOffset +
+                            " range=" + pageScroll.verticalScroller.highValue + " viewport=" + pageScroll.contentViewport.worldBound + " target=" + add.worldBound);
                         Assert.That(add.resolvedStyle.height, Is.GreaterThanOrEqualTo(42));
                         Assert.That(add.worldBound.width, Is.EqualTo(add.parent.worldBound.width).Within(2));
                         Assert.That(add.worldBound.yMin, Is.GreaterThanOrEqualTo(lab.Workspace.Content.worldBound.yMin));
@@ -67,7 +117,7 @@ namespace Deucarian.Editor.Tests
                     }
                     lab.Composer.EnabledWhen(() => false);
                     lab.RefreshForms();
-                    Assert.That(add.enabledInHierarchy, Is.False, "Pinned actions follow the composer's enabled state.");
+                    Assert.That(add.enabledInHierarchy, Is.False, "Actions follow the composer's enabled state.");
                     lab.Composer.EnabledWhen(() => true);
                     lab.RefreshForms();
                     choice.Q<Button>("choice-1").Focus();
@@ -79,7 +129,38 @@ namespace Deucarian.Editor.Tests
                     }
                     Assert.That(lifetime, Is.EqualTo(1));
                 }
-                finally { window.Close(); }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previousScale; window.Close(); }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator CompactPagesRetainTitleHierarchyAndBoundLongProjectNames()
+        {
+            int previousScale = DeucarianEditorAppearance.WorkspaceScalePercent;
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            window.Show();
+            const string project = "AllPackagesConsumer with a longer project name";
+            using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, project))
+            {
+                try
+                {
+                    workspace.Title.text = "Package Development";
+                    var section = DeucarianEditorWorkspaceControls.Label("Working package", "dw-section-title");
+                    workspace.Content.Add(section);
+                    foreach (float width in new[] { 820f, 1180f, 1586f })
+                    foreach (int scale in new[] { 75, 100, 125, 150 })
+                    {
+                        Resize(window, new Vector2(width, 940));
+                        DeucarianEditorAppearance.WorkspaceScalePercent = scale;
+                        for (int frame = 0; frame < 12; frame++) yield return null;
+                        Assert.That(workspace.Title.resolvedStyle.fontSize, Is.GreaterThan(section.resolvedStyle.fontSize));
+                        Assert.That(workspace.ContextButton.resolvedStyle.textOverflow, Is.EqualTo(TextOverflow.Ellipsis));
+                        if (workspace.Root.ClassListContains("dw-compact")) Assert.That(workspace.ContextButton.isElided, Is.True);
+                        Assert.That(workspace.ContextButton.tooltip, Does.Contain(project));
+                        AssertInside(workspace.ContextButton, workspace.Root.Q("workspace-header"), width + " at " + scale);
+                    }
+                }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previousScale; window.Close(); }
             }
         }
 
@@ -103,7 +184,7 @@ namespace Deucarian.Editor.Tests
                         if (!collection.Collection.ClassListContains("dw-split-stacked"))
                         {
                             float paneRatio = collection.Details.resolvedStyle.width / collection.Collection.resolvedStyle.width;
-                            Assert.That(paneRatio, Is.EqualTo(0.45f).Within(0.025f), "Details retain their share of the split: " + size);
+                            Assert.That(paneRatio, Is.EqualTo(0.58f).Within(0.025f), "Details retain their share of the split: " + size);
                         }
                         var row = collection.Collection.Q("workspace-item-key");
                         var select = row.Q<Button>(className: "dw-collection-select");
@@ -149,20 +230,19 @@ namespace Deucarian.Editor.Tests
                         foreach (var card in content.Query(className: "dw-summary-card").ToList()) AssertInside(card, content, size.ToString());
                         view.Render(snapshot, DeucarianControlCenterArea.Developer, null, "");
                         for (int i = 0; i < 8; i++) yield return null;
-                        var row = view.Root.Q("control-center-tool-layout-tool");
+                        var row = view.Root.Q<Button>("control-center-open-layout-tool");
+                        Assert.That(row, Is.Not.Null);
                         Assert.That(row.ClassListContains("dw-summary-card"), Is.False);
-                        foreach (var button in row.Query<Button>().ToList())
-                        {
-                            AssertInside(button, row, size.ToString());
-                            Assert.That(button.resolvedStyle.width, Is.LessThan(120));
-                        }
+                        AssertInside(row, content, size.ToString());
+                        Assert.That(row.ClassListContains("dw-navigation-row"), Is.True);
+                        Assert.That(row.Query<Button>().ToList().Count, Is.LessThanOrEqualTo(1), "One row is one navigation action.");
                     }
                 }
                 finally { window.Close(); }
             }
         }
 
-        private static Vector2[] Sizes() => new[] { new Vector2(1908, 950), new Vector2(1319, 697), new Vector2(1180, 700), new Vector2(820, 650), new Vector2(620, 800), new Vector2(1319, 697) };
+        private static Vector2[] Sizes() => new[] { new Vector2(1908, 950), new Vector2(1319, 697), new Vector2(1180, 940), new Vector2(1180, 700), new Vector2(820, 650), new Vector2(620, 800), new Vector2(1319, 697) };
 
         private static void Resize(EditorWindow window, Vector2 size)
         {

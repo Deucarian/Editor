@@ -5,11 +5,11 @@ namespace Deucarian.Editor
 {
     public sealed class DeucarianEditorSlider : Slider
     {
-        private readonly DeucarianEditorSliderFill fill;
+        private readonly DeucarianEditorSliderFill fillStyle;
 
         public DeucarianEditorSlider(float minimum, float maximum) : base(minimum, maximum)
         {
-            fill = new DeucarianEditorSliderFill(this);
+            fillStyle = new DeucarianEditorSliderFill(this);
             this.RegisterValueChangedCallback(_ => RefreshFill());
             RegisterCallback<GeometryChangedEvent>(_ => RefreshFill());
             RefreshFill();
@@ -21,16 +21,16 @@ namespace Deucarian.Editor
             RefreshFill();
         }
 
-        private void RefreshFill() => fill?.Set(value, lowValue, highValue, direction, inverted);
+        private void RefreshFill() => fillStyle?.Set(value, lowValue, highValue, direction, inverted);
     }
 
     public sealed class DeucarianEditorIntegerSlider : SliderInt
     {
-        private readonly DeucarianEditorSliderFill fill;
+        private readonly DeucarianEditorSliderFill fillStyle;
 
         public DeucarianEditorIntegerSlider(int minimum, int maximum) : base(minimum, maximum)
         {
-            fill = new DeucarianEditorSliderFill(this);
+            fillStyle = new DeucarianEditorSliderFill(this);
             this.RegisterValueChangedCallback(_ => RefreshFill());
             RegisterCallback<GeometryChangedEvent>(_ => RefreshFill());
             RefreshFill();
@@ -42,7 +42,7 @@ namespace Deucarian.Editor
             RefreshFill();
         }
 
-        private void RefreshFill() => fill?.Set(value, lowValue, highValue, direction, inverted);
+        private void RefreshFill() => fillStyle?.Set(value, lowValue, highValue, direction, inverted);
     }
 
     internal sealed class DeucarianEditorSliderFill

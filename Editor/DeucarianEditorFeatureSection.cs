@@ -15,7 +15,7 @@ namespace Deucarian.Editor
         private readonly Label switchLabel;
 
         public DeucarianEditorFeatureSection(string id, string title, string description,
-            string icon, Action<bool> changed)
+            string icon, Action<bool> changed = null)
         {
             Root = DeucarianEditorWorkspaceControls.Region(id, "dw-feature");
             var header = DeucarianEditorWorkspaceControls.Region(null, "dw-feature-header");
@@ -36,11 +36,13 @@ namespace Deucarian.Editor
             switchRow.Add(Switch);
             switchRow.Add(switchLabel);
             header.Add(switchRow);
+            DeucarianEditorWorkspaceControls.Show(switchRow, changed != null);
             Root.Add(header);
             Details = DeucarianEditorWorkspaceControls.Region(id + "-details", "dw-feature-details");
             Actions = DeucarianEditorWorkspaceControls.Region(id + "-actions", "dw-feature-actions");
             Root.Add(Details);
             Root.Add(Actions);
+            DeucarianEditorWorkspaceControls.Show(Status, false);
             Switch.RegisterValueChangedCallback(evt => changed?.Invoke(evt.newValue));
             DeucarianEditorResponsiveLayout.AdaptToWidth(Root, "dw-feature-compact", 670);
         }
@@ -55,6 +57,12 @@ namespace Deucarian.Editor
             DeucarianEditorWorkspaceControls.Show(Status, !string.IsNullOrEmpty(status));
             DeucarianEditorWorkspaceControls.Show(Details, enabled && Details.childCount > 0);
             DeucarianEditorWorkspaceControls.Show(Actions, Actions.childCount > 0);
+        }
+
+        public void UseFormLayout()
+        {
+            Root.AddToClassList("dw-feature-form");
+            Details.Add(Actions);
         }
 
         public static VisualElement Connection(string id, string label, bool connected, string explanation)

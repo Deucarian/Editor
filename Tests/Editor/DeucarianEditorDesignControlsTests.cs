@@ -5,6 +5,26 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianEditorDesignControlsTests
     {
+        [UnityEngine.TestTools.UnityTest]
+        public System.Collections.IEnumerator ReadOnlyFieldsShareTheCaptionBaseline()
+        {
+            var window = UnityEngine.ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            var root = DeucarianEditorInspector.CreateToolkit();
+            var value = DeucarianEditorWorkspaceControls.Label("Local snapshot", "dw-readonly");
+            var row = DeucarianEditorWorkspaceControls.Field("Current version", value);
+            root.Add(row);
+            try
+            {
+                window.Show(); window.rootVisualElement.Add(root);
+                window.position = new UnityEngine.Rect(50, 50, 740, 420);
+                for (int frame = 0; frame < 8; frame++) yield return null;
+                var caption = row.Q<Label>(className: "dw-field-label");
+                Assert.That(value.worldBound.y + value.resolvedStyle.paddingTop,
+                    Is.EqualTo(caption.worldBound.y + caption.resolvedStyle.paddingTop).Within(1));
+            }
+            finally { window.Close(); }
+        }
+
         [Test]
         public void SliderFillTracksSilentChangesAndClampedValues()
         {
@@ -95,6 +115,75 @@ namespace Deucarian.Editor.Tests
             var button = DeucarianEditorWorkspaceControls.Button("Action", () => { }, role);
             Assert.That(button.ClassListContains("dw-button"), Is.True);
             Assert.That(button.ClassListContains(style), Is.True);
+        }
+
+        [UnityEngine.TestTools.UnityTest]
+        public System.Collections.IEnumerator PrimaryButtonKeepsReadableContrastInEveryInteractionState()
+        {
+            var window = UnityEngine.ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            var root = DeucarianEditorInspector.CreateToolkit();
+            var button = DeucarianEditorWorkspaceControls.Button("Validate settings", () => { }, true);
+            root.Add(button);
+            var states = typeof(VisualElement).GetProperty("pseudoStates",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(states, Is.Not.Null);
+            try
+            {
+                window.Show();
+                window.rootVisualElement.Add(root);
+                foreach (bool light in new[] { false, true })
+                {
+                    root.EnableInClassList("deucarian-theme--light", light);
+                    root.EnableInClassList("deucarian-theme--dark", !light);
+                    foreach (string state in new[] { "0", "Focus", "Hover", "Active", "Focus, Active" })
+                    {
+                        states.SetValue(button, System.Enum.Parse(states.PropertyType, state));
+                        for (int frame = 0; frame < 8; frame++) yield return null;
+                        double text = Luminance(button.resolvedStyle.color);
+                        double background = Luminance(button.resolvedStyle.backgroundColor);
+                        double contrast = (System.Math.Max(text, background) + .05) /
+                            (System.Math.Min(text, background) + .05);
+                        Assert.That(contrast, Is.GreaterThanOrEqualTo(4.5), (light ? "Light " : "Dark ") + state);
+                    }
+                }
+            }
+            finally { window.Close(); }
+        }
+
+        private static double Luminance(UnityEngine.Color color)
+        {
+            double Channel(double value) => value <= .04045 ? value / 12.92 : System.Math.Pow((value + .055) / 1.055, 2.4);
+            return .2126 * Channel(color.r) + .7152 * Channel(color.g) + .0722 * Channel(color.b);
+        }
+
+        [UnityEngine.TestTools.UnityTest]
+        public System.Collections.IEnumerator DisabledPrimaryIconButtonsKeepTheirTextAndIconReadable()
+        {
+            var window = UnityEngine.ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            var root = DeucarianEditorInspector.CreateToolkit();
+            var button = DeucarianEditorWorkspaceControls.IconButton("Send command", DeucarianEditorIconIds.Play,
+                () => { }, DeucarianEditorButtonRole.Primary);
+            root.Add(button);
+            button.SetEnabled(false);
+            try
+            {
+                window.Show(); window.rootVisualElement.Add(root);
+                foreach (bool light in new[] { false, true })
+                {
+                    root.EnableInClassList("deucarian-theme--light", light);
+                    root.EnableInClassList("deucarian-theme--dark", !light);
+                    for (int frame = 0; frame < 8; frame++) yield return null;
+                    var label = button.Q<Label>(className: "dw-label");
+                    var icon = button.Q(className: "dw-icon");
+                    Assert.That(label.resolvedStyle.color, Is.EqualTo(button.resolvedStyle.color));
+                    Assert.That(icon.resolvedStyle.unityBackgroundImageTintColor, Is.EqualTo(button.resolvedStyle.color));
+                    double text = Luminance(label.resolvedStyle.color);
+                    double background = Luminance(button.resolvedStyle.backgroundColor);
+                    Assert.That((System.Math.Max(text, background) + .05) / (System.Math.Min(text, background) + .05),
+                        Is.GreaterThanOrEqualTo(4.5), light ? "Light disabled palette" : "Dark disabled palette");
+                }
+            }
+            finally { window.Close(); }
         }
 
         [UnityEngine.TestTools.UnityTest]

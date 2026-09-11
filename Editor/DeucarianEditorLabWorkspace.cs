@@ -20,11 +20,14 @@ namespace Deucarian.Editor
         private string[] targetIds = Array.Empty<string>();
         private readonly Action<string> selectTarget;
         private readonly Button clear;
+        private readonly DeucarianEditorChoiceBar tabs;
         private bool syncing;
         public DeucarianEditorWorkspace Workspace { get; }
         public DeucarianEditorWorkspaceForm Composer { get; }
         public DeucarianEditorWorkspaceForm Appearance { get; }
         public DeucarianEditorWorkspaceForm Audio { get; }
+        public VisualElement MotionPreviewRoot { get; }
+        public event Action<int> TabChanged;
 
         public DeucarianEditorLabWorkspace(VisualElement root, string context, string title, string subtitle,
             Action clearMessages, Action<string> selectTarget)
@@ -34,12 +37,13 @@ namespace Deucarian.Editor
             Workspace.Title.text = title;
             Workspace.Subtitle.text = subtitle;
             Workspace.ContextButton.SetEnabled(false);
-            var tabs = new DeucarianEditorChoiceBar(new[] { "Test", "Appearance", "Audio" }, tabs: true);
+            tabs = new DeucarianEditorChoiceBar(new[] { "Test", "Appearance", "Audio" }, tabs: true);
             Workspace.Tabs.Add(tabs);
-            tabs.Changed += index => { for (int i = 0; i < pages.Count; i++) pages[i].style.display = i == index ? DisplayStyle.Flex : DisplayStyle.None; };
+            tabs.Changed += SelectTab;
+            Workspace.Scope.AddToClassList("dw-lab-destination");
             Workspace.Scope.Add(DeucarianEditorWorkspaceControls.Label("Destination"));
             destinations = new DeucarianEditorChoiceBar(new[] { "Editor preview", "Running app" });
-            destinations.Changed += index => { if (!syncing) selectTarget(index == 0 ? null : targetIds[0]); };
+            destinations.Changed += index => { if (!syncing && (index == 0 || targetIds.Length > 0)) selectTarget(index == 0 ? null : targetIds[0]); };
             Workspace.Scope.Add(destinations);
             targets = new PopupField<string>(new List<string> { "No active list" }, 0) { name = "lab-target" };
             targets.AddToClassList("dw-target-picker");
@@ -47,27 +51,24 @@ namespace Deucarian.Editor
             Workspace.Scope.Add(targets);
             destinationNote = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
             Workspace.Scope.Add(destinationNote);
-            var test = AddPage(scrollable: false);
-            var form = DeucarianEditorWorkspaceControls.Scroll("lab-composer-scroll");
+            var test = AddPage();
+            var form = DeucarianEditorWorkspaceControls.Region("lab-composer-scroll", "dw-lab-composer");
             form.AddToClassList("dw-lab-composer");
-            var preview = DeucarianEditorWorkspaceControls.Scroll("lab-preview-scroll");
+            var preview = DeucarianEditorWorkspaceControls.Panel("lab-preview-scroll");
             preview.AddToClassList("dw-lab-preview");
-            var composerPane = DeucarianEditorWorkspaceControls.Region(null, "dw-lab-composer-pane");
-            var primaryActions = DeucarianEditorWorkspaceControls.Region("lab-primary-actions", "dw-pinned-actions");
+            var composerPane = DeucarianEditorWorkspaceControls.Panel("lab-composer-pane");
             composerPane.Add(form);
-            composerPane.Add(primaryActions);
-            var split = DeucarianEditorWorkspaceControls.Split(composerPane, preview);
+            var split = DeucarianEditorWorkspaceControls.Split(composerPane, preview, stackBelow: 1120);
             split.AddToClassList("dw-lab-split");
             test.Add(split);
-            form.Add(DeucarianEditorWorkspaceControls.Label("New test message", "dw-section-title"));
-            Composer = new DeucarianEditorWorkspaceForm(form, primaryActions);
+            form.Add(DeucarianEditorWorkspaceControls.Label("New message", "dw-section-title"));
+            Composer = new DeucarianEditorWorkspaceForm(form);
             var toolbar = DeucarianEditorWorkspaceControls.Region(null, "dw-preview-toolbar");
-            toolbar.Add(DeucarianEditorWorkspaceControls.Label("Message preview", "dw-section-title"));
+            toolbar.Add(DeucarianEditorWorkspaceControls.Label("Preview", "dw-section-title"));
             count = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
             toolbar.Add(count);
-            clear = DeucarianEditorWorkspaceControls.Button("Clear test messages", clearMessages);
+            clear = DeucarianEditorWorkspaceControls.IconButton("Clear", DeucarianEditorIconIds.Remove, clearMessages);
             clear.name = "lab-clear";
-            clear.AddToClassList("dw-link");
             toolbar.Add(clear);
             preview.Add(toolbar);
             empty = DeucarianEditorWorkspaceControls.Label("All clear. Add a test message to begin.", "dw-empty");
@@ -77,12 +78,29 @@ namespace Deucarian.Editor
             overflow = new Foldout { text = "Overflow", value = false, name = "lab-overflow" };
             overflow.AddToClassList("dw-foldout");
             preview.Add(overflow);
-            Appearance = new DeucarianEditorWorkspaceForm(AddPage());
+            var appearance = AddPage();
+            var appearanceForm = new VisualElement();
+            MotionPreviewRoot = new VisualElement();
+            var appearanceSplit = DeucarianEditorWorkspaceControls.Split(appearanceForm, MotionPreviewRoot);
+            appearanceSplit.AddToClassList("dw-motion-split");
+            appearance.Add(appearanceSplit);
+            Appearance = new DeucarianEditorWorkspaceForm(appearanceForm);
             Audio = new DeucarianEditorWorkspaceForm(AddPage());
             pages[1].AddToClassList("dw-settings-page");
             pages[2].AddToClassList("dw-settings-page");
-            pages[1].style.display = DisplayStyle.None;
-            pages[2].style.display = DisplayStyle.None;
+            DeucarianEditorWorkspaceControls.Show(Workspace.Footer, false);
+            SelectTab(0);
+        }
+
+        public void SelectTab(int index)
+        {
+            if (index < 0 || index >= pages.Count) return;
+            tabs.SetValueWithoutNotify(index);
+            for (int i = 0; i < pages.Count; i++) DeucarianEditorWorkspaceControls.Show(pages[i], i == index);
+            DeucarianEditorWorkspaceControls.Show(Workspace.Scope, index == 0);
+            Workspace.Subtitle.text = index == 0 ? "Create a message. See how it feels." : index == 1
+                ? "Set how messages appear." : "A small sound when attention is needed.";
+            TabChanged?.Invoke(index);
         }
 
         public void SetTargets(IReadOnlyList<string> ids, IReadOnlyList<string> labels, string selected, string note)
@@ -105,6 +123,8 @@ namespace Deucarian.Editor
                 targets.SetValueWithoutNotify(targets.choices[Math.Max(0, index)]);
                 targets.style.display = selected != null && ids.Count > 1 ? DisplayStyle.Flex : DisplayStyle.None;
                 destinationNote.text = note ?? string.Empty;
+                destinations.tooltip = destinationNote.text;
+                DeucarianEditorWorkspaceControls.Show(destinationNote, selected != null);
             }
             finally { syncing = false; }
         }
@@ -116,7 +136,7 @@ namespace Deucarian.Editor
             Synchronize(overflow, hidden, retained);
             foreach (string id in new List<string>(entries.Keys))
                 if (!retained.Contains(id)) { entries[id].Row.RemoveFromHierarchy(); entries.Remove(id); }
-            count.text = visible.Count + " shown · " + hidden.Count + " in overflow" + (pending > 0 ? " · " + pending + " waiting" : "");
+            count.text = visible.Count + " visible · " + hidden.Count + " queued" + (pending > 0 ? " · " + pending + " waiting" : "");
             overflow.text = "Overflow (" + hidden.Count + ") · still active";
             overflow.style.display = hidden.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             empty.text = pending > 0 ? "Waiting for the show delay…" : "All clear. Add a test message to begin.";
@@ -125,7 +145,7 @@ namespace Deucarian.Editor
         }
 
         public void RefreshForms() { Composer.Refresh(); Appearance.Refresh(); Audio.Refresh(); }
-        public void Dispose() { Workspace.Dispose(); entries.Clear(); }
+        public void Dispose() { TabChanged = null; Workspace.Dispose(); entries.Clear(); }
 
         private VisualElement AddPage(bool scrollable = true)
         {
