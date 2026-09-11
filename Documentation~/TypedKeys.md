@@ -1,0 +1,13 @@
+# Typed definition keys
+
+Each domain owns its serializable key type and the definitions that populate it. Ordinary callers accept that domain key, never a raw ID. A public, marked definition set exposes named typed values for code; the same values populate its Inspector dropdown. Persisted fields store only the stable ID, with no asset reference. Generic keys retain the payload type in code and in the picker.
+
+Code-first definitions are declared once in a public runtime key set. Keep each stable ID unique. Do not generate IDs per caller or expose a public string constructor/conversion. Define project identifiers in the project, not in the shared Editor package. Existing value enums remain enums; runtime-created objects use handles issued by their owning scope.
+
+Asset-authored audio roles, screen routes, weapons, attacks and upgrades have domain-owned `DeucarianAssetKeySource` providers. Importing or editing a source asset under Assets generates its `Project*` code set beneath `Assets/DeucarianGeneratedKeys`. The generated domain assembly references the domain's key assembly. Callers with their own asmdef add a reference to `Deucarian.GeneratedKeys.<KeyTypeName>`, for example `Deucarian.GeneratedKeys.WeaponKey`; Assembly-CSharp sees it automatically. Commit generated source and its asmdef with the definitions so builds are reproducible. Do not edit generated files.
+
+The stable ID is independent of the display name. Renaming a definition changes its generated member name, causing old code references to fail compilation, while existing serialized selections retain their ID. Deleting a definition removes its code member and marks serialized selections as missing. Duplicate IDs or code names report the source and repair. Let Unity finish compilation after imports before building.
+
+The picker is shared Editor UI; domain drawers own the type and repair text. Discovery/reflection happens only in the editor. Build callbacks validate generated source and selected keys in included scenes, their dependencies, preloaded assets and Resources. Custom content pipelines can call `DeucarianKeyValidation.Validate` for additional content such as separately built bundles. Runtime code never scans assemblies to find keys.
+
+A key guarantees an existing declared identity and the correct domain/payload type. The scope must still be configured with the corresponding runtime definition. Missing hosts and bindings report what to configure. Expired runtime targets, unavailable resources and cancellation remain explicit outcomes. Type safety does not prove scene wiring, external connectivity or content delivery.
