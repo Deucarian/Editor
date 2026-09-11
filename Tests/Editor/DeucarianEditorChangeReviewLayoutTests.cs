@@ -20,6 +20,8 @@ namespace Deucarian.Editor.Tests
             try
             {
                 review.UseSections(workspace.Tabs, true); review.SelectSection(1);
+                review.Context.Root.AddToClassList("dw-local-source");
+                var branch = review.Context.ReadOnly("review-branch", "Current branch", () => "codex/example");
                 review.SetChanges(new[] { new DeucarianEditorChangeItem("file", "Editor/LongerNamedFolder/ExampleFile.cs", "Modified", true, true, () => { }, _ => { }) }, "file");
                 review.SetDiff("ExampleFile.cs", "-old\n+new");
                 var input = review.Commit.Text("commit-draft", "Commit message", () => "Retained draft", _ => { }, true);
@@ -42,6 +44,13 @@ namespace Deucarian.Editor.Tests
                     Assert.That(row.Q<Toggle>().ClassListContains("dw-checkbox"), Is.True);
                     Assert.That(path.resolvedStyle.fontSize, Is.GreaterThanOrEqualTo(23), context);
                     Assert.That(review.Root.Q<Label>("review-diff-title").resolvedStyle.fontSize, Is.GreaterThanOrEqualTo(27), context);
+                    Assert.That(input.Q(className: "unity-base-field__input").resolvedStyle.height, Is.EqualTo(82).Within(1), context);
+                    Assert.That(state.resolvedStyle.unityTextAlign, Is.EqualTo(TextAnchor.MiddleLeft), context);
+                    review.SelectSection(0);
+                    for (int i = 0; i < 12; i++) yield return null;
+                    if (!branch.parent.ClassListContains("dw-field-stacked"))
+                        Assert.That(branch.worldBound.center.y, Is.EqualTo(branch.parent.Q<Label>(className: "dw-field-label").worldBound.center.y).Within(2), context);
+                    review.SelectSection(1);
                 }
             }
             finally { DeucarianEditorAppearance.WorkspaceScalePercent = previous; window.Close(); }
