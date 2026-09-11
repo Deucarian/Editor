@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.10.8] - 2026-09-11
+
+- Include Unity 2021.3's editor field namespace for the Control Center appearance dropdown, completing the numeric and choice-field compatibility fixes.
+
 ## [1.10.7] - 2026-09-11
 
 - Import the editor UI field namespace used by the numeric stepper on Unity 2021.3, while preserving Unity 6 behavior and the shared visual design.
