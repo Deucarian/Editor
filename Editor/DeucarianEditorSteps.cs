@@ -17,9 +17,9 @@ namespace Deucarian.Editor
                 var step = DeucarianEditorWorkspaceControls.Region(null, "dw-step");
                 var line = DeucarianEditorWorkspaceControls.Region(null, "dw-step-line");
                 if (index == labels.Length - 1) line.style.display = DisplayStyle.None;
-                step.Add(line);
                 step.Add(DeucarianEditorWorkspaceControls.Label((index + 1).ToString(), "dw-step-number"));
                 step.Add(DeucarianEditorWorkspaceControls.Label(labels[index], "dw-step-label"));
+                step.Add(line);
                 Root.Add(step); steps[index] = step;
             }
             SetCurrent(0);

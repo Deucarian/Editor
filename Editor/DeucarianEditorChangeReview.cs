@@ -67,7 +67,7 @@ namespace Deucarian.Editor
             sections[1].Add(Root.Q("review-split"));
             if (integratedPublishing)
             {
-                Root.Q("review-diff").Add(Commit.Root);
+                sections[1].Add(Commit.Root);
                 history.UsePanel();
                 var split = DeucarianEditorWorkspaceControls.Split(Root.Q("review-history"), Publish.Root);
                 split.AddToClassList("dw-review-history-split"); sections[2].Add(split);

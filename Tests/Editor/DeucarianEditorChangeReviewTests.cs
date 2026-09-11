@@ -152,7 +152,7 @@ namespace Deucarian.Editor.Tests
         }
 
         [Test]
-        public void IntegratedPagesKeepCommitBesideDiffAndSharingBesideHistory()
+        public void IntegratedPagesKeepCommitBelowChangesAndSharingBesideHistory()
         {
             using var view = new DeucarianEditorChangeReview(new VisualElement());
             var tabs = new VisualElement(); int calls = 0;
@@ -161,7 +161,8 @@ namespace Deucarian.Editor.Tests
             view.Publish.Action("push", "Push", () => calls++);
             view.UseSections(tabs, integratedPublishing: true);
             Assert.That(tabs.Query<Button>().ToList().Select(button => button.text), Is.EqualTo(new[] { "Workspace", "Changes", "History" }));
-            Assert.That(view.Root.Q("review-diff").Contains(view.Commit.Root), Is.True);
+            Assert.That(view.Root.Q("review-section-1").Contains(view.Commit.Root), Is.True);
+            Assert.That(view.Root.Q("review-diff").Contains(view.Commit.Root), Is.False);
             Assert.That(view.Root.Q("review-section-2").Contains(view.Publish.Root), Is.True);
             view.SelectSection(1); view.SelectSection(2); view.SelectSection(0);
             Assert.That(message.value, Is.EqualTo("Preserved draft")); Assert.That(calls, Is.Zero);

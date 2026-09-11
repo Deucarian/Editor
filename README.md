@@ -11,7 +11,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.10.5`.
+Current package version: `1.10.6`.
 
 Native workspaces use the same styled controls and scale-aware keyboard scrolling. Theming scope controls retain their place before tabs; preview/form columns retain their intended widths. The lab exposes a preview region and tab events, while its consumer owns preview playback. Revisiting the selected Overview route keeps the existing page alive.
 

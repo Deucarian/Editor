@@ -32,10 +32,11 @@ namespace Deucarian.Editor
             scroll.Add(lines);
             copy = new Foldout { text = "Select raw diff text", value = false }; copy.AddToClassList("dw-foldout");
             copy.Add(text); scroll.Add(copy);
-            parent.Add(title);
+            var heading = DeucarianEditorWorkspaceControls.Region(null, "dw-review-diff-heading");
+            heading.Add(title); parent.Add(heading);
             var copyButton = DeucarianEditorWorkspaceControls.IconButton("Copy diff", DeucarianEditorIconIds.Copy,
                 () => EditorGUIUtility.systemCopyBuffer = text.value, DeucarianEditorButtonRole.Quiet);
-            copyButton.name = "review-copy-diff"; parent.Add(copyButton);
+            copyButton.name = "review-copy-diff"; heading.Add(copyButton);
             parent.Add(note);
             parent.Add(scroll);
             Set(title.text, string.Empty, false, false);

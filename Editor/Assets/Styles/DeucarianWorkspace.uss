@@ -331,26 +331,38 @@
 .deucarian-workspace .dw-review { flex-grow: 1; min-width: 0; min-height: 0; }
 .deucarian-workspace .dw-review > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { padding-right: 8px; }
 .deucarian-workspace .dw-review-context { min-width: 0; padding-bottom: 8px; }
+.deucarian-workspace .dw-development-workspace-scope > .dw-field { flex-grow: 1; width: 100%; }
+.deucarian-workspace .dw-development-workspace-scope > .dw-field > .dw-field-input { max-width: none; }
+.deucarian-workspace .dw-local-source .dw-readonly-field > .dw-readonly { padding: 12px 18px; min-height: 56px; border-width: 1px; border-color: var(--dw-border); border-radius: 4px; }
+.deucarian-workspace .dw-source-recovery .dw-readonly-field { padding: 24px 0; border-top-width: 1px; border-top-color: var(--dw-border); }
 .deucarian-workspace .dw-review #review-summary { white-space: normal; margin-bottom: 12px; }
 .deucarian-workspace .dw-review-split { height: 360px; min-height: 360px; flex-grow: 0; flex-shrink: 0; margin-bottom: 16px; }
 .deucarian-workspace .dw-review-split > .dw-form-pane { width: 42%; flex-grow: 0; flex-basis: auto; padding-right: 12px; }
 .deucarian-workspace .dw-review-split > .dw-preview-pane { width: 58%; flex-grow: 0; flex-basis: auto; padding-left: 16px; }
 .deucarian-workspace .dw-review-list, .deucarian-workspace .dw-review-diff { min-width: 0; min-height: 0; }
-.deucarian-workspace .dw-review-list > .dw-section-title, .deucarian-workspace .dw-review-diff > .dw-section-title { font-size: 16px; white-space: normal; flex-shrink: 0; margin-bottom: 8px; }
+.deucarian-workspace .dw-review-list > .dw-section-title, .deucarian-workspace .dw-review-diff-heading > .dw-section-title { font-size: 28px; white-space: normal; flex-shrink: 0; margin: 0 0 12px; }
 .deucarian-workspace .dw-review-list .dw-muted, .deucarian-workspace .dw-review-diff > .dw-muted { white-space: normal; font-size: 19px; flex-shrink: 0; margin-bottom: 6px; }
 .deucarian-workspace .dw-review-row { flex-direction: row; align-items: center; min-width: 0; flex-shrink: 0; border-left-width: 3px; border-left-color: transparent; border-bottom-width: 1px; border-bottom-color: var(--dw-border); }
 .deucarian-workspace .dw-review-row.dw-selected { background-color: var(--dw-selected); border-left-color: var(--dw-accent); }
 .deucarian-workspace .dw-review-select { min-width: 28px; flex-shrink: 0; margin-right: 6px; }
 .deucarian-workspace .dw-review-select > .unity-base-field__input { min-height: 32px; background-color: transparent; border-width: 0; }
 .deucarian-workspace .dw-review-select:focus { border-bottom-width: 2px; border-bottom-color: var(--dw-accent); }
-.deucarian-workspace .dw-review-row .dw-collection-select { min-width: 0; margin: 0; padding: 8px 4px; }
-.deucarian-workspace .dw-review-path { font-size: 20px; white-space: normal; -unity-text-align: middle-left; }
+.deucarian-workspace .dw-review-row .dw-collection-select { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; height: auto; margin: 0; padding: 12px 8px; align-items: center; }
+.deucarian-workspace .dw-review-row .dw-collection-select > .dw-icon { width: 28px; height: 32px; margin-right: 18px; flex-shrink: 0; }
+.deucarian-workspace .dw-review-row-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.deucarian-workspace .dw-review-path { font-size: 24px; white-space: normal; -unity-text-align: middle-left; }
+.deucarian-workspace .dw-review-diff-heading { flex-direction: row; align-items: center; flex-wrap: wrap; flex-shrink: 0; min-height: 56px; }
+.deucarian-workspace .dw-review-diff-heading > .dw-section-title { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-bottom: 0; }
+.deucarian-workspace .dw-review-diff-heading > .dw-button { margin-left: 16px; }
 .deucarian-workspace .dw-review-row .dw-muted { font-size: 17px; white-space: normal; margin-top: 3px; margin-bottom: 0; }
 .deucarian-workspace .dw-review-diff-scroll { flex-grow: 1; min-height: 0; min-width: 0; border-width: 1px; border-color: var(--dw-border); background-color: var(--dw-field); }
 .deucarian-workspace .dw-review-diff-text { min-width: 100%; margin: 0; font-size: 19px; }
 .deucarian-workspace .dw-review-diff-text > .unity-base-field__input { border-width: 0; background-color: transparent; color: var(--dw-text); padding: 10px; white-space: nowrap; }
 .deucarian-workspace .dw-review-commit { min-width: 0; border-top-width: 1px; border-top-color: var(--dw-border); padding-top: 12px; }
-.deucarian-workspace .dw-review-history-row { white-space: normal; font-size: 19px; border-bottom-width: 1px; border-bottom-color: var(--dw-border); padding: 9px 0; }
+.deucarian-workspace .dw-review-history-row { flex-direction: row; align-items: center; min-height: 86px; border-width: 1px; border-color: var(--dw-border); border-radius: 4px; padding: 18px 22px; margin: 10px 0; }
+.deucarian-workspace .dw-review-history-row > .dw-icon { width: 30px; height: 34px; margin-right: 24px; flex-shrink: 0; }
+.deucarian-workspace .dw-review-history-row > .dw-history-title { font-size: 24px; white-space: normal; flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.deucarian-workspace .dw-review-history-row > .dw-muted { font-size: 21px; white-space: normal; margin-left: 20px; max-width: 35%; }
 .deucarian-workspace .dw-review-split.dw-split-stacked { height: 590px; min-height: 590px; }
 .deucarian-workspace .dw-review-split.dw-split-stacked > .dw-form-pane { height: 260px; min-height: 260px; flex-basis: auto; padding-bottom: 12px; }
 .deucarian-workspace .dw-review-split.dw-split-stacked > .dw-preview-pane { height: 310px; min-height: 310px; flex-basis: auto; }
@@ -386,14 +398,26 @@
 .deucarian-workspace .dw-update-bar { flex-direction: row; align-items: center; flex-shrink: 0; min-height: 82px; border-top-width: 1px; border-top-color: var(--dw-border); }
 .deucarian-workspace .dw-update-bar > .dw-icon { margin-right: 18px; }
 .deucarian-workspace .dw-update-bar > .dw-label { flex-grow: 1; min-width: 0; }
-.deucarian-workspace .dw-loading-panel { flex-grow: 1; align-items: center; justify-content: center; padding: 40px; margin-top: 20px; }
-.deucarian-workspace .dw-loading-panel > .dw-icon { width: 80px; height: 80px; -unity-background-image-tint-color: var(--dw-primary); margin-bottom: 24px; }
-.deucarian-workspace .dw-loading-panel > .dw-section-title, .deucarian-workspace .dw-loading-panel > .dw-muted { -unity-text-align: middle-center; white-space: normal; }
-.deucarian-workspace .dw-loading-placeholder { width: 70%; max-width: 720px; height: 52px; background-color: rgba(112,143,152,.12); border-radius: 5px; margin-top: 22px; }
-.deucarian-workspace .dw-review-integrated .dw-review-split { height: 690px; min-height: 690px; margin: 0; }
-.deucarian-workspace .dw-review-integrated .dw-review-split > .dw-form-pane { width: 35%; padding: 20px; border-width: 1px; border-color: var(--dw-border); border-radius: 5px; }
-.deucarian-workspace .dw-review-integrated .dw-review-split > .dw-preview-pane { width: 65%; padding-left: 28px; border-left-width: 0; }
-.deucarian-workspace .dw-review-integrated .dw-review-commit { padding-top: 18px; margin-top: 16px; }
+.deucarian-workspace .dw-loading-panel { flex-grow: 1; align-items: stretch; justify-content: flex-start; padding: 24px 0; margin-top: 20px; border-width: 0; background-color: transparent; }
+.deucarian-workspace .dw-loading-heading { flex-direction: row; align-items: center; margin-bottom: 26px; }
+.deucarian-workspace .dw-loading-heading > .dw-icon { width: 56px; height: 56px; flex-shrink: 0; -unity-background-image-tint-color: var(--dw-primary); margin-right: 28px; }
+.deucarian-workspace .dw-loading-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.deucarian-workspace .dw-loading-copy > .dw-section-title { margin: 0 0 8px 0; font-size: 28px; }
+.deucarian-workspace .dw-loading-copy > .dw-muted { white-space: normal; }
+.deucarian-workspace .dw-loading-panel > .dw-progress { height: 9px; flex-shrink: 0; margin: 0 0 20px; overflow: hidden; }
+.deucarian-workspace .dw-loading-panel .dw-progress-fill { height: 9px; width: 50%; background-color: var(--dw-primary); }
+.deucarian-workspace .dw-loading-placeholder { min-height: 128px; flex-shrink: 0; flex-direction: row; align-items: center; border-width: 1px; border-color: var(--dw-border); border-radius: 5px; margin-top: 24px; padding: 26px 32px; }
+.deucarian-workspace .dw-loading-avatar { width: 68px; height: 68px; flex-shrink: 0; border-radius: 40px; margin-right: 36px; background-color: var(--dw-border); }
+.deucarian-workspace .dw-loading-lines { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.deucarian-workspace .dw-loading-line { width: 44%; height: 24px; border-radius: 5px; background-color: var(--dw-border); }
+.deucarian-workspace .dw-loading-line-long { width: 66%; height: 17px; margin-top: 18px; }
+.deucarian-workspace .dw-loading-badge { width: 13%; height: 24px; border-radius: 5px; background-color: var(--dw-border); }
+.deucarian-workspace .dw-review-integrated .dw-review-split { height: 410px; min-height: 410px; margin: 0; }
+.deucarian-workspace .dw-review-integrated .dw-review-split > .dw-form-pane { width: 43%; padding: 20px; border-width: 1px; border-color: var(--dw-border); border-radius: 5px; }
+.deucarian-workspace .dw-review-integrated .dw-review-split > .dw-preview-pane { width: 57%; padding-left: 20px; border-left-width: 0; }
+.deucarian-workspace .dw-review-integrated .dw-review-commit { flex-direction: row; align-items: flex-end; flex-wrap: wrap; padding-top: 18px; margin-top: 16px; border-top-width: 0; }
+.deucarian-workspace .dw-review-integrated .dw-review-commit > .dw-field { flex-grow: 1; flex-basis: 65%; min-width: 180px; margin: 0 24px 0 0; }
+.deucarian-workspace .dw-review-integrated .dw-review-commit > .dw-button { align-self: flex-end; margin-bottom: 0; }
 .deucarian-workspace .dw-review-integrated .dw-review-commit .dw-field { flex-direction: column; align-items: stretch; }
 .deucarian-workspace .dw-review-integrated .dw-review-commit .dw-field-label { margin-bottom: 12px; }
 .deucarian-workspace .dw-review-integrated .dw-review-commit .dw-multiline { min-height: 82px; }
@@ -410,9 +434,9 @@
 .deucarian-workspace .dw-diff-range { color: var(--dw-accent); }
 .deucarian-workspace.dw-light .dw-diff-added { color: #156a46; }
 .deucarian-workspace.dw-light .dw-diff-removed { color: #a92b39; }
-.deucarian-workspace .dw-review-integrated .dw-review-split.dw-split-stacked { height: 1020px; min-height: 1020px; }
+.deucarian-workspace .dw-review-integrated .dw-review-split.dw-split-stacked { height: 720px; min-height: 720px; }
 .deucarian-workspace .dw-review-integrated .dw-review-split.dw-split-stacked > .dw-form-pane { width: auto; height: 320px; min-height: 320px; }
-.deucarian-workspace .dw-review-integrated .dw-review-split.dw-split-stacked > .dw-preview-pane { width: auto; height: 680px; min-height: 680px; padding: 24px 0 0; }
+.deucarian-workspace .dw-review-integrated .dw-review-split.dw-split-stacked > .dw-preview-pane { width: auto; height: 380px; min-height: 380px; padding: 24px 0 0; }
 .deucarian-workspace .dw-tree { margin-top: 28px; }
 .deucarian-workspace .dw-tree-level { padding-left: 18px; }
 .deucarian-workspace .dw-tree-row { justify-content: flex-start; min-width: 0; height: auto; min-height: 56px; padding: 8px; margin: 2px 0; }

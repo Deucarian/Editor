@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.6] - 2026-09-11
+
+- Match loading skeletons, package change rows, commit placement and history cards to the design references.
+- Keep long file paths and status text separated, use shared checkbox styling, and retain commit drafts below both review panes.
+- Add an inline presentation for existing workflow steps and responsive review geometry coverage.
+
 ## [1.10.5] - 2026-09-11
 
 - Preserve per-window navigation expansion, selection visibility and scroll position across pages, search and UI scales.

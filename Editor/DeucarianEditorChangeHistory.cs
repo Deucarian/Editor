@@ -10,7 +10,7 @@ namespace Deucarian.Editor
         private readonly Foldout foldout;
         private readonly VisualElement rows;
         private readonly Label note;
-        private readonly Dictionary<string, Label> entries = new Dictionary<string, Label>(StringComparer.Ordinal);
+        private readonly Dictionary<string, VisualElement> entries = new Dictionary<string, VisualElement>(StringComparer.Ordinal);
         private bool panel;
 
         internal DeucarianEditorChangeHistory(VisualElement parent)
@@ -50,13 +50,16 @@ namespace Deucarian.Editor
                 var item = items[i];
                 if (!entries.TryGetValue(item.Id, out var row))
                 {
-                    row = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-review-history-row");
+                    row = DeucarianEditorWorkspaceControls.Region(null, "dw-review-history-row");
                     row.name = "review-history-" + item.Id;
-                    row.enableRichText = false;
+                    row.Add(DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.GitBranch));
+                    var title = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-history-title"); title.enableRichText = false; row.Add(title);
+                    var detail = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted"); detail.enableRichText = false; row.Add(detail);
                     entries.Add(item.Id, row);
                 }
-                string value = item.Title + "\n" + item.Detail;
-                row.text = value.Length <= 2048 ? value : value.Substring(0, 2048) + "…";
+                row.Q<Label>(className: "dw-history-title").text = Clip(item.Title);
+                var detailLabel = row.Q<Label>(className: "dw-muted"); detailLabel.text = Clip(item.Detail);
+                DeucarianEditorWorkspaceControls.Show(detailLabel, !string.IsNullOrWhiteSpace(item.Detail));
                 if (row.parent != rows || rows.IndexOf(row) != i) rows.Insert(i, row);
             }
             foldout.text = "Recent history (" + count + ")";
@@ -64,5 +67,6 @@ namespace Deucarian.Editor
             DeucarianEditorWorkspaceControls.Show(note, items.Count > count || panel && count == 0);
             DeucarianEditorWorkspaceControls.Show(foldout, panel || count > 0);
         }
+        private static string Clip(string value) => string.IsNullOrEmpty(value) ? string.Empty : value.Length <= 2048 ? value : value.Substring(0, 2048) + "…";
     }
 }
