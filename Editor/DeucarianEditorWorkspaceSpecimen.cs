@@ -12,8 +12,8 @@ namespace Deucarian.Editor
 
         internal void Build()
         {
-            workspace.Title.text = "Shared controls";
-            workspace.Subtitle.text = "One visual language. Everywhere.";
+            workspace.Title.text = "Editor Component Gallery";
+            workspace.Subtitle.text = "Preview the shared controls used to build Deucarian editor UIs.";
             DeucarianEditorWorkspaceNavigation.Populate(workspace, "deucarian.editor.workspace-preview");
             var page = Controls.Scroll("workspace-specimen-scroll"); workspace.Content.Add(page);
             page.Add(Controls.Divider());

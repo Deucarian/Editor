@@ -72,7 +72,6 @@ namespace Deucarian.Editor
             Sidebar = DeucarianEditorWorkspaceControls.Region("workspace-sidebar", "dw-sidebar");
             Navigation = DeucarianEditorWorkspaceControls.Region("workspace-navigation", "dw-navigation");
             Sidebar.Add(Navigation);
-            Sidebar.Add(DeucarianEditorWorkspaceControls.Region(null, "dw-spacer"));
             NavigationFooter = DeucarianEditorWorkspaceControls.Region("workspace-navigation-footer", "dw-navigation-footer");
             Sidebar.Add(NavigationFooter);
             workbench.Main.Insert(0, Sidebar);

@@ -39,6 +39,51 @@ namespace Deucarian.Editor.Tests
             }
         }
 
+        [Test]
+        public void TestAndAppearanceKeepTheSameRowsAndProgress()
+        {
+            using var view = new DeucarianEditorLabWorkspace(new VisualElement(), "Test", "Lab", "Test", () => { }, _ => { });
+            view.SetMessages(new[] { Item("one", "2 seconds", .5f) }, Array.Empty<DeucarianEditorMessageData>(), 0);
+            var preview = view.PreviewRoot;
+            var row = view.VisibleRows.Q<DeucarianEditorMessageRow>("one");
+            var testParent = preview.parent;
+            view.SelectTab(1);
+            Assert.That(preview.parent, Is.Not.SameAs(testParent));
+            Assert.That(view.VisibleRows.Q<DeucarianEditorMessageRow>("one"), Is.SameAs(row));
+            Assert.That(row.Q<Label>(className: "dw-message-state").text, Is.EqualTo("2 seconds"));
+            view.SelectTab(0);
+            Assert.That(preview.parent, Is.SameAs(testParent));
+        }
+
+        [Test]
+        public void ConsumerCanFinishAnExitBeforeRemovingTheRow()
+        {
+            using var view = new DeucarianEditorLabWorkspace(new VisualElement(), "Test", "Lab", "Test", () => { }, _ => { });
+            Action complete = null;
+            view.DismissRow = (_, done) => complete = done;
+            view.SetMessages(new[] { Item("one", "", null) }, Array.Empty<DeucarianEditorMessageData>(), 0);
+            var row = view.VisibleRows.Q<DeucarianEditorMessageRow>();
+            view.SetMessages(Array.Empty<DeucarianEditorMessageData>(), Array.Empty<DeucarianEditorMessageData>(), 0);
+            Assert.That(row.parent, Is.Not.Null);
+            complete();
+            Assert.That(row.parent, Is.Null);
+        }
+
+        [Test]
+        public void ConsumerCanDeferMovingARowBetweenVisibleAndQueuedLanes()
+        {
+            using var view = new DeucarianEditorLabWorkspace(new VisualElement(), "Test", "Lab", "Test", () => { }, _ => { });
+            view.SetMessages(new[] { Item("one", "", null) }, Array.Empty<DeucarianEditorMessageData>(), 0);
+            var row = view.VisibleRows.Q<DeucarianEditorMessageRow>();
+            VisualElement requestedDestination = null;
+            view.PlaceRow = (_, destination, __) => requestedDestination = destination;
+            view.SetMessages(Array.Empty<DeucarianEditorMessageData>(), new[] { Item("one", "", null) }, 0);
+            Assert.That(row.parent, Is.SameAs(view.VisibleRows));
+            Assert.That(requestedDestination, Is.SameAs(view.Workspace.Root.Q<Foldout>("lab-overflow").contentContainer));
+            requestedDestination.Add(row);
+            Assert.That(row.parent, Is.SameAs(requestedDestination));
+        }
+
         private static DeucarianEditorMessageData Item(string id, string state, float? remaining)
             => new DeucarianEditorMessageData(id, id, "Body", DeucarianEditorStatus.Warning, state, remaining);
     }

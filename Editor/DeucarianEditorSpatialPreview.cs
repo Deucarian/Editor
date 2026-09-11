@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace Deucarian.Editor
 {
-    /// <summary>Editor-only geometry preview; no camera, scene objects or render textures.</summary>
+    /// <summary>Shared specimen geometry, optionally projected through a caller-owned isolated camera.</summary>
     public sealed class DeucarianEditorSpatialPreview : VisualElement
     {
         private Quaternion rotation = Quaternion.AngleAxis(22, Vector3.right) * Quaternion.AngleAxis(-32, Vector3.up);
@@ -12,6 +12,15 @@ namespace Deucarian.Editor
         private readonly bool showCube;
         private readonly bool solidCube;
         private readonly Label[] axes;
+        private Camera projectionCamera;
+
+        /// <summary>The caller retains camera ownership. Passing null restores the illustrative view.</summary>
+        public void SetCamera(Camera camera)
+        {
+            projectionCamera = camera;
+            PositionAxes();
+            MarkDirtyRepaint();
+        }
 
         public DeucarianEditorSpatialPreview(bool showCube = true, bool solidCube = false)
         {
@@ -50,6 +59,9 @@ namespace Deucarian.Editor
             {
                 var end = Vector3.zero;
                 end[i] = solidCube ? (rotation * Axis(i)).z >= 0 ? 1 : -1 : 2.2f;
+                bool visible = InFront(end);
+                axes[i].style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                if (!visible) continue;
                 var point = Project(end, contentRect);
                 axes[i].style.left = Mathf.Clamp(point.x - 14, contentRect.xMin, Mathf.Max(contentRect.xMin, contentRect.xMax - 28));
                 axes[i].style.top = Mathf.Clamp(point.y - 20, contentRect.yMin, Mathf.Max(contentRect.yMin, contentRect.yMax - 30));
@@ -67,7 +79,7 @@ namespace Deucarian.Editor
 
         internal void BuildGeometry(Rect bounds, out Vertex[] vertices, out ushort[] indices)
         {
-            if (solidCube) { BuildSolidGeometry(bounds, out vertices, out indices); return; }
+            if (solidCube && projectionCamera == null) { BuildSolidGeometry(bounds, out vertices, out indices); return; }
             var lines = new List<Vector3>();
             for (int i = -4; i <= 4; i++)
             {
@@ -93,7 +105,10 @@ namespace Deucarian.Editor
             var clip = new Rect(bounds.x + 1, bounds.y + 1, Mathf.Max(0, bounds.width - 2), Mathf.Max(0, bounds.height - 2));
             for (int i = 0; i < lines.Count; i += 2)
             {
-                Vector2 start = Project(lines[i], bounds); Vector2 end = Project(lines[i + 1], bounds);
+                Vector3 worldStart = lines[i], worldEnd = lines[i + 1];
+                bool visible = ClipNearPlane(ref worldStart, ref worldEnd);
+                Vector2 start = visible ? Project(worldStart, bounds) : clip.center;
+                Vector2 end = visible ? Project(worldEnd, bounds) : clip.center;
                 if (!Clip(clip, ref start, ref end)) start = end = clip.center;
                 var direction = end - start;
                 var offset = new Vector2(-direction.y, direction.x).normalized * (i < gridVertices ? 0.4f : 0.8f);
@@ -141,9 +156,34 @@ namespace Deucarian.Editor
 
         private Vector2 Project(Vector3 point, Rect bounds)
         {
+            if (projectionCamera != null)
+            {
+                Vector3 viewport = projectionCamera.WorldToViewportPoint(point);
+                return new Vector2(bounds.xMin + viewport.x * bounds.width,
+                    bounds.yMax - viewport.y * bounds.height);
+            }
             Vector3 transformed = rotation * point;
             float size = Mathf.Min(bounds.width, bounds.height) * 0.21f * zoom;
             return bounds.center + new Vector2(transformed.x, -transformed.y) * size;
+        }
+
+        private bool InFront(Vector3 point) => projectionCamera == null ||
+            Vector3.Dot(point - projectionCamera.transform.position, projectionCamera.transform.forward)
+                >= projectionCamera.nearClipPlane;
+
+        private bool ClipNearPlane(ref Vector3 start, ref Vector3 end)
+        {
+            if (projectionCamera == null) return true;
+            Vector3 position = projectionCamera.transform.position;
+            Vector3 forward = projectionCamera.transform.forward;
+            float near = Mathf.Max(0.0001f, projectionCamera.nearClipPlane);
+            float startDepth = Vector3.Dot(start - position, forward);
+            float endDepth = Vector3.Dot(end - position, forward);
+            if (startDepth < near && endDepth < near) return false;
+            if (startDepth >= near && endDepth >= near) return true;
+            Vector3 intersection = Vector3.LerpUnclamped(start, end, (near - startDepth) / (endDepth - startDepth));
+            if (startDepth < near) start = intersection; else end = intersection;
+            return true;
         }
 
         private static bool Clip(Rect bounds, ref Vector2 start, ref Vector2 end)

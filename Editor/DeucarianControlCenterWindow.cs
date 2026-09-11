@@ -123,7 +123,7 @@ namespace Deucarian.Editor
             pageRoot.Clear();
             workspace = new DeucarianEditorWorkspace(pageRoot, Application.productName);
             workspace.Title.text = "Control Center";
-            workspace.Subtitle.text = "Your project, at a glance.";
+            workspace.Subtitle.text = "Review project readiness and open installed Deucarian tools.";
             DeucarianEditorWorkspaceNavigation.Populate(workspace, DeucarianToolIds.ControlCenter, filterNavigation: false);
             workspace.SetSearchPrompt("Search tools and checks…");
             searchField = workspace.SearchField;
@@ -280,7 +280,7 @@ namespace Deucarian.Editor
             {
                 workspace.Root.EnableInClassList("dw-overview-page", false);
                 workspace.Title.text = "Project settings";
-                workspace.Subtitle.text = "Make the workspace yours.";
+                workspace.Subtitle.text = "Set editor appearance, scale and project preferences.";
                 workspace.SelectNavigation("settings");
                 DeucarianEditorWorkspaceControls.Show(workspace.PageActions, false);
                 DeucarianEditorWorkspaceControls.Show(workspace.Footer, false);
@@ -296,7 +296,7 @@ namespace Deucarian.Editor
             bool overview = selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery);
             bool advanced = selectedArea == DeucarianControlCenterArea.Project || selectedArea == DeucarianControlCenterArea.Developer;
             workspace.Title.text = advanced ? "Advanced" : "Control Center";
-            workspace.Subtitle.text = advanced ? "Less-used tools, when you need them." : "Your project, at a glance.";
+            workspace.Subtitle.text = advanced ? "Review package checks and find advanced project tools." : "Review project readiness and open installed Deucarian tools.";
             workspace.SelectNavigation(advanced ? "advanced" : DeucarianToolIds.ControlCenter);
             DeucarianEditorWorkspaceControls.Show(workspace.PageActions, !overview && !advanced);
             DeucarianEditorWorkspaceControls.Show(workspace.Footer, !overview && !advanced);

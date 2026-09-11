@@ -37,6 +37,7 @@ namespace Deucarian.Editor.Tests
                         root.Q<Foldout>("workspace-group-Test group/Nested").value = true;
                         var scroll = root.Q<ScrollView>("workspace-navigation-scroll");
                         scroll.style.height = 140;
+                        scroll.style.flexBasis = 140;
                         scroll.style.flexGrow = 0;
                         for (int i = 0; i < 120 && scroll.verticalScroller.highValue < 35; i++)
                         { window.Repaint(); yield return null; }
@@ -48,6 +49,7 @@ namespace Deucarian.Editor.Tests
                         Assert.That(root.Q<DeucarianEditorPageHost>().NavigationState.ScrollOffset, Is.EqualTo(35));
                         session.Navigate("test.shared.nav");
                         root.Q<ScrollView>("workspace-navigation-scroll").style.height = 140;
+                        root.Q<ScrollView>("workspace-navigation-scroll").style.flexBasis = 140;
                         root.Q<ScrollView>("workspace-navigation-scroll").style.flexGrow = 0;
                         yield return new WaitForSecondsRealtime(.2f);
                         Assert.That(root.Q<Foldout>("workspace-group-Test group").value, Is.True);
@@ -71,6 +73,7 @@ namespace Deucarian.Editor.Tests
                         for (int i = 0; i < 4; i++) yield return null;
                         search.value = "";
                         root.Q<ScrollView>("workspace-navigation-scroll").style.height = 140;
+                        root.Q<ScrollView>("workspace-navigation-scroll").style.flexBasis = 140;
                         root.Q<ScrollView>("workspace-navigation-scroll").style.flexGrow = 0;
                         yield return new WaitForSecondsRealtime(.2f);
                         Assert.That(root.Q<ScrollView>("workspace-navigation-scroll").scrollOffset.y, Is.EqualTo(destinationOffset).Within(1),

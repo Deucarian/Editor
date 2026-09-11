@@ -166,7 +166,9 @@ namespace Deucarian.Editor.Tests
                 var root = window.rootVisualElement;
                 Assert.That(root.Q("specimen-message-rows").childCount, Is.EqualTo(4));
                 Assert.That(root.Q<TextField>("specimen-title").value, Is.EqualTo("Example"));
-                Assert.That(root.Q<Label>(className: "dw-title").text, Is.EqualTo("Shared controls"));
+                Assert.That(root.Q<Label>(className: "dw-title").text, Is.EqualTo("Editor Component Gallery"));
+                Assert.That(root.Q<Label>(className: "dw-subtitle").text,
+                    Is.EqualTo("Preview the shared controls used to build Deucarian editor UIs."));
                 Assert.That(root.Query<Button>().ToList().Exists(button => button.text == "Open standalone" || button.text == "Add test message"), Is.False);
                 Assert.That(root.Q<Slider>("specimen-duration"), Is.Not.Null);
                 Assert.That(root.Q("workspace-content").resolvedStyle.height, Is.GreaterThan(100));

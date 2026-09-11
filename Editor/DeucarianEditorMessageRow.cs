@@ -12,21 +12,27 @@ namespace Deucarian.Editor
         private readonly VisualElement fill;
         private readonly Button actionButton;
         private readonly bool hasAction;
+        private readonly VisualElement marker, icon;
+        public Label Title { get; }
+        public Label Body { get; }
 
         public DeucarianEditorMessageRow(string title, string body, DeucarianEditorStatus status,
             string stateLabel, string actionLabel = null, Action action = null)
         {
             AddToClassList("dw-message");
             AddToClassList("dw-message--" + status.ToString().ToLowerInvariant());
-            var marker = DeucarianEditorWorkspaceControls.Region(null, "dw-message-marker");
+            marker = DeucarianEditorWorkspaceControls.Region(null, "dw-message-marker");
             Add(marker);
             string iconId = status == DeucarianEditorStatus.Warning ? DeucarianEditorIconIds.Warning :
                 status == DeucarianEditorStatus.Error ? DeucarianEditorIconIds.Error :
                 status == DeucarianEditorStatus.Success ? DeucarianEditorIconIds.Success : DeucarianEditorIconIds.Info;
-            Add(DeucarianEditorWorkspaceControls.Icon(iconId));
+            icon = DeucarianEditorWorkspaceControls.Icon(iconId);
+            Add(icon);
             var text = DeucarianEditorWorkspaceControls.Region(null, "dw-message-text");
-            text.Add(DeucarianEditorWorkspaceControls.Label(title, "dw-message-title"));
-            if (!string.IsNullOrEmpty(body)) text.Add(DeucarianEditorWorkspaceControls.Label(body, "dw-muted"));
+            Title = DeucarianEditorWorkspaceControls.Label(title, "dw-message-title");
+            text.Add(Title);
+            Body = DeucarianEditorWorkspaceControls.Label(body, "dw-muted");
+            if (!string.IsNullOrEmpty(body)) text.Add(Body);
             Add(text);
             var trailing = DeucarianEditorWorkspaceControls.Region(null, "dw-message-trailing");
             state = DeucarianEditorWorkspaceControls.Label(stateLabel, "dw-message-state");
@@ -47,6 +53,17 @@ namespace Deucarian.Editor
         }
 
         public void SetActionEnabled(bool enabled) => actionButton?.SetEnabled(enabled && hasAction);
+
+        /// <summary>Colors a domain specimen. Editor chrome and controls remain Editor-owned.</summary>
+        public void SetColors(Color surface, Color title, Color body, Color severity)
+        {
+            style.backgroundColor = surface;
+            Title.style.color = title;
+            Body.style.color = body;
+            marker.style.backgroundColor = severity;
+            icon.style.unityBackgroundImageTintColor = severity;
+            icon.style.color = severity;
+        }
 
         public void SetProgress(string label, float? remaining)
         {

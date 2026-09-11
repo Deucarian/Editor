@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.0] - 2026-09-11
+
+- Keep Advanced reachable while sidebar categories expand, with independent scrolling for the tool list.
+- Give primary, secondary and quiet buttons equal dimensions and aligned baselines.
+- Describe the Component Gallery, project settings and Control Center by their actual editor tasks.
+- Expose camera-projected preview geometry for interactive package-owned navigation sessions.
+- Share one final notification preview between Test and Appearance, with generic row appearance controls.
+- Add layout regressions for expanded navigation, button alignment and interactive preview composition.
+
 ## [1.10.8] - 2026-09-11
 
 - Include Unity 2021.3's editor field namespace for the Control Center appearance dropdown, completing the numeric and choice-field compatibility fixes.
