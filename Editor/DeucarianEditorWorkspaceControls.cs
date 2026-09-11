@@ -54,6 +54,7 @@ namespace Deucarian.Editor
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             var row = Region(null, "dw-field");
+            if (input is Label) row.AddToClassList("dw-readonly-field");
             if (input is DeucarianEditorColorField) row.AddToClassList("dw-color-row");
             var caption = Label(label, "dw-field-label");
             row.Add(caption);
@@ -76,7 +77,20 @@ namespace Deucarian.Editor
             return scroll;
         }
 
-        public static VisualElement Split(VisualElement form, VisualElement preview)
+        public static VisualElement Search(string id, string prompt, out TextField input)
+        {
+            var search = Region(null, "dw-search");
+            search.Add(Icon(DeucarianEditorIconIds.Search));
+            input = new TextField { name = id, tooltip = prompt };
+            search.Add(input);
+            var placeholder = Label(prompt, "dw-search-placeholder");
+            placeholder.pickingMode = PickingMode.Ignore;
+            search.Add(placeholder);
+            input.RegisterValueChangedCallback(evt => Show(placeholder, string.IsNullOrEmpty(evt.newValue)));
+            return search;
+        }
+
+        public static VisualElement Split(VisualElement form, VisualElement preview, float stackBelow = 840)
         {
             if (form == null) throw new ArgumentNullException(nameof(form));
             if (preview == null) throw new ArgumentNullException(nameof(preview));
@@ -85,7 +99,7 @@ namespace Deucarian.Editor
             preview.AddToClassList("dw-preview-pane");
             split.Add(form);
             split.Add(preview);
-            DeucarianEditorResponsiveLayout.AdaptToWidth(split, "dw-split-stacked", 840);
+            DeucarianEditorResponsiveLayout.AdaptToWidth(split, "dw-split-stacked", stackBelow);
             return split;
         }
 

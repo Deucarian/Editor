@@ -37,13 +37,14 @@ namespace Deucarian.Editor.Tests
                 Assert.That(slider.lowValue, Is.EqualTo(0)); Assert.That(slider.highValue, Is.EqualTo(1));
                 Undo.IncrementCurrentGroup(); Undo.RecordObject(asset, "Inspector source update");
                 asset.active = true; asset.amount = .75f; Undo.FlushUndoRecordObjects(); EditorUtility.SetDirty(asset);
-                for (int frame = 0; frame < 12; frame++) yield return null;
+                yield return WaitFor(() => toggle.value && toggle.ClassListContains("dw-switch-on") && Mathf.Approximately(slider.value, .75f));
                 Assert.That(toggle.value, Is.True); Assert.That(slider.value, Is.EqualTo(.75f).Within(.001f));
                 Assert.That(toggle.ClassListContains("dw-switch-on"), Is.True);
                 var tracker = slider.Q(className: "unity-base-slider__tracker");
+                yield return WaitFor(() => Mathf.Abs(slider.Q("slider-fill").resolvedStyle.width / tracker.resolvedStyle.width - .75f) < .04f);
                 Assert.That(slider.Q("slider-fill").resolvedStyle.width / tracker.resolvedStyle.width, Is.EqualTo(.75).Within(.04));
                 Undo.PerformUndo();
-                for (int frame = 0; frame < 12; frame++) yield return null;
+                yield return WaitFor(() => !toggle.value && !toggle.ClassListContains("dw-switch-on") && Mathf.Approximately(slider.value, .25f));
                 Assert.That(toggle.value, Is.False); Assert.That(toggle.ClassListContains("dw-switch-on"), Is.False);
                 Assert.That(slider.value, Is.EqualTo(.25f).Within(.001f));
                 slider.value = .6f;
@@ -53,6 +54,13 @@ namespace Deucarian.Editor.Tests
                 Assert.That(slider.Query(className: "dw-slider-fill").ToList(), Has.Count.EqualTo(1));
             }
             finally { window.Close(); Undo.ClearUndo(asset); Object.DestroyImmediate(asset); }
+        }
+
+        private static IEnumerator WaitFor(System.Func<bool> settled)
+        {
+            double deadline = EditorApplication.timeSinceStartup + 5;
+            while (!settled() && EditorApplication.timeSinceStartup < deadline) yield return null;
+            Assert.That(settled(), Is.True, "Serialized fields and their scheduled styling must settle within five seconds.");
         }
 
         [UnityTest] public IEnumerator MultiSelectionUsesTheOriginalSerializedTargets()

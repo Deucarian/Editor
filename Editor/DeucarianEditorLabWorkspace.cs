@@ -58,7 +58,7 @@ namespace Deucarian.Editor
             preview.AddToClassList("dw-lab-preview");
             var composerPane = DeucarianEditorWorkspaceControls.Panel("lab-composer-pane");
             composerPane.Add(form);
-            var split = DeucarianEditorWorkspaceControls.Split(composerPane, preview);
+            var split = DeucarianEditorWorkspaceControls.Split(composerPane, preview, stackBelow: 1120);
             split.AddToClassList("dw-lab-split");
             test.Add(split);
             form.Add(DeucarianEditorWorkspaceControls.Label("New message", "dw-section-title"));

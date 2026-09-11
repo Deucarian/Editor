@@ -5,12 +5,15 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianSpatialPreviewGeometryTests
     {
-        [TestCase(0.2f)]
-        [TestCase(1f)]
-        [TestCase(3f)]
-        public void StrokesFaceThePanelAndStayInsideTheirViewport(float zoom)
+        [TestCase(0.2f, false)]
+        [TestCase(1f, false)]
+        [TestCase(3f, false)]
+        [TestCase(0.2f, true)]
+        [TestCase(1f, true)]
+        [TestCase(3f, true)]
+        public void StrokesFaceThePanelAndStayInsideTheirViewport(float zoom, bool solid)
         {
-            var preview = new DeucarianEditorSpatialPreview();
+            var preview = new DeucarianEditorSpatialPreview(solidCube: solid);
             var bounds = new Rect(3, 7, 360, 280);
             preview.SetView(Quaternion.Euler(22, -32, 0), zoom);
             preview.BuildGeometry(bounds, out var vertices, out var indices);

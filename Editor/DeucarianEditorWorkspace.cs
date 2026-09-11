@@ -36,6 +36,7 @@ namespace Deucarian.Editor
         private readonly Label searchPlaceholder;
         private readonly DeucarianEditorWorkspaceScale uiScale;
         private IDisposable navigationBinding;
+        private readonly IVisualElementScheduledItem sectionLayout;
 
         public DeucarianEditorWorkspace(VisualElement root, string context, bool includeDrawer = false)
         {
@@ -57,19 +58,14 @@ namespace Deucarian.Editor
             ContextButton = DeucarianEditorWorkspaceControls.Button(context, null);
             ContextButton.name = "workspace-context";
             ContextButton.AddToClassList("dw-project");
-            ContextButton.tooltip = "Current project. This workspace never switches projects automatically.";
+            ContextButton.tooltip = context + "\nCurrent project. This workspace never switches projects automatically.";
             header.Add(ContextButton);
             var spacer = DeucarianEditorWorkspaceControls.Region(null, "dw-spacer");
             header.Add(spacer);
-            var search = DeucarianEditorWorkspaceControls.Region(null, "dw-search");
-            search.Add(DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Search));
-            SearchField = new TextField { name = "workspace-search", tooltip = "Find a tool · Ctrl/Cmd+K" };
-            search.Add(SearchField);
-            var placeholder = DeucarianEditorWorkspaceControls.Label("Find a tool…", "dw-search-placeholder");
-            searchPlaceholder = placeholder;
-            placeholder.pickingMode = PickingMode.Ignore;
-            search.Add(placeholder);
-            SearchField.RegisterValueChangedCallback(evt => placeholder.style.display = string.IsNullOrEmpty(evt.newValue) ? DisplayStyle.Flex : DisplayStyle.None);
+            var search = DeucarianEditorWorkspaceControls.Search("workspace-search", "Find a tool…", out var searchInput);
+            SearchField = searchInput;
+            SearchField.tooltip = "Find a tool · Ctrl/Cmd+K";
+            searchPlaceholder = search.Q<Label>(className: "dw-search-placeholder");
             header.Add(search);
             Root.Insert(0, header);
             Root.Insert(0, new DeucarianEditorWorkspaceBackdrop());
@@ -97,6 +93,7 @@ namespace Deucarian.Editor
             Page.Add(contextScroll);
             Tabs = DeucarianEditorWorkspaceControls.Region("workspace-tabs", "dw-tabs");
             Scope = DeucarianEditorWorkspaceControls.Region("workspace-scope", "dw-scope");
+            Tabs.AddToClassList("dw-region-empty"); Scope.AddToClassList("dw-region-empty");
             Content = DeucarianEditorWorkspaceControls.Region("workspace-content", "dw-content");
             var footerBar = DeucarianEditorWorkspaceControls.Region("workspace-footer-bar", "dw-footer");
             Footer = DeucarianEditorWorkspaceControls.Region("workspace-footer", "dw-footer-content");
@@ -120,6 +117,10 @@ namespace Deucarian.Editor
             Root.RegisterCallback(resized);
             Root.RegisterCallback<KeyDownEvent>(OnKeyDown);
             ApplyWidth(root.resolvedStyle.width);
+            sectionLayout = Root.schedule.Execute(() => {
+                Tabs.EnableInClassList("dw-region-empty", Tabs.childCount == 0);
+                Scope.EnableInClassList("dw-region-empty", Scope.childCount == 0);
+            }).Every(100);
         }
 
         public VisualElement Root { get; }
@@ -207,6 +208,7 @@ namespace Deucarian.Editor
             navigationBinding?.Dispose();
             navigationBinding = null;
             uiScale.Dispose();
+            sectionLayout.Pause();
             Root.UnregisterCallback(resized);
             Root.UnregisterCallback<KeyDownEvent>(OnKeyDown);
             if (host.Contains(Root)) host.RemoveFromClassList("deucarian-workspace-host");

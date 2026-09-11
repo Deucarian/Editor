@@ -57,6 +57,7 @@ namespace Deucarian.Editor
             DeucarianEditorUIResources.TryAddSharedStyleSheet(root);
             DeucarianEditorUIResources.TryAddStyleSheet(root, DeucarianEditorWorkspace.StyleSheetPath);
             DeucarianEditorUIResources.TryAddStyleSheet(root, DeucarianEditorUIResources.StylesPath + "/DeucarianFeatures.uss");
+            root.Add(new DeucarianEditorWorkspaceBackdrop());
             if (!string.IsNullOrWhiteSpace(title))
                 root.Add(DeucarianEditorWorkspaceControls.Label(title, "dw-section-title"));
             return root;

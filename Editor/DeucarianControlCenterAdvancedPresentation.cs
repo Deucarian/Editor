@@ -45,7 +45,8 @@ namespace Deucarian.Editor
             var tools = Ui.Region("advanced-tool-list", "dw-navigation-list"); root.Add(tools);
             foreach (var tool in snapshot.Tools)
             {
-                if (tool.Id == DeucarianToolIds.ControlCenter || tool.Area != DeucarianControlCenterArea.Developer) continue;
+                if (tool.Id == DeucarianToolIds.ControlCenter ||
+                    !(tool.NavigationPath == "Developer" || tool.NavigationPath.StartsWith("Developer/", StringComparison.Ordinal))) continue;
                 var captured = tool;
                 var row = Ui.Button(string.Empty, () => DeucarianEditorNavigation.Open(root, captured.Id));
                 row.name = "control-center-open-" + tool.Id; row.tooltip = tool.Description;
@@ -69,12 +70,17 @@ namespace Deucarian.Editor
                 item.EnableInClassList("dw-check-expanded", expanded);
             });
             row.name = "control-center-check-" + card.Id; row.AddToClassList("dw-navigation-row");
-            row.Add(Ui.Label(card.Title, "dw-navigation-title"));
+            bool readinessIssue = card.Id.StartsWith("deucarian.readiness.issue.", StringComparison.Ordinal);
+            row.EnableInClassList("dw-check-description", readinessIssue);
+            row.Add(Ui.Label(readinessIssue && !string.IsNullOrWhiteSpace(card.Description) ? card.Description : card.Title,
+                "dw-navigation-title"));
+            row.tooltip = card.Title;
             var status = Ui.Label(card.StatusText, "dw-navigation-status");
             status.AddToClassList("dw-card-status--" + card.Status.ToString().ToLowerInvariant()); row.Add(status);
             var arrow = Ui.Icon(DeucarianEditorIconIds.ChevronRight); arrow.AddToClassList("dw-navigation-arrow");
             row.Add(arrow); item.Add(row);
-            if (!string.IsNullOrEmpty(card.Description)) details.Add(Ui.Label(card.Description, "dw-note"));
+            if (readinessIssue) details.Add(Ui.Label(card.Title, "dw-muted"));
+            else if (!string.IsNullOrEmpty(card.Description)) details.Add(Ui.Label(card.Description, "dw-note"));
             foreach (string detail in card.Details) details.Add(Ui.Label(detail, "dw-note"));
             var actions = Ui.Actions();
             foreach (var action in card.Actions)

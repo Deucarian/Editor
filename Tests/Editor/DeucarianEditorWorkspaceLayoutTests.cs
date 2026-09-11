@@ -85,6 +85,14 @@ namespace Deucarian.Editor.Tests
                         AssertInside(add, composer, size.ToString());
                         var pageScroll = lab.Workspace.Root.Q<ScrollView>("lab-page-0");
                         var preview = lab.Workspace.Root.Q("lab-preview-scroll");
+                        string context = size + " at " + scale + "%";
+                        AssertInside(preview, pageScroll.contentViewport, context);
+                        var toolbar = preview.Q(className: "dw-preview-toolbar");
+                        AssertInside(toolbar, preview, context);
+                        foreach (var control in toolbar.Children()) AssertInside(control, toolbar, context);
+                        var clear = toolbar.Q<Button>("lab-clear");
+                        Assert.That(clear.resolvedStyle.width, Is.LessThan(220), "A text action must not inherit the spatial toolbar's equal-width buttons.");
+                        Assert.That(clear.Q<Label>().worldBound.xMin, Is.GreaterThan(clear.Q(className: "dw-icon").worldBound.xMax));
                         Assert.That(composer.resolvedStyle.height, Is.GreaterThan(70));
                         Assert.That(preview.resolvedStyle.height, Is.GreaterThan(70));
                         choice.Q<Button>("choice-0").Focus();
@@ -120,6 +128,37 @@ namespace Deucarian.Editor.Tests
                         choice.Q<Button>("choice-1").SendEvent(evt);
                     }
                     Assert.That(lifetime, Is.EqualTo(1));
+                }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previousScale; window.Close(); }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator CompactPagesRetainTitleHierarchyAndBoundLongProjectNames()
+        {
+            int previousScale = DeucarianEditorAppearance.WorkspaceScalePercent;
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            window.Show();
+            const string project = "AllPackagesConsumer with a longer project name";
+            using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, project))
+            {
+                try
+                {
+                    workspace.Title.text = "Package Development";
+                    var section = DeucarianEditorWorkspaceControls.Label("Working package", "dw-section-title");
+                    workspace.Content.Add(section);
+                    foreach (float width in new[] { 820f, 1180f, 1586f })
+                    foreach (int scale in new[] { 75, 100, 125, 150 })
+                    {
+                        Resize(window, new Vector2(width, 940));
+                        DeucarianEditorAppearance.WorkspaceScalePercent = scale;
+                        for (int frame = 0; frame < 12; frame++) yield return null;
+                        Assert.That(workspace.Title.resolvedStyle.fontSize, Is.GreaterThan(section.resolvedStyle.fontSize));
+                        Assert.That(workspace.ContextButton.resolvedStyle.textOverflow, Is.EqualTo(TextOverflow.Ellipsis));
+                        if (workspace.Root.ClassListContains("dw-compact")) Assert.That(workspace.ContextButton.isElided, Is.True);
+                        Assert.That(workspace.ContextButton.tooltip, Does.Contain(project));
+                        AssertInside(workspace.ContextButton, workspace.Root.Q("workspace-header"), width + " at " + scale);
+                    }
                 }
                 finally { DeucarianEditorAppearance.WorkspaceScalePercent = previousScale; window.Close(); }
             }
@@ -203,7 +242,7 @@ namespace Deucarian.Editor.Tests
             }
         }
 
-        private static Vector2[] Sizes() => new[] { new Vector2(1908, 950), new Vector2(1319, 697), new Vector2(1180, 700), new Vector2(820, 650), new Vector2(620, 800), new Vector2(1319, 697) };
+        private static Vector2[] Sizes() => new[] { new Vector2(1908, 950), new Vector2(1319, 697), new Vector2(1180, 940), new Vector2(1180, 700), new Vector2(820, 650), new Vector2(620, 800), new Vector2(1319, 697) };
 
         private static void Resize(EditorWindow window, Vector2 size)
         {

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.5] - 2026-09-11
+
+- Preserve per-window navigation expansion, selection visibility and scroll position across pages, search and UI scales.
+- Keep compact page titles, project-name ellipsis, read-only baselines and disabled icon-button colors consistent.
+- Constrain notification preview columns and scope spatial toolbar styling to its own component; cover 28 responsive size/scale combinations.
+- Clarify Advanced checks without duplicating domain tools, and finish native Inspector, authoring, gallery and sample presentation.
+- Extend shared controls with dark/light contrast, attached geometry, source-aware collection and spatial-preview regressions.
+
 ## [1.10.4] - 2026-09-11
 
 - Match centered session panels, side-by-side navigation previews and anchored collection actions to the approved designs.

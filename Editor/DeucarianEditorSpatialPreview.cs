@@ -10,13 +10,16 @@ namespace Deucarian.Editor
         private Quaternion rotation = Quaternion.AngleAxis(22, Vector3.right) * Quaternion.AngleAxis(-32, Vector3.up);
         private float zoom = 1;
         private readonly bool showCube;
+        private readonly bool solidCube;
         private readonly Label[] axes;
 
-        public DeucarianEditorSpatialPreview(bool showCube = true)
+        public DeucarianEditorSpatialPreview(bool showCube = true, bool solidCube = false)
         {
             this.showCube = showCube;
+            this.solidCube = showCube && solidCube;
             name = "spatial-preview";
             AddToClassList("dw-spatial-preview");
+            if (this.solidCube) AddToClassList("dw-spatial-solid");
             generateVisualContent += Draw;
             tooltip = "Illustrative navigation preview. Your scene camera is unchanged.";
             if (showCube)
@@ -45,7 +48,8 @@ namespace Deucarian.Editor
             if (axes == null || contentRect.width < 1) return;
             for (int i = 0; i < 3; i++)
             {
-                var end = Vector3.zero; end[i] = 2.2f;
+                var end = Vector3.zero;
+                end[i] = solidCube ? (rotation * Axis(i)).z >= 0 ? 1 : -1 : 2.2f;
                 var point = Project(end, contentRect);
                 axes[i].style.left = Mathf.Clamp(point.x - 14, contentRect.xMin, Mathf.Max(contentRect.xMin, contentRect.xMax - 28));
                 axes[i].style.top = Mathf.Clamp(point.y - 20, contentRect.yMin, Mathf.Max(contentRect.yMin, contentRect.yMax - 30));
@@ -63,6 +67,7 @@ namespace Deucarian.Editor
 
         internal void BuildGeometry(Rect bounds, out Vertex[] vertices, out ushort[] indices)
         {
+            if (solidCube) { BuildSolidGeometry(bounds, out vertices, out indices); return; }
             var lines = new List<Vector3>();
             for (int i = -4; i <= 4; i++)
             {
@@ -101,6 +106,38 @@ namespace Deucarian.Editor
                 indices[index + 3] = (ushort)(first + 2); indices[index + 4] = (ushort)(first + 3); indices[index + 5] = (ushort)(first + 1);
             }
         }
+
+        private void BuildSolidGeometry(Rect bounds, out Vertex[] vertices, out ushort[] indices)
+        {
+            vertices = new Vertex[12]; indices = new ushort[18];
+            for (int axis = 0; axis < 3; axis++)
+            {
+                Vector3 normal = Axis(axis) * ((rotation * Axis(axis)).z >= 0 ? 1 : -1);
+                Vector3 across = Axis((axis + 1) % 3), up = Axis((axis + 2) % 3);
+                var color = axis == 1 ? new Color32(202, 217, 226, 255) : axis == 0 ?
+                    new Color32(161, 181, 194, 255) : new Color32(132, 154, 169, 255);
+                int offset = axis * 4;
+                for (int corner = 0; corner < 4; corner++)
+                {
+                    Vector3 point = normal + across * (corner < 2 ? -1 : 1) + up * (corner % 2 == 0 ? -1 : 1);
+                    Vector2 projected = Project(point, bounds);
+                    projected.x = Mathf.Clamp(projected.x, bounds.xMin + 1, bounds.xMax - 1);
+                    projected.y = Mathf.Clamp(projected.y, bounds.yMin + 1, bounds.yMax - 1);
+                    vertices[offset + corner] = VertexAt(projected, color);
+                }
+                bool clockwise = Vector3.Cross(vertices[offset + 2].position - vertices[offset].position,
+                    vertices[offset + 1].position - vertices[offset].position).z >= 0;
+                int start = axis * 6;
+                indices[start] = (ushort)offset;
+                indices[start + 1] = (ushort)(offset + (clockwise ? 2 : 1));
+                indices[start + 2] = (ushort)(offset + (clockwise ? 1 : 2));
+                indices[start + 3] = (ushort)(offset + 2);
+                indices[start + 4] = (ushort)(offset + (clockwise ? 3 : 1));
+                indices[start + 5] = (ushort)(offset + (clockwise ? 1 : 3));
+            }
+        }
+
+        private static Vector3 Axis(int index) { var value = Vector3.zero; value[index] = 1; return value; }
 
         private Vector2 Project(Vector3 point, Rect bounds)
         {

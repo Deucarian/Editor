@@ -10,6 +10,114 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorNativeFormsTests
     {
         [UnityTest]
+        public IEnumerator SharedSearchKeepsItsPromptSeparateFromTheQuery()
+        {
+            var search = DeucarianEditorWorkspaceControls.Search("query", "Find a command…", out var input);
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>(); window.Show();
+            try
+            {
+                window.rootVisualElement.Add(search); yield return null;
+                var prompt = search.Q<Label>(className: "dw-search-placeholder");
+                Assert.That(input.value, Is.Empty);
+                Assert.That(prompt.text, Is.EqualTo("Find a command…"));
+                Assert.That(prompt.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                input.value = "focus";
+                Assert.That(prompt.style.display.value, Is.EqualTo(DisplayStyle.None));
+                input.value = string.Empty;
+                Assert.That(prompt.style.display.value, Is.EqualTo(DisplayStyle.Flex));
+            }
+            finally { window.Close(); }
+        }
+
+        [UnityTest]
+        public IEnumerator AssetPickerAndActionShareTheirRowWithLongNames()
+        {
+            var asset = ScriptableObject.CreateInstance<FormAsset>(); asset.name = "Long project settings asset name for a shared runtime profile";
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>(); window.Show();
+            int scale = DeucarianEditorAppearance.WorkspaceScalePercent;
+            var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Test");
+            try
+            {
+                window.position = new Rect(50, 50, 1586, 940);
+                DeucarianEditorAppearance.WorkspaceScalePercent = 100;
+                var card = new DeucarianEditorFeatureSection("asset-layout", "Settings", "Shared project settings.", DeucarianEditorIconIds.Package);
+                card.Root.AddToClassList("dw-feature-settings");
+                var field = new UnityEditor.UIElements.ObjectField { value = asset, objectType = typeof(FormAsset) };
+                var button = DeucarianEditorWorkspaceControls.Button("Select", () => { });
+                var actions = DeucarianEditorWorkspaceControls.Actions(field, button); actions.AddToClassList("dw-asset-actions");
+                card.Details.Add(DeucarianEditorWorkspaceControls.Field("Settings asset", actions)); card.SetState(true);
+                var cards = new VisualElement(); cards.Add(card.Root);
+                var split = DeucarianEditorWorkspaceControls.Split(cards, new VisualElement());
+                split.AddToClassList("dw-spatial-split"); split.AddToClassList("dw-asset-preview-split");
+                workspace.Content.Add(split);
+                for (int frame = 0; frame < 20; frame++) yield return null;
+                Assert.That(field.worldBound.center.y, Is.EqualTo(button.worldBound.center.y).Within(2));
+                Assert.That(field.worldBound.xMax, Is.LessThan(button.worldBound.xMin));
+                Assert.That(button.worldBound.xMax, Is.LessThanOrEqualTo(card.Root.worldBound.xMax));
+            }
+            finally { workspace.Dispose(); window.Close(); Object.DestroyImmediate(asset); DeucarianEditorAppearance.WorkspaceScalePercent = scale; }
+        }
+
+        [UnityTest]
+        public IEnumerator InspectorPreviewActionsKeepIconsAndCheckboxLabelsWithinTheirControls()
+        {
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>(); window.Show();
+            try
+            {
+                var root = DeucarianEditorInspector.CreateToolkit("Preview"); window.rootVisualElement.Add(root);
+                var preview = DeucarianEditorWorkspaceControls.Region(null, "dw-visibility-preview"); root.Add(preview);
+                var actions = DeucarianEditorWorkspaceControls.Actions(
+                    DeucarianEditorWorkspaceControls.IconButton("Enter", DeucarianEditorIconIds.Play, () => { }),
+                    DeucarianEditorWorkspaceControls.IconButton("Exit", DeucarianEditorIconIds.Play, () => { }),
+                    DeucarianEditorWorkspaceControls.IconButton("Stop", DeucarianEditorIconIds.Stop, () => { }));
+                preview.Add(actions);
+                var repeat = DeucarianEditorWorkspaceControls.Region(null, "dw-inline-checkbox");
+                var check = new Toggle(); check.AddToClassList("dw-checkbox"); repeat.Add(check);
+                var label = DeucarianEditorWorkspaceControls.Label("Loop"); repeat.Add(label); actions.Add(repeat);
+                foreach (int width in new[] { 340, 460, 850 })
+                {
+                    window.position = new Rect(80, 80, width, 620);
+                    for (int i = 0; i < 16; i++) yield return null;
+                    Assert.That(check.Q(className: "unity-toggle__checkmark").worldBound.xMax, Is.LessThanOrEqualTo(label.worldBound.xMin));
+                    Assert.That(label.worldBound.xMax, Is.LessThanOrEqualTo(root.worldBound.xMax));
+                    foreach (var button in actions.Query<Button>().ToList())
+                    {
+                        var icon = button.Q(className: "dw-icon");
+                        Assert.That(icon.worldBound.yMin, Is.GreaterThanOrEqualTo(button.worldBound.yMin));
+                        Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(button.worldBound.yMax));
+                    }
+                }
+            }
+            finally { window.Close(); }
+        }
+
+        [UnityTest]
+        public IEnumerator EmptyContextRegionsCollapseAndReturnWhenAConsumerAddsControls()
+        {
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>(); window.Show();
+            try
+            {
+                using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Review"))
+                {
+                    double deadline = EditorApplication.timeSinceStartup + 3;
+                    while (workspace.Scope.resolvedStyle.display != DisplayStyle.None && EditorApplication.timeSinceStartup < deadline) yield return null;
+                    Assert.That(workspace.Scope.resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
+                    Assert.That(workspace.Tabs.resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
+                    workspace.Scope.Add(new TextField()); workspace.Tabs.Add(new Button());
+                    deadline = EditorApplication.timeSinceStartup + 3;
+                    while (workspace.Scope.resolvedStyle.display == DisplayStyle.None && EditorApplication.timeSinceStartup < deadline) yield return null;
+                    Assert.That(workspace.Scope.resolvedStyle.display, Is.EqualTo(DisplayStyle.Flex));
+                    Assert.That(workspace.Tabs.resolvedStyle.display, Is.EqualTo(DisplayStyle.Flex));
+                    workspace.Scope.Clear(); workspace.Tabs.Clear();
+                    deadline = EditorApplication.timeSinceStartup + 3;
+                    while (workspace.Scope.resolvedStyle.display != DisplayStyle.None && EditorApplication.timeSinceStartup < deadline) yield return null;
+                    Assert.That(workspace.Scope.resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
+                }
+            }
+            finally { window.Close(); }
+        }
+
+        [UnityTest]
         public IEnumerator CodeExamplesUseTheBundledMonospaceFont()
         {
             var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
@@ -122,6 +230,27 @@ namespace Deucarian.Editor.Tests
             Assert.That(checkbox.ClassListContains("dw-checkbox"), Is.True);
             toggle.SetValueWithoutNotify(true);
             Assert.That(toggle.Q<Label>(className: "dw-switch-label").text, Is.EqualTo("On"));
+        }
+
+        [UnityTest]
+        public IEnumerator CheckedCheckboxUsesTheAccentFillAndRemainsLegible()
+        {
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            var root = DeucarianEditorInspector.CreateToolkit();
+            var checkbox = new Toggle(); root.Add(DeucarianEditorWorkspaceControls.Field("Override", checkbox));
+            window.Show(); window.rootVisualElement.Add(root);
+            try
+            {
+                checkbox.value = true;
+                for (int frame = 0; frame < 16; frame++) yield return null;
+                var mark = checkbox.Q(className: "unity-toggle__checkmark");
+                var fill = mark.resolvedStyle.backgroundColor;
+                Assert.That(fill.a, Is.GreaterThan(.9f));
+                Assert.That(fill.g, Is.GreaterThan(fill.r + .1f));
+                Assert.That(fill.b, Is.GreaterThan(fill.r + .1f));
+                Assert.That(mark.resolvedStyle.backgroundImage.texture, Is.Not.Null);
+            }
+            finally { window.Close(); }
         }
 
         private sealed class FormAsset : ScriptableObject

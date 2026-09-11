@@ -25,7 +25,7 @@ namespace Deucarian.Editor
             var disabled = Controls.Button("Disabled", () => { }); disabled.SetEnabled(false);
             var buttons = Controls.Actions(primary, Controls.Button("Secondary", clicked),
                 Controls.Button("Quiet text", clicked, DeucarianEditorButtonRole.Quiet), disabled,
-                Controls.IconButton(string.Empty, DeucarianEditorIconIds.Settings, clicked));
+                Controls.IconButton(string.Empty, "cog", clicked));
             buttons[4].tooltip = "Example icon action";
             buttons.AddToClassList("dw-gallery-buttons"); page.Add(buttons); page.Add(feedback);
             page.Add(Controls.Divider()); page.Add(Controls.Label("Fields", "dw-section-title"));
@@ -53,7 +53,7 @@ namespace Deucarian.Editor
             var more = new DeucarianEditorWorkspaceForm(page).Section("More examples", true);
             more.Root.Add(new DeucarianEditorSteps("Choose", "Configure", "Review").Root);
             more.Root.Add(new DeucarianEditorControlSpecimen());
-            workspace.FooterLeading.text = "Component examples · Nothing is saved";
+            workspace.FooterLeading.text = string.Empty;
             workspace.FooterTrailing.text = string.Empty;
         }
         private static void AddStatus(VisualElement root, string label, DeucarianEditorStatus status, string icon)

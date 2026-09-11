@@ -33,7 +33,7 @@ namespace Deucarian.Editor.Tests
             var tool = new DeucarianToolDescriptor(id, "Test audio", "Audio palette",
                 DeucarianControlCenterArea.Developer, () => standalone++, "com.deucarian.editor",
                 createPage: () => new DeucarianEditorPage(new TextField { name = "draft", value = "Preserve me" },
-                    value => route = value), navigationPath: "Experience/Audio");
+                    value => route = value), navigationPath: "Developer/Audio");
             using (DeucarianToolRegistry.Register(tool))
             using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))
             {
