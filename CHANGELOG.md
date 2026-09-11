@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.4] - 2026-09-11
+
+- Match centered session panels, side-by-side navigation previews and anchored collection actions to the approved designs.
+- Clip spatial-preview meshes to their own viewport and correct face winding, with zoom and geometry regression checks.
+- Keep contextual operation activity out of the stationary scale dock and add the licensed Lucide user-session icon.
+
 ## [1.10.3] - 2026-09-11
 
 - Align native filters, paneled collections, trailing switches and action rows with the approved reference compositions.

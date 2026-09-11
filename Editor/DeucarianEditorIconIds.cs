@@ -12,6 +12,7 @@ namespace Deucarian.Editor
         public const string Gamepad = "gamepad-2";
         public const string Orbit = "orbit";
         public const string Users = "users-round";
+        public const string User = "circle-user-round";
         public const string Document = "file-text";
         public const string Audio = "headphones";
         public const string Keyboard = "keyboard";
