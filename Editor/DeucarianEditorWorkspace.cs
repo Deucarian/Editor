@@ -91,7 +91,10 @@ namespace Deucarian.Editor
             pageHeader.Add(heading);
             PageActions = DeucarianEditorWorkspaceControls.Region("workspace-page-actions", "dw-page-actions");
             pageHeader.Add(PageActions);
-            Page.Add(pageHeader);
+            var contextScroll = new ScrollView(ScrollViewMode.Vertical) { name = "workspace-context-scroll" };
+            contextScroll.AddToClassList("dw-context-scroll");
+            contextScroll.Add(pageHeader);
+            Page.Add(contextScroll);
             Tabs = DeucarianEditorWorkspaceControls.Region("workspace-tabs", "dw-tabs");
             Scope = DeucarianEditorWorkspaceControls.Region("workspace-scope", "dw-scope");
             Content = DeucarianEditorWorkspaceControls.Region("workspace-content", "dw-content");
@@ -109,8 +112,8 @@ namespace Deucarian.Editor
             projectSettings.name = "workspace-project-settings";
             projectSettings.AddToClassList("dw-project-settings");
             footerBar.Insert(0, projectSettings);
-            Page.Add(Tabs);
-            Page.Add(Scope);
+            contextScroll.Add(Tabs);
+            contextScroll.Add(Scope);
             Page.Add(Content);
             uiScale = new DeucarianEditorWorkspaceScale(Root, footerBar);
             resized = evt => ApplyWidth(evt.newRect.width);

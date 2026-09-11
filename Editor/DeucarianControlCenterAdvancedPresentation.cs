@@ -51,7 +51,8 @@ namespace Deucarian.Editor
                 row.name = "control-center-open-" + tool.Id; row.tooltip = tool.Description;
                 row.AddToClassList("dw-navigation-row"); row.Add(Ui.Icon(tool.IconKey));
                 row.Add(Ui.Label(tool.DisplayName, "dw-navigation-title"));
-                row.Add(Ui.Icon(DeucarianEditorIconIds.ChevronRight)); tools.Add(row);
+                var arrow = Ui.Icon(DeucarianEditorIconIds.ChevronRight); arrow.AddToClassList("dw-navigation-arrow");
+                row.Add(arrow); tools.Add(row);
             }
             if (tools.childCount == 0) root.Add(Ui.Label("No developer tools are installed.", "dw-note"));
         }
@@ -71,7 +72,8 @@ namespace Deucarian.Editor
             row.Add(Ui.Label(card.Title, "dw-navigation-title"));
             var status = Ui.Label(card.StatusText, "dw-navigation-status");
             status.AddToClassList("dw-card-status--" + card.Status.ToString().ToLowerInvariant()); row.Add(status);
-            row.Add(Ui.Icon(DeucarianEditorIconIds.ChevronRight)); item.Add(row);
+            var arrow = Ui.Icon(DeucarianEditorIconIds.ChevronRight); arrow.AddToClassList("dw-navigation-arrow");
+            row.Add(arrow); item.Add(row);
             if (!string.IsNullOrEmpty(card.Description)) details.Add(Ui.Label(card.Description, "dw-note"));
             foreach (string detail in card.Details) details.Add(Ui.Label(detail, "dw-note"));
             var actions = Ui.Actions();

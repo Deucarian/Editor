@@ -98,6 +98,9 @@
 .deucarian-workspace .dw-nav-item.dw-selected .dw-icon { -unity-background-image-tint-color: var(--dw-accent); }
 .deucarian-workspace .dw-navigation-footer { padding: 12px 0 20px; }
 .deucarian-workspace .dw-page { padding: 36px 56px 0 64px; min-width: 0; }
+.deucarian-workspace .dw-context-scroll { flex-grow: 0; flex-shrink: 1; min-height: 0; max-height: 50%; }
+.deucarian-workspace .dw-context-scroll > .unity-scroll-view__content-viewport { min-height: 0; }
+.deucarian-workspace .dw-context-scroll > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { min-width: 0; }
 .deucarian-workspace .dw-page-header { flex-direction: row; align-items: flex-start; margin-bottom: 26px; flex-shrink: 0; }
 .deucarian-workspace .dw-heading { flex-grow: 1; min-width: 0; }
 .deucarian-workspace .dw-title { font-size: 50px; -unity-font: url("../Fonts/DINish-SemiBold.otf"); -unity-font-style: bold; margin-bottom: 2px; }

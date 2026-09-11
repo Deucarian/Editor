@@ -12,6 +12,44 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorWorkspaceLayoutTests
     {
         [UnityTest]
+        public IEnumerator WrappedContextNeverStarvesTheWorkingPageAtAnyScale()
+        {
+            int previous = DeucarianEditorAppearance.WorkspaceScalePercent;
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            window.Show();
+            using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Review fixture"))
+            {
+                try
+                {
+                    workspace.Title.text = "Package Development";
+                    workspace.Subtitle.text = "Work on a package. Test it here. Share it when ready.";
+                    workspace.Tabs.Add(new DeucarianEditorChoiceBar(new[] { "Workspace", "Changes", "History" }, tabs: true));
+                    var scope = new DeucarianEditorWorkspaceForm(workspace.Scope);
+                    scope.Choice("layout-package", "Package", new[] { "Package with a longer display name" }, () => 0, _ => { });
+                    scope.ReadOnly("layout-branch", "Branch", () => "codex/a-long-but-valid-feature-branch");
+                    var body = DeucarianEditorWorkspaceControls.Scroll("layout-body"); workspace.Content.Add(body);
+                    for (int i = 0; i < 20; i++) body.Add(new Label("Working page content " + i));
+                    foreach (var size in new[] { new Vector2(1586, 940), new Vector2(820, 650), new Vector2(620, 650) })
+                    foreach (int scale in new[] { 75, 100, 125, 150 })
+                    {
+                        Resize(window, size); DeucarianEditorAppearance.WorkspaceScalePercent = scale;
+                        for (int i = 0; i < 12; i++) yield return null;
+                        string context = size + " at " + scale + "%";
+                        var heading = workspace.Root.Q<ScrollView>("workspace-context-scroll");
+                        Assert.That(heading.worldBound.height, Is.GreaterThan(40), context);
+                        Assert.That(body.worldBound.height, Is.GreaterThan(80), context);
+                        Assert.That(body.worldBound.yMin, Is.GreaterThanOrEqualTo(heading.worldBound.yMax - 1), context);
+                        Assert.That(body.worldBound.yMax, Is.LessThanOrEqualTo(window.rootVisualElement.Q("workspace-scale").worldBound.yMin + 1), context);
+                        heading.ScrollTo(workspace.Scope);
+                        for (int i = 0; i < 3; i++) yield return null;
+                        Assert.That(workspace.Scope.worldBound.yMin, Is.LessThan(heading.worldBound.yMax), context);
+                    }
+                }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previous; window.Close(); }
+            }
+        }
+
+        [UnityTest]
         public IEnumerator LabControlsAdaptToTheirColumnAndRemainReachableAfterResizing()
         {
             var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();

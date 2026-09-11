@@ -11,7 +11,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.10.0`.
+Current package version: `1.10.1`.
 
 Feature setup pages compose `DeucarianEditorFeatureSection`: the shared section owns switch, status, details, actions and responsive styling; the domain supplies saved state and commands. `SetState` never invokes a command. Unknown connections use an empty ring, not a success checkmark. Register concise `navigationLabel` values and an optional `navigationGroupIcon` while preserving stable tool IDs and full display names.
 

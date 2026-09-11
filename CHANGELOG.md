@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.1] - 2026-09-11
+
+- Keep wrapped headings and context filters scrollable without starving page content at large UI scales.
+- Replace the unsupported last-child style selector with an explicit navigation-arrow class.
+- Avoid hiding Unity's built-in slider fill member with the shared fill renderer.
+
 ## [1.10.0] - 2026-09-11
 
 - Recompose the shared workspace and native forms around the approved visual references: charcoal gradient, typography, Lucide icons, reusable buttons and fixed colored scale dock.

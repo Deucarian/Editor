@@ -298,7 +298,7 @@
 .deucarian-workspace .dw-navigation-list .dw-navigation-row:hover { background-color: var(--dw-list-selected); }
 .deucarian-workspace .dw-navigation-title { flex-grow: 1; flex-shrink: 1; min-width: 0; -unity-text-align: middle-left; }
 .deucarian-workspace .dw-navigation-row > .dw-icon { flex-shrink: 0; margin-right: 26px; }
-.deucarian-workspace .dw-navigation-row > .dw-icon:last-child { width: 24px; height: 24px; margin-right: 0; }
+.deucarian-workspace .dw-navigation-row > .dw-navigation-arrow { width: 24px; height: 24px; margin-right: 0; }
 .deucarian-workspace .dw-navigation-status { flex-shrink: 1; width: 65%; margin: 0 20px; -unity-text-align: middle-left; }
 .deucarian-workspace .dw-check-details { padding: 18px 30px 26px; }
 .deucarian-workspace .dw-steps { flex-direction: row; margin: 0 20px 40px; padding: 18px 0 0; }
