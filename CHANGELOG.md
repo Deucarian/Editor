@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.0] - 2026-09-11
+
+- Add shared asset/declarative-C# definition synchronization, stable identity and conflict handling, domain schema adapters, Definitions UI, generated assembly setup and build validation.
+- Align declared package dependencies with the definition-authoring development wave.
+
+
 ## [1.11.0] - 2026-09-11
 
 - Keep Advanced reachable while sidebar categories expand, with independent scrolling for the tool list.

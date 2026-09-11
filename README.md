@@ -27,7 +27,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.11.0`.
+Current package version: `1.12.0`.
 
 Native workspaces use the same styled controls and scale-aware keyboard scrolling. Theming scope controls retain their place before tabs; preview/form columns retain their intended widths. The lab exposes a preview region and tab events, while its consumer owns preview playback. Revisiting the selected Overview route keeps the existing page alive.
 
@@ -408,3 +408,9 @@ Use `navigationPath` for readable submenu groups, for example `"Experience/Audio
 A page button calls `DeucarianEditorNavigation.Open(sourceElement, toolId, route)`. Card actions declare `navigationToolId` and optional `navigationRoute`; project checks declare `setupToolId` and optional `setupRoute`. Search carries the same destination. Non-navigation actions retain explicit execution and confirmation behavior. Do not use a global current-window lookup.
 
 Older IMGUI tools can compose `DeucarianEditorImGuiPage` while retaining their domain renderer. New tools should use plain composed pages and shared workspace controls. Native file pickers, confirmations, and deliberately external documentation links remain explicit external interactions.
+
+## Definition authoring integration
+
+Editor owns the shared Definitions page, declarative synchronization, generated-key infrastructure and build validation. Domain packages supply their own schemas and projections.
+
+See the [authoring walkthrough](Documentation~/DefinitionAuthoring.md). Runtime packages expose their **Definition Workflow** sample through Package Manager.
