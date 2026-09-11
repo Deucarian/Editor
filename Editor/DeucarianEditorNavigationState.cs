@@ -13,7 +13,6 @@ namespace Deucarian.Editor
         internal bool IsExpanded(string path, bool selected)
         {
             if (expanded.TryGetValue(path, out bool value)) return value;
-            if (selected) expanded[path] = true;
             return selected;
         }
 

@@ -21,6 +21,7 @@ namespace Deucarian.Editor
         private int selectedSearchResult = -1;
         private readonly List<DeucarianControlCenterSearchResult> searchResults = new List<DeucarianControlCenterSearchResult>();
         private readonly List<Button> searchButtons = new List<Button>();
+        private readonly Dictionary<string, bool> expandedChecks = new Dictionary<string, bool>();
         private DeucarianEditorLayoutMode layoutMode;
     }
 }

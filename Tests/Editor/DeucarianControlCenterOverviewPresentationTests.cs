@@ -21,7 +21,8 @@ namespace Deucarian.Editor.Tests
                 Assert.That(view.Root.Query(className: "dw-focus-title").ToList().Count, Is.EqualTo(1));
                 Assert.That(view.Root.Q<Label>(className: "dw-focus-title").text, Is.EqualTo("No issues reported"));
                 Assert.That(view.Root.Q("control-center-card-deucarian.readiness.overview"), Is.Null);
-                Assert.That(view.Root.Q("control-center-card-deucarian.overview.build-packages").Query<Label>().ToList().Count, Is.EqualTo(2));
+                Assert.That(view.Root.Q("control-center-card-deucarian.overview.build-packages"), Is.Null,
+                    "The overview shows focused tool destinations, not a second row of package summaries.");
                 Assert.That(view.Root.Query<Label>().ToList().Any(label => label.text.Contains("Verbose source")), Is.False);
                 view.Render(Snapshot(ready, summary), DeucarianControlCenterArea.Overview, null, "Verbose source");
                 Assert.That(view.Root.Q("control-center-card-deucarian.overview.build-packages"), Is.Null);

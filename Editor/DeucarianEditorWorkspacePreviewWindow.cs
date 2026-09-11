@@ -7,6 +7,7 @@ namespace Deucarian.Editor
     public sealed class DeucarianEditorWorkspacePreviewWindow : EditorWindow
     {
         private DeucarianEditorWorkspace workspace;
+        private DeucarianEditorWorkspaceSpecimen specimen;
 
         public static void Open()
         {
@@ -28,14 +29,17 @@ namespace Deucarian.Editor
 
         private void BuildPage(UnityEngine.UIElements.VisualElement root)
         {
+            specimen?.Dispose();
             workspace?.Dispose();
             workspace = new DeucarianEditorWorkspace(root,
                 System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(Application.dataPath)));
-            new DeucarianEditorWorkspaceSpecimen(workspace).Build();
+            specimen = new DeucarianEditorWorkspaceSpecimen(workspace);
+            specimen.Build();
         }
 
         private void OnDisable()
         {
+            specimen?.Dispose(); specimen = null;
             navigation?.Dispose();
             navigation = null;
             workspace?.Dispose();

@@ -11,13 +11,13 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.9.1`.
+Current package version: `1.10.0`.
 
 Feature setup pages compose `DeucarianEditorFeatureSection`: the shared section owns switch, status, details, actions and responsive styling; the domain supplies saved state and commands. `SetState` never invokes a command. Unknown connections use an empty ring, not a success checkmark. Register concise `navigationLabel` values and an optional `navigationGroupIcon` while preserving stable tool IDs and full display names.
 
 All editor surfaces share the workspace's charcoal/teal palette and DINish typography. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
 
-Custom inspectors can return `DeucarianEditorInspector.Create(OnInspectorGUI)` from `CreateInspectorGUI`. This adds shared presentation without a second sidebar and preserves native serialized property editing. Embedded legacy windows pass their owner to the header, footer and settings-page helpers so the workspace remains the only page header.
+Custom inspectors compose `DeucarianEditorInspector.CreateToolkit` and bind native properties through `Properties` or `Property` using the original `SerializedObject`. The Inspector has no sidebar or scale dock. Native bindings preserve Undo, mixed values and prefab overrides; shared sliders and switches follow source changes. `Create(OnInspectorGUI)` remains a compatibility boundary, not the pattern for new forms.
 
 ## Reading and scaling the workspace
 

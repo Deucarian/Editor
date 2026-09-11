@@ -50,7 +50,8 @@ namespace Deucarian.Editor
             DeucarianEditorUIResources.TryAddStyleSheet(root, DeucarianEditorUIResources.StylesPath + "/DeucarianFeatures.uss");
             var header = DeucarianEditorWorkspaceControls.Region("workspace-header", "dw-header");
             var brand = DeucarianEditorWorkspaceControls.Region("workspace-brand", "dw-brand");
-            brand.Add(DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Package));
+            var mark = new DeucarianEditorBrandMark();
+            brand.Add(mark);
             brand.Add(DeucarianEditorWorkspaceControls.Label("Deucarian", "dw-brand-name"));
             header.Add(brand);
             ContextButton = DeucarianEditorWorkspaceControls.Button(context, null);
@@ -71,6 +72,7 @@ namespace Deucarian.Editor
             SearchField.RegisterValueChangedCallback(evt => placeholder.style.display = string.IsNullOrEmpty(evt.newValue) ? DisplayStyle.Flex : DisplayStyle.None);
             header.Add(search);
             Root.Insert(0, header);
+            Root.Insert(0, new DeucarianEditorWorkspaceBackdrop());
             Sidebar = DeucarianEditorWorkspaceControls.Region("workspace-sidebar", "dw-sidebar");
             Navigation = DeucarianEditorWorkspaceControls.Region("workspace-navigation", "dw-navigation");
             Sidebar.Add(Navigation);
@@ -101,6 +103,12 @@ namespace Deucarian.Editor
             Footer.Add(DeucarianEditorWorkspaceControls.Region(null, "dw-spacer"));
             Footer.Add(FooterTrailing);
             footerBar.Add(Footer);
+            var projectSettings = DeucarianEditorWorkspaceControls.IconButton("Project settings",
+                DeucarianEditorIconIds.Settings, () => DeucarianEditorNavigation.Open(Root, DeucarianToolIds.ControlCenter, "settings"),
+                DeucarianEditorButtonRole.Quiet);
+            projectSettings.name = "workspace-project-settings";
+            projectSettings.AddToClassList("dw-project-settings");
+            footerBar.Insert(0, projectSettings);
             Page.Add(Tabs);
             Page.Add(Scope);
             Page.Add(Content);
@@ -136,6 +144,15 @@ namespace Deucarian.Editor
             searchPlaceholder.style.display = string.IsNullOrEmpty(SearchField.value) ? DisplayStyle.Flex : DisplayStyle.None;
             SearchField.tooltip = prompt + " · Ctrl/Cmd+K";
         }
+
+        /// <summary>Asset/context filters precede local tabs on collection pages.</summary>
+        public void SetScopeBeforeTabs(bool before = true)
+        {
+            if (before) Scope.PlaceBehind(Tabs);
+            else Scope.PlaceInFront(Tabs);
+        }
+
+        public void SetScopeStacked(bool stacked = true) => Scope.EnableInClassList("dw-scope-stacked", stacked);
 
         public Button AddNavigation(string id, string label, string icon, Action open, bool footer = false)
         {
@@ -175,8 +192,8 @@ namespace Deucarian.Editor
         public void ApplyWidth(float width)
         {
             bool known = !float.IsNaN(width) && !float.IsInfinity(width) && width > 0;
-            Root.EnableInClassList("dw-compact", known && width < 1100);
-            Root.EnableInClassList("dw-narrow", known && width < 760);
+            Root.EnableInClassList("dw-compact", known && width < 1470);
+            Root.EnableInClassList("dw-narrow", known && width < 1067);
         }
 
         public void Dispose()

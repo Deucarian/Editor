@@ -14,18 +14,19 @@ namespace Deucarian.Editor
         public VisualElement Root { get; }
 
         public DeucarianEditorCapabilityGate(VisualElement controls, Func<bool> isEnabled,
-            string title, string explanation, string actionLabel, Action openSettings, Action whenDisabled = null)
+            string title, string explanation, string actionLabel, Action openSettings, Action whenDisabled = null, string iconId = null)
         {
             this.controls = controls ?? throw new ArgumentNullException(nameof(controls));
             this.isEnabled = isEnabled ?? throw new ArgumentNullException(nameof(isEnabled));
             this.whenDisabled = whenDisabled;
             Root = DeucarianEditorWorkspaceControls.Region(null, "dw-capability-gate");
-            notice = DeucarianEditorWorkspaceControls.Region("capability-disabled", "dw-capability-notice");
-            notice.Add(DeucarianEditorWorkspaceControls.Label(title, "dw-section-title"));
-            notice.Add(DeucarianEditorWorkspaceControls.Label(explanation, "dw-muted"));
+            var summary = new DeucarianEditorStatusSummary("capability-disabled");
+            summary.Set(title, explanation, DeucarianEditorStatus.Info, iconId);
+            notice = summary.Root;
+            notice.AddToClassList("dw-capability-notice");
             var action = DeucarianEditorWorkspaceControls.Button(actionLabel, openSettings, true);
             action.name = "capability-open-settings";
-            notice.Add(action);
+            summary.Actions.Add(action);
             Root.Add(notice);
             Root.Add(controls);
             Refresh();

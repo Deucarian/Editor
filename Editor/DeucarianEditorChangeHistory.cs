@@ -11,6 +11,7 @@ namespace Deucarian.Editor
         private readonly VisualElement rows;
         private readonly Label note;
         private readonly Dictionary<string, Label> entries = new Dictionary<string, Label>(StringComparer.Ordinal);
+        private bool panel;
 
         internal DeucarianEditorChangeHistory(VisualElement parent)
         {
@@ -23,6 +24,15 @@ namespace Deucarian.Editor
             foldout.Add(note);
             parent.Add(foldout);
             DeucarianEditorWorkspaceControls.Show(foldout, false);
+        }
+
+        internal void UsePanel()
+        {
+            panel = true; foldout.value = true;
+            foldout.AddToClassList("dw-review-history-panel");
+            foldout.Insert(0, DeucarianEditorWorkspaceControls.Label("Recent history", "dw-section-title"));
+            DeucarianEditorWorkspaceControls.Show(foldout, true);
+            note.text = "Load recent history to review this repository’s commits.";
         }
 
         internal void Set(IReadOnlyList<DeucarianEditorHistoryItem> items)
@@ -50,9 +60,9 @@ namespace Deucarian.Editor
                 if (row.parent != rows || rows.IndexOf(row) != i) rows.Insert(i, row);
             }
             foldout.text = "Recent history (" + count + ")";
-            note.text = items.Count > count ? "Showing " + count + " of " + items.Count + " entries. Open the external client for full history." : string.Empty;
-            DeucarianEditorWorkspaceControls.Show(note, items.Count > count);
-            DeucarianEditorWorkspaceControls.Show(foldout, count > 0);
+            note.text = count == 0 ? "Load recent history to review this repository’s commits." : items.Count > count ? "Showing " + count + " of " + items.Count + " entries. Open the external client for full history." : string.Empty;
+            DeucarianEditorWorkspaceControls.Show(note, items.Count > count || panel && count == 0);
+            DeucarianEditorWorkspaceControls.Show(foldout, panel || count > 0);
         }
     }
 }

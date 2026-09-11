@@ -42,17 +42,13 @@ namespace Deucarian.Editor.Tests
                         }
                         foreach (var button in choice.Query<Button>().ToList()) AssertInside(button, choice, size.ToString());
                         AssertInside(add, composer, size.ToString());
-                        var composerScroll = (ScrollView)composer;
-                        var previewScroll = lab.Workspace.Root.Q<ScrollView>("lab-preview-scroll");
-                        Assert.That(composerScroll.resolvedStyle.height, Is.GreaterThan(70));
-                        Assert.That(previewScroll.resolvedStyle.height, Is.GreaterThan(70));
-                        var previousPreviewOffset = previewScroll.scrollOffset;
-                        float actionY = add.worldBound.yMin;
-                        composerScroll.scrollOffset = new Vector2(0, 100);
-                        yield return null;
-                        Assert.That(previewScroll.scrollOffset, Is.EqualTo(previousPreviewOffset));
-                        Assert.That(add.worldBound.yMin, Is.EqualTo(actionY).Within(1), "The primary action does not scroll away.");
-                        Assert.That(composerScroll.Contains(add), Is.False);
+                        var pageScroll = lab.Workspace.Root.Q<ScrollView>("lab-page-0");
+                        var preview = lab.Workspace.Root.Q("lab-preview-scroll");
+                        Assert.That(composer.resolvedStyle.height, Is.GreaterThan(70));
+                        Assert.That(preview.resolvedStyle.height, Is.GreaterThan(70));
+                        pageScroll.ScrollTo(add);
+                        for (int i = 0; i < 3; i++) yield return null;
+                        Assert.That(composer.Contains(add), Is.True, "The action belongs to the form and follows its fields.");
                         Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1));
                         Assert.That(add.resolvedStyle.height, Is.GreaterThanOrEqualTo(42));
                         Assert.That(add.worldBound.width, Is.EqualTo(add.parent.worldBound.width).Within(2));
@@ -67,7 +63,7 @@ namespace Deucarian.Editor.Tests
                     }
                     lab.Composer.EnabledWhen(() => false);
                     lab.RefreshForms();
-                    Assert.That(add.enabledInHierarchy, Is.False, "Pinned actions follow the composer's enabled state.");
+                    Assert.That(add.enabledInHierarchy, Is.False, "Actions follow the composer's enabled state.");
                     lab.Composer.EnabledWhen(() => true);
                     lab.RefreshForms();
                     choice.Q<Button>("choice-1").Focus();
@@ -103,7 +99,7 @@ namespace Deucarian.Editor.Tests
                         if (!collection.Collection.ClassListContains("dw-split-stacked"))
                         {
                             float paneRatio = collection.Details.resolvedStyle.width / collection.Collection.resolvedStyle.width;
-                            Assert.That(paneRatio, Is.EqualTo(0.45f).Within(0.025f), "Details retain their share of the split: " + size);
+                            Assert.That(paneRatio, Is.EqualTo(0.58f).Within(0.025f), "Details retain their share of the split: " + size);
                         }
                         var row = collection.Collection.Q("workspace-item-key");
                         var select = row.Q<Button>(className: "dw-collection-select");
@@ -149,13 +145,12 @@ namespace Deucarian.Editor.Tests
                         foreach (var card in content.Query(className: "dw-summary-card").ToList()) AssertInside(card, content, size.ToString());
                         view.Render(snapshot, DeucarianControlCenterArea.Developer, null, "");
                         for (int i = 0; i < 8; i++) yield return null;
-                        var row = view.Root.Q("control-center-tool-layout-tool");
+                        var row = view.Root.Q<Button>("control-center-open-layout-tool");
+                        Assert.That(row, Is.Not.Null);
                         Assert.That(row.ClassListContains("dw-summary-card"), Is.False);
-                        foreach (var button in row.Query<Button>().ToList())
-                        {
-                            AssertInside(button, row, size.ToString());
-                            Assert.That(button.resolvedStyle.width, Is.LessThan(120));
-                        }
+                        AssertInside(row, content, size.ToString());
+                        Assert.That(row.ClassListContains("dw-navigation-row"), Is.True);
+                        Assert.That(row.Query<Button>().ToList().Count, Is.LessThanOrEqualTo(1), "One row is one navigation action.");
                     }
                 }
                 finally { window.Close(); }

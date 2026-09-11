@@ -57,6 +57,10 @@ namespace Deucarian.Editor
             var caption = Label(label, "dw-field-label");
             row.Add(caption);
             input.AddToClassList("dw-field-input");
+            if (input.ClassListContains("unity-base-field") && !input.ClassListContains("dw-multiline") &&
+                !(input is Toggle) && !(input is Slider) && !(input is SliderInt))
+                input.AddToClassList("dw-single-line");
+            if (input is Toggle && !(input is DeucarianEditorSwitch)) input.AddToClassList("dw-checkbox");
             if (string.IsNullOrEmpty(input.tooltip)) input.tooltip = label;
             row.Add(input);
             DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-field-stacked", input is Label ? 320 : 520);
@@ -93,6 +97,43 @@ namespace Deucarian.Editor
         {
             var row = Region(null, "dw-actions");
             foreach (var action in actions) if (action != null) row.Add(action);
+            return row;
+        }
+
+        public static Button IconButton(string label, string icon, Action clicked,
+            DeucarianEditorButtonRole role = DeucarianEditorButtonRole.Secondary)
+        {
+            var button = Button(string.Empty, clicked, role);
+            button.AddToClassList("dw-icon-button");
+            button.tooltip = label;
+            button.Add(Icon(icon));
+            if (!string.IsNullOrEmpty(label)) button.Add(Label(label));
+            return button;
+        }
+
+        public static VisualElement Panel(string id, string title = null)
+        {
+            var panel = Region(id, "dw-panel");
+            if (!string.IsNullOrEmpty(title)) panel.Add(Label(title, "dw-section-title"));
+            return panel;
+        }
+
+        public static VisualElement Divider() => Region(null, "dw-divider");
+
+        public static VisualElement IconPanel(string id, string iconId, VisualElement content)
+        {
+            var panel = Panel(id);
+            panel.AddToClassList("dw-icon-panel");
+            panel.Add(Icon(iconId));
+            content.AddToClassList("dw-icon-panel-content");
+            panel.Add(content);
+            return panel;
+        }
+
+        public static VisualElement EndActions(params VisualElement[] actions)
+        {
+            var row = Actions(actions);
+            row.AddToClassList("dw-end-actions");
             return row;
         }
 

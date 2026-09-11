@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.0] - 2026-09-11
+
+- Recompose the shared workspace and native forms around the approved visual references: charcoal gradient, typography, Lucide icons, reusable buttons and fixed colored scale dock.
+- Add native serialized Inspector styling with source/Undo/multi-selection coverage; retain legacy adapters for compatibility.
+- Keep project settings and page navigation inside the current Control Center, with persistent Advanced expansion state.
+- Support integrated Workspace / Changes / History composition, literal colored diffs, explicit staging and caller-owned publishing controls.
+
+Visual acceptance and the portfolio consumer rollout are tracked separately; this package does not own domain actions.
+
 ## [1.9.1] - 2026-09-10
 
 - Keep shared switches compact in stretched form columns and give slider value fields enough height to remain readable.

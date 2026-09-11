@@ -51,6 +51,7 @@ namespace Deucarian.Editor
             }
             sidebar?.RemoveFromHierarchy();
             sidebar = CreateSidebar(snapshot, selectedArea);
+            DeucarianEditorWorkspaceControls.Show(sidebar, selectedArea != DeucarianControlCenterArea.Overview);
             layout.Insert(0, sidebar);
             content.Clear();
 
@@ -122,6 +123,14 @@ namespace Deucarian.Editor
                 name = "control-center-sidebar"
             };
             result.AddToClassList("dw-control-sections");
+            if (selectedArea == DeucarianControlCenterArea.Project || selectedArea == DeucarianControlCenterArea.Developer)
+            {
+                var tabs = new DeucarianEditorChoiceBar(new[] { "Project checks", "Developer tools" },
+                    selectedArea == DeucarianControlCenterArea.Project ? 0 : 1, tabs: true);
+                tabs.Changed += index => navigate(index == 0 ? DeucarianControlCenterArea.Project : DeucarianControlCenterArea.Developer, null);
+                result.Add(tabs);
+                return result;
+            }
             foreach (DeucarianControlCenterArea area in snapshot.Areas)
             {
                 DeucarianControlCenterArea captured = area;
@@ -141,21 +150,26 @@ namespace Deucarian.Editor
             DeucarianControlCenterArea area,
             string focusedTargetId)
         {
-            if (area != DeucarianControlCenterArea.Overview)
-                DeucarianControlCenterVisuals.AddPageHeading(content,
-                    DeucarianControlCenterAreaIds.GetDisplayName(area), GetAreaDescription(area));
-            else
+            if (area == DeucarianControlCenterArea.Overview)
+            {
                 content.Add(DeucarianControlCenterOverviewPresentation.CreateFocus(snapshot, navigate));
+                content.Add(DeucarianControlCenterContinueWorking.Create(snapshot, Root));
+                return;
+            }
+            if (area == DeucarianControlCenterArea.Project || area == DeucarianControlCenterArea.Developer)
+            {
+                DeucarianControlCenterAdvancedPresentation.Build(content, snapshot, area, focusedTargetId, refresh, ExecuteCardAction, expandedChecks);
+                return;
+            }
+            DeucarianControlCenterVisuals.AddPageHeading(content,
+                DeucarianControlCenterAreaIds.GetDisplayName(area), GetAreaDescription(area));
             VisualElement cards = CreateCardHost();
             content.Add(cards);
             foreach (DeucarianControlCenterCard card in snapshot.Cards)
             {
                 if (card.Area == area)
                 {
-                    if (area == DeucarianControlCenterArea.Overview && card.Id == "deucarian.readiness.overview") continue;
-                    cards.Add(area == DeucarianControlCenterArea.Overview && DeucarianControlCenterOverviewPresentation.TryGetSummaryArea(card.Id, out _)
-                        ? DeucarianControlCenterOverviewPresentation.CreateSummary(card, navigate)
-                        : DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
+                    cards.Add(DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
                 }
             }
 
@@ -175,78 +189,8 @@ namespace Deucarian.Editor
                 }
             }
 
-            if (area == DeucarianControlCenterArea.Developer || area == DeucarianControlCenterArea.Overview)
-                RenderTools(content, snapshot.Tools, area);
         }
 
-        private void RenderTools(
-            VisualElement content,
-            IReadOnlyList<DeucarianToolDescriptor> tools,
-            DeucarianControlCenterArea area)
-        {
-            var matching = new List<DeucarianToolDescriptor>();
-            foreach (DeucarianToolDescriptor tool in tools)
-            {
-                if (tool.Id != DeucarianToolIds.ControlCenter &&
-                    (area == DeucarianControlCenterArea.Developer || DeucarianToolHistory.IsFavorite(tool.Id) ||
-                        DeucarianToolHistory.RecentIndex(tool.Id) >= 0 && DeucarianToolHistory.RecentIndex(tool.Id) < 3))
-                {
-                    matching.Add(tool);
-                }
-            }
-
-            if (matching.Count == 0)
-            {
-                return;
-            }
-
-            matching.Sort((left, right) =>
-            {
-                int favorite = DeucarianToolHistory.IsFavorite(right.Id).CompareTo(DeucarianToolHistory.IsFavorite(left.Id));
-                if (favorite != 0) return favorite;
-                int leftIndex = DeucarianToolHistory.RecentIndex(left.Id);
-                int rightIndex = DeucarianToolHistory.RecentIndex(right.Id);
-                int recent = (leftIndex < 0 ? int.MaxValue : leftIndex).CompareTo(rightIndex < 0 ? int.MaxValue : rightIndex);
-                return recent != 0 ? recent : string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
-            });
-
-            DeucarianControlCenterVisuals.AddSectionHeading(
-                content,
-                area == DeucarianControlCenterArea.Overview ? "Your tools" : "Tools",
-                string.Empty);
-            foreach (DeucarianToolDescriptor tool in matching)
-            {
-                DeucarianToolDescriptor captured = tool;
-                var row = new VisualElement
-                {
-                    name = "control-center-tool-" + tool.Id
-                };
-                row.AddToClassList("dw-tool-row");
-                DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-tool-stacked", 520);
-                var text = DeucarianEditorWorkspaceControls.Region(null, "dw-tool-text");
-                text.Add(DeucarianControlCenterVisuals.CreateLabel(tool.DisplayName, true));
-                row.tooltip = tool.Description;
-                if (area != DeucarianControlCenterArea.Overview && tool.Description.Length > 0)
-                {
-                    text.Add(DeucarianControlCenterVisuals.CreateMutedLabel(tool.Description));
-                }
-
-                row.Add(text);
-                var button = DeucarianEditorWorkspaceControls.Button("Open",
-                    () => DeucarianEditorNavigation.Open(Root, captured.Id));
-                button.name = "control-center-open-" + tool.Id;
-                bool favorite = DeucarianToolHistory.IsFavorite(tool.Id);
-                var pin = DeucarianEditorWorkspaceControls.Button(favorite ? "Unpin" : "Pin", () =>
-                {
-                    DeucarianToolHistory.SetFavorite(captured.Id, !DeucarianToolHistory.IsFavorite(captured.Id));
-                    refresh();
-                });
-                pin.name = "control-center-pin-" + tool.Id;
-                pin.tooltip = "Keep this tool on the overview for this project.";
-                row.Add(DeucarianEditorWorkspaceControls.Actions(button, pin));
-                content.Add(row);
-            }
-        }
 
         private void RenderSearch(
             VisualElement content,

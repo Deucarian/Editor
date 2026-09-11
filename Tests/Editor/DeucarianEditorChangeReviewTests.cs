@@ -151,6 +151,41 @@ namespace Deucarian.Editor.Tests
             Assert.Throws<ObjectDisposedException>(() => view.SetSummary("No longer active"));
         }
 
+        [Test]
+        public void IntegratedPagesKeepCommitBesideDiffAndSharingBesideHistory()
+        {
+            using var view = new DeucarianEditorChangeReview(new VisualElement());
+            var tabs = new VisualElement(); int calls = 0;
+            view.Context.Action("inspect", "Inspect", () => calls++);
+            var message = view.Commit.Text("draft", "Message", () => "Preserved draft", _ => calls++);
+            view.Publish.Action("push", "Push", () => calls++);
+            view.UseSections(tabs, integratedPublishing: true);
+            Assert.That(tabs.Query<Button>().ToList().Select(button => button.text), Is.EqualTo(new[] { "Workspace", "Changes", "History" }));
+            Assert.That(view.Root.Q("review-diff").Contains(view.Commit.Root), Is.True);
+            Assert.That(view.Root.Q("review-section-2").Contains(view.Publish.Root), Is.True);
+            view.SelectSection(1); view.SelectSection(2); view.SelectSection(0);
+            Assert.That(message.value, Is.EqualTo("Preserved draft")); Assert.That(calls, Is.Zero);
+            Assert.That(view.Root.Q<Foldout>("review-history").value, Is.True);
+            view.SetHistory(Array.Empty<DeucarianEditorHistoryItem>());
+            Assert.That(view.Root.Q<Foldout>("review-history").style.display.value, Is.EqualTo(DisplayStyle.Flex));
+        }
+
+        [Test]
+        public void ColoredDiffRendersLiteralBoundedLinesAndRetainsRawCopy()
+        {
+            using var view = new DeucarianEditorChangeReview(new VisualElement());
+            string content = "+<b>not markup</b>\n-old\n@@ range @@\n" + string.Join("\n", Enumerable.Repeat(" context", 700));
+            view.SetDiff("Example", content);
+            var lines = view.Root.Q("review-diff-lines");
+            Assert.That(lines.childCount, Is.EqualTo(500));
+            Assert.That(((Label)lines[0]).text, Is.EqualTo("+<b>not markup</b>"));
+            Assert.That(((Label)lines[0]).enableRichText, Is.False);
+            Assert.That(lines[0].ClassListContains("dw-diff-added"), Is.True);
+            Assert.That(lines[1].ClassListContains("dw-diff-removed"), Is.True);
+            Assert.That(view.Root.Q<TextField>("review-diff-text").value, Is.EqualTo(content));
+            Assert.That(view.Root.Q<Label>("review-diff-note").text, Does.Contain("Partial"));
+        }
+
         private static DeucarianEditorChangeItem Item(string id, bool selected, Action inspect, Action<bool> select)
             => new DeucarianEditorChangeItem(id, id + ".cs", "Modified", false, selected, inspect, select);
     }

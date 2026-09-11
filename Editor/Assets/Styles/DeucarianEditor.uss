@@ -1,20 +1,20 @@
 .deucarian-editor {
-    --deucarian-bg: #202b2e;
-    --deucarian-panel: #1b2528;
-    --deucarian-panel-soft: #223033;
-    --deucarian-panel-header: #223033;
-    --deucarian-sidebar: #1b2528;
-    --deucarian-border: #3d4e52;
-    --deucarian-border-active: #72e1df;
+    --deucarian-bg: #1b282c;
+    --deucarian-panel: #152125;
+    --deucarian-panel-soft: #1c2b2f;
+    --deucarian-panel-header: #1c2b2f;
+    --deucarian-sidebar: #152125;
+    --deucarian-border: #3d5259;
+    --deucarian-border-active: #00d8e6;
     --deucarian-text: #f2f4f7;
     --deucarian-muted: #bac3cd;
-    --deucarian-teal: #72e1df;
-    --deucarian-blue: #32bdc2;
+    --deucarian-teal: #00d8e6;
+    --deucarian-blue: #00cfdf;
     --deucarian-primary-text: #102124;
     --deucarian-window-overlay: rgba(27, 26, 24, 0.18);
-    --deucarian-control: #223033;
-    --deucarian-control-hover: #2b3b3f;
-    --deucarian-control-active: #214e52;
+    --deucarian-control: #1c2b2f;
+    --deucarian-control-hover: #273b40;
+    --deucarian-control-active: #07535c;
     --deucarian-green: #69cea0;
     --deucarian-amber: #ffcb4a;
     --deucarian-red: #ff6b70;
@@ -107,11 +107,11 @@
 }
 
 .deucarian-editor.deucarian-quiet {
-    --deucarian-panel: #1b2528;
-    --deucarian-panel-soft: #223033;
-    --deucarian-panel-header: #223033;
-    --deucarian-sidebar: #1b2528;
-    --deucarian-border: #3d4e52;
+    --deucarian-panel: #152125;
+    --deucarian-panel-soft: #1c2b2f;
+    --deucarian-panel-header: #1c2b2f;
+    --deucarian-sidebar: #152125;
+    --deucarian-border: #3d5259;
 }
 
 .deucarian-editor.deucarian-quiet.deucarian-theme--light {

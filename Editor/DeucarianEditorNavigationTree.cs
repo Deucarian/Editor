@@ -55,10 +55,14 @@ namespace Deucarian.Editor
             SaveScroll();
             restoringScroll = true;
             workspace.ClearNavigation();
-            AddTool(workspace.Navigation, DeucarianToolIds.ControlCenter, "Overview", DeucarianEditorIconIds.Dashboard);
+            AddTool(workspace.Navigation, DeucarianToolIds.ControlCenter, "Overview", DeucarianEditorIconIds.Home);
             var menu = new ToolbarMenu { name = "workspace-navigation-menu", text = "Navigate…" };
             menu.AddToClassList("dw-navigation-menu");
             workspace.Navigation.Add(menu);
+            var rail = DeucarianEditorWorkspaceControls.Scroll("workspace-navigation-rail");
+            rail.AddToClassList("dw-navigation-rail");
+            workspace.Navigation.Add(rail);
+            var railMenus = new Dictionary<string, ToolbarMenu>(StringComparer.Ordinal);
             menu.menu.AppendAction("Overview", _ => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter, "overview"));
             scroll = DeucarianEditorWorkspaceControls.Scroll("workspace-navigation-scroll");
             scroll.AddToClassList("dw-navigation-tree");
@@ -77,6 +81,22 @@ namespace Deucarian.Editor
                 menu.menu.AppendAction(tool.NavigationPath + "/" + tool.DisplayName,
                     _ => DeucarianEditorNavigation.Open(workspace.Root, destination.Id),
                     tool.CreatePage == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
+                string topGroup = tool.NavigationPath.Split('/')[0].Trim();
+                if (topGroup.Length == 0) topGroup = "Tools";
+                if (!railMenus.TryGetValue(topGroup, out var railMenu))
+                {
+                    railMenu = new ToolbarMenu { name = "workspace-rail-" + topGroup, text = topGroup, tooltip = topGroup };
+                    railMenu.AddToClassList("dw-rail-menu");
+                    railMenu.Add(DeucarianEditorWorkspaceControls.Icon(tool.NavigationGroupIcon ?? GroupIcon(topGroup)));
+                    railMenu.EnableInClassList("dw-selected", selectedPath == topGroup || selectedPath.StartsWith(topGroup + "/", StringComparison.Ordinal));
+                    railMenus.Add(topGroup, railMenu); rail.Add(railMenu);
+                }
+                string railLabel = tool.NavigationPath.Length > topGroup.Length
+                    ? tool.NavigationPath.Substring(topGroup.Length + 1) + "/" + tool.NavigationLabel : tool.NavigationLabel;
+                if (tool.IsFeatureEnabled != null && !tool.IsFeatureEnabled()) railLabel += " (off)";
+                railMenu.menu.AppendAction(railLabel, _ => DeucarianEditorNavigation.Open(workspace.Root, destination.Id),
+                    tool.CreatePage == null ? DropdownMenuAction.Status.Disabled
+                    : tool.Id == selected ? DropdownMenuAction.Status.Checked : DropdownMenuAction.Status.Normal);
                 VisualElement parent = scroll;
                 string path = "";
                 foreach (string part in tool.NavigationPath.Split('/'))
@@ -109,8 +129,8 @@ namespace Deucarian.Editor
                 }
                 AddTool(parent, tool.Id, tool.NavigationLabel, tool.IconKey);
             }
-            var advanced = workspace.AddNavigation("advanced", "Advanced", DeucarianEditorIconIds.Settings,
-                () => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter, "developer"), true);
+            var advanced = workspace.AddNavigation("advanced", "Advanced", "cog",
+                () => DeucarianEditorNavigation.Open(workspace.Root, DeucarianToolIds.ControlCenter, "project"), true);
             advanced.tooltip = "Project checks and all registered tools, in this window.";
             workspace.SelectNavigation(workspace.SelectedNavigation ?? (selected == DeucarianEditorWorkspaceNavigation.AudioToolId ? "audio" : selected));
             var currentScroll = scroll;
@@ -162,13 +182,13 @@ namespace Deucarian.Editor
             {
                 case "Theming": case "Appearance": return DeucarianEditorIconIds.Palette;
                 case "Audio": return DeucarianEditorIconIds.Audio;
-                case "Notifications": return DeucarianEditorIconIds.Sample;
+                case "Notifications": return DeucarianEditorIconIds.Notifications;
                 case "Connections": return DeucarianEditorIconIds.Integration;
-                case "Communication": return DeucarianEditorIconIds.Network;
+                case "Communication": return DeucarianEditorIconIds.Communication;
                 case "Diagnostics": return DeucarianEditorIconIds.Activity;
-                case "Experience": return DeucarianEditorIconIds.Monitor;
-                case "Authoring": return DeucarianEditorIconIds.FolderTree;
-                case "Developer": return DeucarianEditorIconIds.Wrench;
+                case "Experience": return DeucarianEditorIconIds.Gamepad;
+                case "Authoring": return DeucarianEditorIconIds.Authoring;
+                case "Developer": return DeucarianEditorIconIds.Developer;
                 default: return DeucarianEditorIconIds.Package;
             }
         }
