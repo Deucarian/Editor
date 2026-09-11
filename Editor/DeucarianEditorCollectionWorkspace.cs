@@ -119,6 +119,7 @@ namespace Deucarian.Editor
                 Root.EnableInClassList("dw-selected", selected);
                 title.text = item.Title;
                 subtitle.text = item.Description;
+                DeucarianEditorWorkspaceControls.Show(subtitle, !string.IsNullOrWhiteSpace(item.Description));
                 status.text = item.Status;
                 bool iconAction = !string.IsNullOrEmpty(item.ActionIconId);
                 action.text = iconAction ? string.Empty : item.ActionLabel;

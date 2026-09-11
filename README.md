@@ -11,13 +11,13 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.10.2`.
+Current package version: `1.10.3`.
 
 Native workspaces use the same styled controls and scale-aware keyboard scrolling. Theming scope controls retain their place before tabs; preview/form columns retain their intended widths. The lab exposes a preview region and tab events, while its consumer owns preview playback. Revisiting the selected Overview route keeps the existing page alive.
 
 Feature setup pages compose `DeucarianEditorFeatureSection`: the shared section owns switch, status, details, actions and responsive styling; the domain supplies saved state and commands. `SetState` never invokes a command. Unknown connections use an empty ring, not a success checkmark. Register concise `navigationLabel` values and an optional `navigationGroupIcon` while preserving stable tool IDs and full display names.
 
-All editor surfaces share the workspace's charcoal/teal palette and DINish typography. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
+All editor surfaces share the workspace's charcoal/teal palette and DINish typography. Code, log examples and diffs use JetBrains Mono Regular, bundled unmodified from [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono/tree/19371302b95d218af43299bce79ddbddd0bc364d) under the accompanying SIL Open Font License. New pages use workspace controls; existing IMGUI forms use `DeucarianEditorInputGUI`, `DeucarianEditorTextGUI` and `DeucarianEditorActionGUI`. These helpers own visual treatment without changing package actions. Do not copy styles into consuming packages or mutate Unity's shared `EditorStyles`.
 
 Custom inspectors compose `DeucarianEditorInspector.CreateToolkit` and bind native properties through `Properties` or `Property` using the original `SerializedObject`. The Inspector has no sidebar or scale dock. Native bindings preserve Undo, mixed values and prefab overrides; shared sliders and switches follow source changes. `Create(OnInspectorGUI)` remains a compatibility boundary, not the pattern for new forms.
 

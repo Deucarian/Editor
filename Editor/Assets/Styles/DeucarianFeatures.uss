@@ -116,6 +116,9 @@
 .deucarian-workspace .dw-switch-label { width: 48px; margin-left: 24px; font-size: 24px; flex-shrink: 0; }
 .deucarian-workspace .dw-feature-unseparated .dw-feature-details { border-top-width: 0; padding-top: 0; }
 .deucarian-workspace .dw-feature-actions-leading { margin-left: 130px; justify-content: flex-start; margin-top: 32px; }
+.deucarian-workspace .dw-feature-actions-leading > .dw-button { margin: 0 24px 0 0; }
+.deucarian-workspace .dw-switch-field.dw-switch-trailing > .dw-field-label { flex-grow: 1; }
+.deucarian-workspace .dw-switch-field.dw-switch-trailing > .dw-switch { flex-grow: 0; flex-basis: auto; }
 .deucarian-workspace .dw-feature-compact .dw-feature-actions-leading { margin-left: 0; }
 .deucarian-workspace.dw-inspector .dw-field-label { width: 150px; padding: 8px 12px 0 0; font-size: 14px; }
 .deucarian-workspace.dw-inspector .dw-field { margin-bottom: 12px; }
@@ -288,6 +291,11 @@
 .deucarian-workspace .dw-action-summary > .dw-button { min-width: 245px; min-height: 80px; }
 .deucarian-workspace .dw-code { margin: 14px 0 30px; min-height: 100px; }
 .deucarian-workspace .dw-code > .unity-base-field__input { padding: 24px; white-space: normal; }
+.deucarian-workspace .dw-code-example,
+.deucarian-workspace .dw-code > .unity-base-field__input,
+.deucarian-workspace .dw-diff-line { -unity-font: url("../Fonts/JetBrainsMono-Regular.ttf"); -unity-font-definition: url("../Fonts/JetBrainsMono-Regular.ttf"); font-size: 21px; }
+.deucarian-workspace .dw-service-form .dw-end-actions { padding-left: 244px; justify-content: flex-start; }
+.deucarian-workspace.dw-compact .dw-service-form .dw-end-actions { padding-left: 0; }
 .deucarian-workspace .dw-empty-preview { min-height: 175px; align-items: center; justify-content: center; }
 .deucarian-workspace .dw-empty-preview > .dw-icon { width: 56px; height: 56px; margin-bottom: 22px; -unity-background-image-tint-color: var(--dw-muted); }
 .deucarian-workspace .dw-check-row { flex-direction: row; align-items: center; flex-wrap: wrap; padding: 25px 12px; border-top-width: 1px; border-top-color: var(--dw-border); }
@@ -346,3 +354,44 @@
 .deucarian-workspace.dw-inspector .dw-field > .dw-single-line > .unity-base-field__input { height: 32px; max-height: 32px; }
 .deucarian-workspace .dw-check-expanded > .dw-navigation-row > .dw-icon { rotate: 90deg; }
 .deucarian-workspace .dw-note { white-space: normal; }
+.deucarian-search-input .deucarian-search-glyph { width: 14px; height: 14px; margin-right: 5px; }
+.deucarian-search-input .deucarian-search-caption { color: #bac3cd; font-size: 14px; }
+.deucarian-workspace .deucarian-search-input .deucarian-search-glyph { width: 26px; height: 26px; margin: 0 14px; -unity-background-image-tint-color: var(--dw-muted); }
+.deucarian-workspace .deucarian-search-input .deucarian-search-caption { color: var(--dw-muted); font-size: 24px; }
+.deucarian-workspace .dw-filter-scope { align-items: stretch; flex-direction: column; padding-top: 0; border-width: 0; }
+.deucarian-workspace .dw-filter-toolbar { flex-direction: row; align-items: flex-end; flex-wrap: wrap; }
+.deucarian-workspace .dw-filter-toolbar > .dw-field { flex-direction: column; align-items: stretch; flex-basis: 500px; margin-bottom: 8px; }
+.deucarian-workspace .dw-filter-toolbar > .dw-field > .dw-field-label { width: auto; margin: 0 0 10px; }
+.deucarian-workspace .dw-filter-toolbar > .deucarian-search-input { flex-grow: 1; flex-basis: 560px; min-width: 0; height: 60px; margin: 0 24px 8px 0; }
+.deucarian-workspace .dw-filter-toolbar > .dw-button { margin-bottom: 8px; }
+.deucarian-workspace .dw-balanced-panels > .dw-form-pane { width: 48%; }
+.deucarian-workspace .dw-balanced-panels { margin-bottom: 96px; }
+.deucarian-workspace .dw-balanced-panels.dw-split-stacked > .dw-form-pane { width: auto; }
+.deucarian-workspace .dw-balanced-panels.dw-split-stacked { margin-bottom: 12px; }
+.deucarian-workspace .dw-balanced-panels .dw-collection-icon { border-width: 0; }
+.deucarian-workspace .dw-overview-focus.dw-status-compact { margin-bottom: 8px; }
+.deucarian-workspace .dw-property-list > .dw-field { border-bottom-width: 1px; border-bottom-color: var(--dw-border); padding: 20px 0; margin-bottom: 0; }
+.deucarian-workspace .dw-property-list > .dw-field > .dw-field-label { width: 56%; }
+.deucarian-workspace .dw-end-actions > .dw-button { min-width: 210px; max-width: 100%; }
+.deucarian-workspace .dw-package-collection.dw-collection-panels > .dw-form-pane { width: 58%; padding: 10px 0; }
+.deucarian-workspace .dw-package-collection.dw-collection-panels > .dw-preview-pane { padding: 30px 24px 20px 42px; border-width: 0; border-left-width: 1px; border-radius: 0; }
+.deucarian-workspace .dw-package-collection .dw-collection-icon { border-width: 0; margin-right: 20px; }
+.deucarian-workspace .dw-package-collection .dw-collection-copy { flex-direction: row; align-items: center; }
+.deucarian-workspace .dw-package-collection .dw-collection-copy > .dw-message-title { font-size: 24px; -unity-font-style: normal; flex-grow: 1; flex-basis: 0; margin-right: 24px; }
+.deucarian-workspace .dw-package-collection .dw-collection-copy > .dw-muted { width: 105px; }
+.deucarian-workspace .dw-package-collection .dw-collection-status { min-width: 155px; }
+.deucarian-workspace .dw-package-collection .dw-primary { align-self: stretch; width: 100%; margin: 24px 0; }
+.deucarian-workspace .dw-package-collection.dw-split-stacked > .dw-form-pane { width: auto; }
+.deucarian-workspace .dw-package-collection.dw-split-stacked > .dw-preview-pane { padding: 24px; border-left-width: 0; }
+.deucarian-workspace .dw-package-filters > .dw-field { flex-grow: 0; flex-basis: 520px; }
+.deucarian-workspace .dw-package-filters > .dw-field > .dw-field-label { width: 120px; }
+.deucarian-workspace .dw-package-filters > .deucarian-search-input { flex-grow: 1; flex-basis: 480px; max-width: 550px; height: 60px; margin-bottom: 8px; }
+.deucarian-workspace .dw-update-bar { border-width: 1px; border-radius: 5px; padding: 18px 24px; margin: 28px 0 30px; }
+.deucarian-workspace .dw-update-bar > .dw-button { margin-left: 18px; }
+.deucarian-workspace .dw-footer .deucarian-icon-text-button__label { font-size: 13px; }
+.deucarian-workspace .dw-service-collection { margin-top: 0; margin-bottom: 120px; }
+.deucarian-workspace .dw-service-collection.dw-collection-panels > .dw-form-pane { width: 27%; }
+.deucarian-workspace .dw-service-collection .dw-collection-icon { width: 55px; border-width: 0; margin-right: 12px; }
+.deucarian-workspace .dw-service-collection .dw-collection-copy > .dw-message-title { font-size: 24px; -unity-font-style: normal; }
+.deucarian-workspace .dw-service-collection.dw-split-stacked { margin-bottom: 12px; }
+.deucarian-workspace .dw-service-collection.dw-split-stacked > .dw-form-pane { width: auto; }

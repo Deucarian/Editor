@@ -72,6 +72,7 @@ namespace Deucarian.Editor
         private readonly VisualElement hint;
         internal DeucarianEditorSearchInput(string placeholder)
         {
+            AddToClassList("deucarian-search-input");
             tooltip = placeholder;
             hint = new VisualElement { pickingMode = PickingMode.Ignore };
             hint.style.position = Position.Absolute;
@@ -81,13 +82,10 @@ namespace Deucarian.Editor
             hint.style.bottom = 0;
             hint.style.flexDirection = FlexDirection.Row;
             hint.style.alignItems = Align.Center;
-            var icon = new Image { image = DeucarianEditorIcons.GetIcon("search"), pickingMode = PickingMode.Ignore, tintColor = DeucarianEditorTheme.MutedText };
-            icon.style.width = 14f;
-            icon.style.height = 14f;
-            icon.style.marginRight = 5f;
+            var icon = DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Search);
+            icon.AddToClassList("deucarian-search-glyph");
             var label = new Label(placeholder) { name = "deucarian-search-placeholder", pickingMode = PickingMode.Ignore };
-            label.style.color = DeucarianEditorTheme.MutedText;
-            label.style.fontSize = 14f;
+            label.AddToClassList("deucarian-search-caption");
             hint.Add(icon);
             hint.Add(label);
             Add(hint);

@@ -9,6 +9,31 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianEditorNativeFormsTests
     {
+        [UnityTest]
+        public IEnumerator CodeExamplesUseTheBundledMonospaceFont()
+        {
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
+            window.Show();
+            try
+            {
+                using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Review"))
+                {
+                    var example = DeucarianEditorWorkspaceControls.Label("iii WWW 0123", "dw-code-example");
+                    workspace.Content.Add(example);
+                    for (int i = 0; i < 6; i++) yield return null;
+                    var font = AssetDatabase.LoadAssetAtPath<Font>(DeucarianEditorUIResources.FontsPath + "/JetBrainsMono-Regular.ttf");
+                    Assert.NotNull(font);
+                    Assert.AreSame(font, example.resolvedStyle.unityFont);
+                    Assert.AreSame(font, example.resolvedStyle.unityFontDefinition.font,
+                        "Unity's inherited font definition must not override the code font.");
+                    var narrow = example.MeasureTextSize("iiii", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                    var wide = example.MeasureTextSize("WWWW", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                    Assert.That(narrow.x, Is.EqualTo(wide.x).Within(0.1f), "Rendered glyph advances must be monospace.");
+                }
+            }
+            finally { window.Close(); }
+        }
+
         [Test]
         public void ChoiceIconsFollowTheSelectedSemanticStatusWithoutRetainingOldTints()
         {

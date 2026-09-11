@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.3] - 2026-09-11
+
+- Align native filters, paneled collections, trailing switches and action rows with the approved reference compositions.
+- Give code examples and change reviews a bundled, licensed monospace font.
+- Keep empty descriptions out of status/list layouts and correct compact operation-footer button typography.
+
 ## [1.10.2] - 2026-09-11
 
 - Preserve Overview content on repeated navigation and keep form/preview columns at their intended widths.

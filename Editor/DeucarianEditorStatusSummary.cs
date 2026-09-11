@@ -28,6 +28,7 @@ namespace Deucarian.Editor
         public void Set(string title, string description, DeucarianEditorStatus status, string iconId = null)
         {
             Title.text = title; Description.text = description;
+            DeucarianEditorWorkspaceControls.Show(Description, !string.IsNullOrWhiteSpace(description));
             foreach (string value in new[] { "success", "warning", "error", "info" })
                 Root.EnableInClassList("dw-focus--" + value, value == status.ToString().ToLowerInvariant());
             string id = status == DeucarianEditorStatus.Success ? DeucarianEditorIconIds.Success
