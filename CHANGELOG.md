@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2] - 2026-09-11
+
+- Preserve Overview content on repeated navigation and keep form/preview columns at their intended widths.
+- Keep keyboard-focused controls visible inside scaled scrolling forms, including narrow layouts.
+- Refine palette context, color-field proportions and spacing using the shared visual system.
+- Keep notification playback with its owning package; the shared lab exposes a preview region and tab event.
+
 ## [1.10.1] - 2026-09-11
 
 - Keep wrapped headings and context filters scrollable without starving page content at large UI scales.

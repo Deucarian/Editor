@@ -26,7 +26,8 @@ namespace Deucarian.Editor
         public DeucarianEditorWorkspaceForm Composer { get; }
         public DeucarianEditorWorkspaceForm Appearance { get; }
         public DeucarianEditorWorkspaceForm Audio { get; }
-        public DeucarianEditorMotionPreview MotionPreview { get; }
+        public VisualElement MotionPreviewRoot { get; }
+        public event Action<int> TabChanged;
 
         public DeucarianEditorLabWorkspace(VisualElement root, string context, string title, string subtitle,
             Action clearMessages, Action<string> selectTarget)
@@ -79,8 +80,8 @@ namespace Deucarian.Editor
             preview.Add(overflow);
             var appearance = AddPage();
             var appearanceForm = new VisualElement();
-            MotionPreview = new DeucarianEditorMotionPreview();
-            var appearanceSplit = DeucarianEditorWorkspaceControls.Split(appearanceForm, MotionPreview);
+            MotionPreviewRoot = new VisualElement();
+            var appearanceSplit = DeucarianEditorWorkspaceControls.Split(appearanceForm, MotionPreviewRoot);
             appearanceSplit.AddToClassList("dw-motion-split");
             appearance.Add(appearanceSplit);
             Appearance = new DeucarianEditorWorkspaceForm(appearanceForm);
@@ -99,7 +100,7 @@ namespace Deucarian.Editor
             DeucarianEditorWorkspaceControls.Show(Workspace.Scope, index == 0);
             Workspace.Subtitle.text = index == 0 ? "Create a message. See how it feels." : index == 1
                 ? "Set how messages appear." : "A small sound when attention is needed.";
-            if (index != 1) MotionPreview.Stop();
+            TabChanged?.Invoke(index);
         }
 
         public void SetTargets(IReadOnlyList<string> ids, IReadOnlyList<string> labels, string selected, string note)
@@ -144,7 +145,7 @@ namespace Deucarian.Editor
         }
 
         public void RefreshForms() { Composer.Refresh(); Appearance.Refresh(); Audio.Refresh(); }
-        public void Dispose() { MotionPreview.Dispose(); Workspace.Dispose(); entries.Clear(); }
+        public void Dispose() { TabChanged = null; Workspace.Dispose(); entries.Clear(); }
 
         private VisualElement AddPage(bool scrollable = true)
         {

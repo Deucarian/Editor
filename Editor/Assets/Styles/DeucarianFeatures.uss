@@ -183,6 +183,9 @@
 .deucarian-workspace .dw-color-swatch > .unity-base-field__input { padding: 0; min-height: 60px; border-radius: 5px; overflow: hidden; }
 .deucarian-workspace .dw-color-swatch .unity-color-field__eyedropper { display: none; }
 .deucarian-workspace .dw-color-hex { width: 250px; flex-grow: 1; flex-shrink: 1; min-width: 80px; margin: 0; }
+.deucarian-workspace .dw-color-row { margin-bottom: 40px; }
+.deucarian-workspace .dw-color-row > .dw-color-field { max-width: 350px; }
+.deucarian-workspace.dw-inspector .dw-color-row { margin-bottom: 14px; }
 .deucarian-workspace .dw-color-field .unity-base-field__label { display: none; }
 .deucarian-workspace.dw-inspector .dw-color-swatch { width: 38px; min-width: 38px; height: 32px; margin-right: 12px; }
 .deucarian-workspace.dw-inspector .dw-color-swatch > .unity-base-field__input { min-height: 32px; }
@@ -205,7 +208,7 @@
 .deucarian-workspace .dw-motion-specimen { padding: 8px 0; }
 .deucarian-workspace .dw-motion-preview > .dw-actions { justify-content: center; margin: 28px 0 62px; }
 .deucarian-workspace .dw-motion-split > .dw-form-pane { width: 57%; padding: 16px 52px 0 0; border-width: 0; }
-.deucarian-workspace .dw-motion-split > .dw-preview-pane { padding: 50px; }
+.deucarian-workspace .dw-motion-split > .dw-preview-pane { padding: 0; }
 .deucarian-workspace .dw-lab-destination { border-width: 1px; border-color: var(--dw-border); border-radius: 5px; padding: 24px; margin: 22px 0 10px; }
 .deucarian-workspace .dw-lab-destination > .dw-label { width: 196px; }
 .deucarian-workspace .dw-lab-destination .dw-choice-bar { width: 660px; max-width: 100%; }
@@ -231,6 +234,9 @@
 .deucarian-workspace .dw-motion-preview .dw-message { padding: 20px; min-height: 80px; background-color: var(--dw-field); border-color: var(--dw-border); }
 .deucarian-workspace .dw-motion-preview .dw-message .dw-message-title { -unity-font-style: normal; margin-bottom: 0; }
 .deucarian-workspace .dw-motion-preview .dw-message .dw-message-trailing { display: none; }
+.deucarian-workspace .dw-motion-preview .dw-message .dw-button { width: 36px; min-width: 36px; height: 36px; min-height: 36px; padding: 0; border-width: 0; background-color: transparent; }
+.deucarian-workspace .dw-motion-preview .dw-message .dw-button .dw-icon { width: 24px; height: 24px; margin: 0; -unity-background-image-tint-color: var(--dw-text); }
+.deucarian-workspace .dw-foldout-panel { border-width: 1px; border-color: var(--dw-border); border-radius: 5px; padding: 18px 24px; margin-top: 40px; }
 .deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-form-pane { width: auto; flex-basis: auto; max-height: none; margin: 0 0 22px; padding: 28px; }
 .deucarian-workspace .dw-lab-split.dw-split-stacked > .dw-preview-pane { flex-basis: auto; min-height: 270px; padding: 28px; }
 .deucarian-workspace .dw-motion-split.dw-split-stacked > .dw-form-pane { width: auto; padding: 0; }
@@ -266,6 +272,7 @@
 .deucarian-workspace .dw-icon.dw-status-success { -unity-background-image-tint-color: var(--dw-success); }
 .deucarian-workspace .dw-icon.dw-status-warning { -unity-background-image-tint-color: var(--dw-warning); }
 .deucarian-workspace .dw-icon.dw-status-error { -unity-background-image-tint-color: var(--dw-error); }
+.deucarian-workspace .dw-icon.dw-status-info { -unity-background-image-tint-color: var(--dw-info); }
 .deucarian-workspace .dw-card-workspace { flex-grow: 1; min-height: 0; padding: 28px; }
 .deucarian-workspace .dw-inset-split { flex-grow: 1; min-height: 0; }
 .deucarian-workspace .dw-inset-split > .dw-form-pane { width: 36%; flex-grow: 0; flex-basis: auto; padding-right: 32px; }

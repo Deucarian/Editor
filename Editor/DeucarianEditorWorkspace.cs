@@ -151,6 +151,7 @@ namespace Deucarian.Editor
         /// <summary>Asset/context filters precede local tabs on collection pages.</summary>
         public void SetScopeBeforeTabs(bool before = true)
         {
+            Scope.EnableInClassList("dw-scope-before-tabs", before);
             if (before) Scope.PlaceBehind(Tabs);
             else Scope.PlaceInFront(Tabs);
         }

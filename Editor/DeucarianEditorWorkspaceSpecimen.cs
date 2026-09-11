@@ -7,7 +7,6 @@ namespace Deucarian.Editor
     internal sealed class DeucarianEditorWorkspaceSpecimen : IDisposable
     {
         private readonly DeucarianEditorWorkspace workspace;
-        private DeucarianEditorMotionPreview motion;
         internal DeucarianEditorWorkspaceSpecimen(DeucarianEditorWorkspace workspace) =>
             this.workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
@@ -53,9 +52,6 @@ namespace Deucarian.Editor
             AddStatus(statuses, "Inactive", DeucarianEditorStatus.Disabled, "circle");
             var more = new DeucarianEditorWorkspaceForm(page).Section("More examples", true);
             more.Root.Add(new DeucarianEditorSteps("Choose", "Configure", "Review").Root);
-            motion = new DeucarianEditorMotionPreview();
-            motion.Specimen.Add(new DeucarianEditorMessageRow("Example warning", "A shared motion specimen.", DeucarianEditorStatus.Warning, "Preview"));
-            more.Root.Add(motion);
             more.Root.Add(new DeucarianEditorControlSpecimen());
             workspace.FooterLeading.text = "Component examples · Nothing is saved";
             workspace.FooterTrailing.text = string.Empty;
@@ -66,6 +62,6 @@ namespace Deucarian.Editor
             var symbol = Controls.Icon(icon); symbol.AddToClassList("dw-status-" + status.ToString().ToLowerInvariant());
             row.Add(symbol); row.Add(Controls.Label(label)); root.Add(row);
         }
-        public void Dispose() { motion?.Dispose(); motion = null; }
+        public void Dispose() { }
     }
 }

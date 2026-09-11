@@ -11,7 +11,9 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.10.1`.
+Current package version: `1.10.2`.
+
+Native workspaces use the same styled controls and scale-aware keyboard scrolling. Theming scope controls retain their place before tabs; preview/form columns retain their intended widths. The lab exposes a preview region and tab events, while its consumer owns preview playback. Revisiting the selected Overview route keeps the existing page alive.
 
 Feature setup pages compose `DeucarianEditorFeatureSection`: the shared section owns switch, status, details, actions and responsive styling; the domain supplies saved state and commands. `SetState` never invokes a command. Unknown connections use an empty ring, not a success checkmark. Register concise `navigationLabel` values and an optional `navigationGroupIcon` while preserving stable tool IDs and full display names.
 

@@ -105,15 +105,15 @@ namespace Deucarian.Editor
         private void ActivatePage(string route)
         {
             if (string.IsNullOrEmpty(route)) return;
+            bool wasSettings = showSettings;
             showSettings = route == "settings";
-            if (showSettings) { SetSearch(string.Empty); Render(); return; }
+            if (showSettings) { if (!wasSettings) SetSearch(string.Empty); return; }
             var area = DeucarianControlCenterArea.Overview;
             foreach (DeucarianControlCenterArea candidate in Enum.GetValues(typeof(DeucarianControlCenterArea)))
                 if (DeucarianControlCenterAreaIds.GetId(candidate) == route) { area = candidate; break; }
-            if (selectedArea != area || !string.IsNullOrEmpty(searchQuery) || focusedTargetId != null) Navigate(area, null);
+            if (wasSettings || selectedArea != area || !string.IsNullOrEmpty(searchQuery) || focusedTargetId != null) Navigate(area, null);
             workspace?.SelectNavigation(area == DeucarianControlCenterArea.Developer || area == DeucarianControlCenterArea.Project
                 ? "advanced" : DeucarianToolIds.ControlCenter);
-            Render();
         }
 
         private void BuildPage(VisualElement root)

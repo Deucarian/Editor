@@ -146,7 +146,15 @@ namespace Deucarian.Editor
                 var icon = DeucarianEditorWorkspaceControls.Icon(icons[Clamp(read(), choices.Count)]);
                 icon.AddToClassList("dw-choice-icon");
                 field.Q(className: "unity-base-field__input").Insert(0, icon);
-                synchronizers.Add(() => icon.style.backgroundImage = new StyleBackground(DeucarianEditorIcons.GetIcon(icons[Clamp(read(), choices.Count)])));
+                synchronizers.Add(() =>
+                {
+                    string selected = icons[Clamp(read(), choices.Count)];
+                    icon.style.backgroundImage = new StyleBackground(DeucarianEditorIcons.GetIcon(selected));
+                    icon.EnableInClassList("dw-status-warning", selected == DeucarianEditorIconIds.Warning);
+                    icon.EnableInClassList("dw-status-error", selected == DeucarianEditorIconIds.Error);
+                    icon.EnableInClassList("dw-status-info", selected == DeucarianEditorIconIds.Info);
+                    icon.EnableInClassList("dw-status-success", selected == DeucarianEditorIconIds.Success);
+                });
             }
             field.RegisterValueChangedCallback(_ => write(field.index));
             Refresh();

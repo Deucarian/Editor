@@ -9,6 +9,26 @@ namespace Deucarian.Editor.Tests
 {
     public sealed class DeucarianEditorNativeFormsTests
     {
+        [Test]
+        public void ChoiceIconsFollowTheSelectedSemanticStatusWithoutRetainingOldTints()
+        {
+            var root = new VisualElement();
+            var form = new DeucarianEditorWorkspaceForm(root);
+            int selection = 0;
+            var choice = form.Choice("severity", "Type", new[] { "Warning", "Error", "Info", "Success", "Other" },
+                () => selection, value => selection = value,
+                new[] { DeucarianEditorIconIds.Warning, DeucarianEditorIconIds.Error, DeucarianEditorIconIds.Info,
+                    DeucarianEditorIconIds.Success, DeucarianEditorIconIds.Settings });
+            var icon = choice.Q(className: "dw-choice-icon");
+            string[] states = { "warning", "error", "info", "success" };
+            for (selection = 0; selection < 5; selection++)
+            {
+                form.Refresh();
+                for (int state = 0; state < states.Length; state++)
+                    Assert.That(icon.ClassListContains("dw-status-" + states[state]), Is.EqualTo(selection == state));
+            }
+        }
+
         [UnityTest]
         public IEnumerator SerializedFieldsRoundTripAndDisposeReleasesBindings()
         {

@@ -120,9 +120,11 @@
 .deucarian-workspace .dw-choice-bar .dw-selected { border-color: #00d8e6; background-color: var(--dw-selected); }
 .deucarian-workspace .dw-content { flex-grow: 1; min-height: 0; padding-top: 12px; }
 .deucarian-workspace .dw-split { flex-direction: row; flex-grow: 1; min-height: 0; }
-.deucarian-workspace .dw-form-pane { width: 37%; min-width: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; padding: 6px 24px 18px 4px; border-right-width: 1px; border-right-color: var(--dw-border); }
+.deucarian-workspace .dw-form-pane { width: 48%; min-width: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; padding: 6px 24px 18px 4px; border-right-width: 1px; border-right-color: var(--dw-border); }
 .deucarian-workspace .dw-preview-pane { flex-grow: 1; min-width: 0; padding: 6px 0 18px 20px; }
 .deucarian-workspace .dw-scroll { flex-grow: 1; min-height: 0; }
+.deucarian-workspace .dw-scroll.dw-context-scroll { flex-grow: 0; }
+.deucarian-workspace .dw-split > .dw-form-pane { flex-grow: 0; }
 .deucarian-workspace .dw-scroll .unity-scroll-view__content-container { min-width: 0; }
 .deucarian-workspace .dw-section-title { font-size: 29px; -unity-font: url("../Fonts/DINish-SemiBold.otf"); -unity-font-style: bold; margin-bottom: 14px; }
 .deucarian-workspace .dw-field { flex-direction: row; min-width: 0; margin-bottom: 20px; align-items: flex-start; flex-shrink: 0; }
@@ -236,7 +238,10 @@
 .deucarian-workspace .dw-summary-card .unity-button { font-size: 20px; max-width: 100%; height: auto; min-height: 32px; padding: 6px 10px; white-space: normal; border-radius: 4px; background-color: var(--dw-field); border-color: var(--dw-border); color: var(--dw-text); }
 .deucarian-workspace .dw-summary-card .unity-button:hover { background-color: var(--dw-hover); border-color: var(--dw-accent); }
 .deucarian-workspace .dw-scope { flex-wrap: wrap; }
-.deucarian-workspace .dw-scope .dw-field { min-width: 0; flex-basis: 300px; max-width: 500px; flex-grow: 1; margin-right: 20px; margin-bottom: 8px; }
+.deucarian-workspace .dw-scope .dw-field { min-width: 0; flex-basis: 440px; flex-grow: 1; margin-right: 20px; margin-bottom: 8px; }
+.deucarian-workspace .dw-scope .dw-field-label { width: 200px; }
+.deucarian-workspace .dw-scope.dw-scope-before-tabs { border-bottom-width: 0; margin-bottom: 14px; }
+.deucarian-workspace .dw-visual-palette-split { padding-top: 40px; }
 .deucarian-workspace .dw-scope.dw-scope-stacked { flex-direction: column; align-items: stretch; border-bottom-width: 0; }
 .deucarian-workspace .dw-scope.dw-scope-stacked > .dw-field { flex-basis: auto; flex-grow: 0; width: auto; max-width: none; margin-right: 0; margin-bottom: 20px; }
 .deucarian-workspace .dw-scope.dw-scope-stacked .dw-field-label { width: 290px; }

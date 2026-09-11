@@ -52,6 +52,7 @@ namespace Deucarian.Editor.Tests
         [UnityTest]
         public IEnumerator LabControlsAdaptToTheirColumnAndRemainReachableAfterResizing()
         {
+            int previousScale = DeucarianEditorAppearance.WorkspaceScalePercent;
             var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>();
             window.Show();
             using (var lab = new DeucarianEditorLabWorkspace(window.rootVisualElement, "Test", "Notifications", "Create a test message.", () => { }, _ => { }))
@@ -67,8 +68,10 @@ namespace Deucarian.Editor.Tests
                     var add = lab.Composer.Action("layout-add", "Add test message", () => { }, primary: true);
                     lab.SetMessages(new[] { new DeucarianEditorMessageData("layout-message", "A longer warning title", "Please resolve this test message to simulate recovery.", DeucarianEditorStatus.Warning, "Until resolved", null, "Resolve", () => { }) }, Array.Empty<DeucarianEditorMessageData>(), 0);
                     foreach (var size in Sizes())
+                    foreach (int scale in new[] { 75, 100, 125, 150 })
                     {
                         Resize(window, size);
+                        DeucarianEditorAppearance.WorkspaceScalePercent = scale;
                         for (int i = 0; i < 8; i++) yield return null;
                         var composer = lab.Workspace.Root.Q(className: "dw-lab-composer");
                         foreach (var field in composer.Query(className: "dw-field").ToList())
@@ -84,10 +87,15 @@ namespace Deucarian.Editor.Tests
                         var preview = lab.Workspace.Root.Q("lab-preview-scroll");
                         Assert.That(composer.resolvedStyle.height, Is.GreaterThan(70));
                         Assert.That(preview.resolvedStyle.height, Is.GreaterThan(70));
-                        pageScroll.ScrollTo(add);
-                        for (int i = 0; i < 3; i++) yield return null;
+                        choice.Q<Button>("choice-0").Focus();
+                        yield return null;
+                        add.Focus();
+                        for (int i = 0; i < 8; i++) yield return null;
                         Assert.That(composer.Contains(add), Is.True, "The action belongs to the form and follows its fields.");
-                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1));
+                        Assert.That(add.focusController.focusedElement, Is.SameAs(add));
+                        Assert.That(add.worldBound.yMax, Is.LessThanOrEqualTo(lab.Workspace.Content.worldBound.yMax + 1),
+                            size + " scale=" + DeucarianEditorAppearance.WorkspaceScalePercent + " offset=" + pageScroll.scrollOffset +
+                            " range=" + pageScroll.verticalScroller.highValue + " viewport=" + pageScroll.contentViewport.worldBound + " target=" + add.worldBound);
                         Assert.That(add.resolvedStyle.height, Is.GreaterThanOrEqualTo(42));
                         Assert.That(add.worldBound.width, Is.EqualTo(add.parent.worldBound.width).Within(2));
                         Assert.That(add.worldBound.yMin, Is.GreaterThanOrEqualTo(lab.Workspace.Content.worldBound.yMin));
@@ -113,7 +121,7 @@ namespace Deucarian.Editor.Tests
                     }
                     Assert.That(lifetime, Is.EqualTo(1));
                 }
-                finally { window.Close(); }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previousScale; window.Close(); }
             }
         }
 

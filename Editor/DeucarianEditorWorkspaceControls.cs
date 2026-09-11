@@ -54,6 +54,7 @@ namespace Deucarian.Editor
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             var row = Region(null, "dw-field");
+            if (input is DeucarianEditorColorField) row.AddToClassList("dw-color-row");
             var caption = Label(label, "dw-field-label");
             row.Add(caption);
             input.AddToClassList("dw-field-input");
@@ -69,7 +70,7 @@ namespace Deucarian.Editor
 
         public static ScrollView Scroll(string name)
         {
-            var scroll = new ScrollView(ScrollViewMode.Vertical) { name = name };
+            var scroll = new DeucarianEditorScrollView { name = name };
             scroll.AddToClassList("dw-scroll");
             scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             return scroll;
