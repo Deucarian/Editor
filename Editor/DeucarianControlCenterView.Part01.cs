@@ -231,20 +231,13 @@ namespace Deucarian.Editor
             {
                 searchResults.Add(result);
                 DeucarianControlCenterSearchResult captured = result;
-                var row = new Button(() => OpenSearchResult(captured))
-                {
-                    name = "control-center-search-result-" + result.TargetId
-                };
-                row.style.marginBottom = 6f;
-                row.style.paddingLeft = 10f;
-                row.style.paddingRight = 10f;
-                row.style.paddingTop = 8f;
-                row.style.paddingBottom = 8f;
-                row.style.unityTextAlign = TextAnchor.MiddleLeft;
-                row.Add(DeucarianControlCenterVisuals.CreateLabel(result.Title, true));
+                var row = DeucarianEditorWorkspaceControls.Button(string.Empty, () => OpenSearchResult(captured));
+                row.name = "control-center-search-result-" + result.TargetId;
+                row.AddToClassList("dw-search-result");
+                row.Add(DeucarianEditorWorkspaceControls.Label(result.Title, "dw-message-title"));
                 if (result.Description.Length > 0)
                 {
-                    row.Add(DeucarianControlCenterVisuals.CreateMutedLabel(result.Description));
+                    row.Add(DeucarianEditorWorkspaceControls.Label(result.Description, "dw-muted"));
                 }
 
                 content.Add(row);
@@ -261,12 +254,11 @@ namespace Deucarian.Editor
         internal void MoveSearchSelection(int direction)
         {
             if (searchButtons.Count == 0) return;
-            if (selectedSearchResult >= 0) searchButtons[selectedSearchResult].style.borderLeftWidth = 0;
+            if (selectedSearchResult >= 0) searchButtons[selectedSearchResult].RemoveFromClassList("dw-selected");
             selectedSearchResult = selectedSearchResult < 0 ? (direction > 0 ? 0 : searchButtons.Count - 1)
                 : (selectedSearchResult + direction + searchButtons.Count) % searchButtons.Count;
             var selected = searchButtons[selectedSearchResult];
-            selected.style.borderLeftWidth = 3;
-            selected.style.borderLeftColor = DeucarianEditorTheme.Accent;
+            selected.AddToClassList("dw-selected");
             content.ScrollTo(selected);
         }
 

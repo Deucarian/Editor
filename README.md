@@ -1,5 +1,9 @@
 # Deucarian Editor
 
+## Asset selection and project defaults
+
+Asset-backed pages use `DeucarianEditorAssetField` or `DeucarianEditorWorkspaceForm.AssetWithActions`. Discovery includes installed packages and project assets and is cached until project changes. The domain supplies defaults, compatibility, creation and any deep-copy policy; opening or refreshing a field does not create assets or change runtime configuration. Keep the same control instance alive when rebuilding dependent content so Unity's open object picker continues to deliver every selection. See [Shared asset workflow](Documentation~/AssetWorkflow.md).
+
 ## Generated typed definition keys
 
 The shared key tools turn project-authored definitions into named C# values and Inspector dropdown choices. `.g.cs` means generated C#: domain providers read source assets under `Assets`, and the editor generates and compiles ordinary runtime key classes. Callers use the same typed identity in code or a serialized field without retaining the source asset.
@@ -27,7 +31,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.12.0`.
+Current package version: `1.13.0`.
 
 Native workspaces use the same styled controls and scale-aware keyboard scrolling. Theming scope controls retain their place before tabs; preview/form columns retain their intended widths. The lab exposes a preview region and tab events, while its consumer owns preview playback. Revisiting the selected Overview route keeps the existing page alive.
 

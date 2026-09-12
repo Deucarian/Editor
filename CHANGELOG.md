@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.13.0] - Unreleased
+
+- Unify package/project asset selection, explicit create/customize/default actions and origin hints. Retain native object fields across dependent content updates and scale Overview search rows with workspace typography.
+
 ## [1.12.0] - Unreleased
 
 - Keep Overview review navigation on one project-check list, including issues contributed by domain sections; filter by severity without switching pages, preserve filters on refresh, and name explicit tool destinations.
