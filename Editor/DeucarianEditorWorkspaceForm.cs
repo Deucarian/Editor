@@ -133,6 +133,16 @@ namespace Deucarian.Editor
             return field;
         }
 
+        public ObjectField AssetWithActions(string id, string label, Type type, Func<Object> read, Action<Object> write,
+            Func<Object> create = null, Func<Object, Object> customize = null, Func<Object> defaultValue = null,
+            bool allowSceneObjects = false)
+        {
+            var field = new DeucarianEditorAssetField(id, type, read, write, create, customize, defaultValue, allowSceneObjects);
+            Root.Add(DeucarianEditorWorkspaceControls.Field(label, field.Root));
+            synchronizers.Add(field.Refresh);
+            return field.Input;
+        }
+
         public PopupField<string> Choice(string id, string label, IReadOnlyList<string> choices, Func<int> read, Action<int> write,
             IReadOnlyList<string> icons = null)
         {

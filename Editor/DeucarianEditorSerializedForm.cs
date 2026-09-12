@@ -11,12 +11,14 @@ namespace Deucarian.Editor
     {
         private readonly SerializedObject serialized;
         private bool disposed;
+        private readonly bool editable;
         public VisualElement Root { get; }
 
         public DeucarianEditorSerializedForm(VisualElement root, UnityEngine.Object target)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
             serialized = new SerializedObject(target != null ? target : throw new ArgumentNullException(nameof(target)));
+            editable = !DeucarianEditorAssetCatalog.IsPackageAsset(target);
         }
 
         public VisualElement Property(string path, string label = null)
@@ -36,6 +38,7 @@ namespace Deucarian.Editor
                     var native = new PropertyField(property, label ?? property.displayName) { name = path };
                     native.AddToClassList("dw-native-property");
                     native.Bind(serialized);
+                    native.SetEnabled(editable);
                     Root.Add(native);
                     return native;
             }
@@ -77,11 +80,12 @@ namespace Deucarian.Editor
             return serialized.FindProperty(path) ?? throw new ArgumentException("Unknown serialized field: " + path, nameof(path));
         }
 
-        private static T Bind<T>(T field, SerializedProperty property) where T : VisualElement, IBindable
+        private T Bind<T>(T field, SerializedProperty property) where T : VisualElement, IBindable
         {
             field.name = property.propertyPath;
             field.tooltip = property.tooltip;
             field.BindProperty(property);
+            field.SetEnabled(editable);
             return field;
         }
 

@@ -1,5 +1,9 @@
 # Deucarian Editor
 
+## Asset selection and project defaults
+
+Asset-backed pages use `DeucarianEditorAssetField` or `DeucarianEditorWorkspaceForm.AssetWithActions`. Discovery includes installed packages and project assets and is cached until project changes. The domain supplies defaults, compatibility, creation and any deep-copy policy; opening or refreshing a field does not create assets or change runtime configuration. Keep the same control instance alive when rebuilding dependent content so Unity's open object picker continues to deliver every selection. See [Shared asset workflow](Documentation~/AssetWorkflow.md).
+
 ## Generated typed definition keys
 
 The shared key tools turn project-authored definitions into named C# values and Inspector dropdown choices. `.g.cs` means generated C#: domain providers read source assets under `Assets`, and the editor generates and compiles ordinary runtime key classes. Callers use the same typed identity in code or a serialized field without retaining the source asset.

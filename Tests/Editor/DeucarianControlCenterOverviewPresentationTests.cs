@@ -71,5 +71,36 @@ namespace Deucarian.Editor.Tests
 
         private static DeucarianControlCenterSnapshot Snapshot(params DeucarianControlCenterCard[] cards) =>
             new DeucarianControlCenterSnapshot(DateTime.UtcNow, cards, Array.Empty<DeucarianControlCenterSection>(), Array.Empty<DeucarianToolDescriptor>());
+
+        [UnityTest]
+        public IEnumerator SearchResultsUseWorkspaceTypographyAtEverySupportedScale()
+        {
+            var window = ScriptableObject.CreateInstance<WorkspaceLayoutTestWindow>(); window.Show();
+            int previous = DeucarianEditorAppearance.WorkspaceScalePercent;
+            using (var workspace = new DeucarianEditorWorkspace(window.rootVisualElement, "Search test"))
+            using (var view = new DeucarianControlCenterView((_, __) => { }, () => { }))
+            {
+                try
+                {
+                    workspace.Content.Add(view.Root);
+                    view.Render(Snapshot(Card("search-sizing", DeucarianControlCenterArea.Overview, DeucarianControlCenterStatus.Success)),
+                        DeucarianControlCenterArea.Overview, null, "Build");
+                    var reference = DeucarianEditorWorkspaceControls.Label("Reference row", "dw-message-title"); workspace.Content.Add(reference);
+                    foreach (int width in new[] { 1586, 1000, 820 })
+                    foreach (int scale in new[] { 75, 100, 150 })
+                    {
+                        window.position = new Rect(30, 30, width, 800);
+                        DeucarianEditorAppearance.WorkspaceScalePercent = scale;
+                        for (int frame = 0; frame < 10; frame++) yield return null;
+                        var row = view.Root.Q<Button>("control-center-search-result-search-sizing");
+                        var title = row.Q<Label>(className: "dw-message-title");
+                        Assert.That(title.resolvedStyle.fontSize, Is.GreaterThanOrEqualTo(reference.resolvedStyle.fontSize));
+                        Assert.That(row.layout.height, Is.GreaterThanOrEqualTo(88));
+                        Assert.That(title.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 1));
+                    }
+                }
+                finally { DeucarianEditorAppearance.WorkspaceScalePercent = previous; window.Close(); }
+            }
+        }
     }
 }

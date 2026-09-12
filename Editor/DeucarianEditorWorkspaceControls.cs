@@ -81,12 +81,11 @@ namespace Deucarian.Editor
         {
             var search = Region(null, "dw-search");
             search.Add(Icon(DeucarianEditorIconIds.Search));
-            input = new TextField { name = id, tooltip = prompt };
-            search.Add(input);
             var placeholder = Label(prompt, "dw-search-placeholder");
             placeholder.pickingMode = PickingMode.Ignore;
+            input = new DeucarianEditorWorkspaceSearchField(placeholder) { name = id, tooltip = prompt };
+            search.Add(input);
             search.Add(placeholder);
-            input.RegisterValueChangedCallback(evt => Show(placeholder, string.IsNullOrEmpty(evt.newValue)));
             return search;
         }
 
