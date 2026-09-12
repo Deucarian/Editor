@@ -2,6 +2,8 @@
 
 ## [1.13.0] - Unreleased
 
+- Keep a non-interactive, color-coded X/Y/Z orientation reference above real rendered spatial previews; it follows the preview camera without intercepting gestures.
+
 - Unify package/project asset selection, explicit create/customize/default actions and origin hints. Retain native object fields across dependent content updates and scale Overview search rows with workspace typography.
 
 ## [1.12.0] - Unreleased

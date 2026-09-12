@@ -14,6 +14,7 @@ namespace Deucarian.Editor
         private readonly Label[] axes;
         private Camera projectionCamera;
         private Image renderedImage;
+        private DeucarianEditorOrientationGizmo orientation;
 
         /// <summary>Displays a caller-owned render texture in place of the illustrative geometry.</summary>
         public void SetRenderedTexture(Texture texture)
@@ -24,6 +25,12 @@ namespace Deucarian.Editor
                 renderedImage.StretchToParentSize();
                 Add(renderedImage);
                 if (axes != null) foreach (var axis in axes) axis.style.display = DisplayStyle.None;
+                if (showCube)
+                {
+                    orientation = new DeucarianEditorOrientationGizmo();
+                    Add(orientation);
+                    orientation.SetCamera(projectionCamera);
+                }
             }
             renderedImage.image = texture;
             MarkDirtyRepaint();
@@ -33,6 +40,7 @@ namespace Deucarian.Editor
         public void SetCamera(Camera camera)
         {
             projectionCamera = camera;
+            orientation?.SetCamera(camera);
             PositionAxes();
             MarkDirtyRepaint();
         }
