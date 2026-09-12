@@ -51,7 +51,7 @@ namespace Deucarian.Editor.Tests
                 focus.Q<Button>().Focus();
                 yield return null;
                 using (var evt = NavigationSubmitEvent.GetPooled()) { evt.target = focus.Q<Button>(); focus.Q<Button>().SendEvent(evt); }
-                Assert.That(area, Is.EqualTo(DeucarianControlCenterArea.Diagnostics));
+                Assert.That(area, Is.EqualTo(DeucarianControlCenterArea.Project), "Review always opens the unified check list, never an arbitrary domain page.");
                 Assert.That(target, Is.EqualTo("error"));
             }
             finally { window.Close(); }

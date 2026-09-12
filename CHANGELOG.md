@@ -2,6 +2,7 @@
 
 ## [1.12.0] - Unreleased
 
+- Keep Overview review navigation on one project-check list, including issues contributed by domain sections; filter by severity without switching pages, preserve filters on refresh, and name explicit tool destinations.
 - Add shared asset/declarative-C# definition synchronization, stable identity and conflict handling, domain schema adapters, Definitions UI, generated assembly setup and build validation.
 - Align declared package dependencies with the definition-authoring development wave.
 
