@@ -295,8 +295,12 @@ namespace Deucarian.Editor
             workspace.Root.EnableInClassList("dw-overview-page", selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery));
             bool overview = selectedArea == DeucarianControlCenterArea.Overview && string.IsNullOrWhiteSpace(searchQuery);
             bool advanced = selectedArea == DeucarianControlCenterArea.Project || selectedArea == DeucarianControlCenterArea.Developer;
-            workspace.Title.text = advanced ? "Advanced" : "Control Center";
-            workspace.Subtitle.text = advanced ? "Review package checks and find advanced project tools." : "Review project readiness and open installed Deucarian tools.";
+            workspace.Title.text = selectedArea == DeucarianControlCenterArea.Project ? "Project checks"
+                : selectedArea == DeucarianControlCenterArea.Developer ? "Developer tools" : "Control Center";
+            workspace.Subtitle.text = selectedArea == DeucarianControlCenterArea.Project
+                ? "Review issues from all installed packages. Open a tool when you are ready to fix one."
+                : selectedArea == DeucarianControlCenterArea.Developer ? "Find advanced tools for your project."
+                : "Review project readiness and open installed Deucarian tools.";
             workspace.SelectNavigation(advanced ? "advanced" : DeucarianToolIds.ControlCenter);
             DeucarianEditorWorkspaceControls.Show(workspace.PageActions, !overview && !advanced);
             DeucarianEditorWorkspaceControls.Show(workspace.Footer, !overview && !advanced);

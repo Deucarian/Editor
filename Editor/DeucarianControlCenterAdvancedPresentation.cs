@@ -9,18 +9,24 @@ namespace Deucarian.Editor
     {
         internal static void Build(VisualElement root, DeucarianControlCenterSnapshot snapshot,
             DeucarianControlCenterArea area, string focusedId, Action refresh,
-            Action<DeucarianControlCenterAction> execute, IDictionary<string, bool> expandedChecks)
+            Action<DeucarianControlCenterAction> execute, IDictionary<string, bool> expandedChecks,
+            Action<DeucarianControlCenterArea, string> navigate, DeucarianProjectCheckFilter filter)
         {
             bool checks = area == DeucarianControlCenterArea.Project;
             var heading = Ui.Region(null, "dw-section-heading-row");
             heading.Add(Ui.Label(checks ? "Project checks" : "Developer tools", "dw-section-title"));
+            var destination = checks ? DeucarianControlCenterArea.Developer : DeucarianControlCenterArea.Project;
+            var otherPage = Ui.Button(checks ? "Open developer tools" : "Review project checks", () => navigate(destination, null));
+            otherPage.name = "control-center-related-page";
+            heading.Add(otherPage);
             if (checks)
             {
                 var run = Ui.IconButton("Run checks", DeucarianEditorIconIds.Play, refresh, DeucarianEditorButtonRole.Primary);
                 run.name = "control-center-run-checks"; heading.Add(run);
             }
             root.Add(heading);
-            var cards = new List<DeucarianControlCenterCard>(snapshot.GetCards(area));
+            var cards = checks ? DeucarianProjectCheckReview.Collect(snapshot)
+                : new List<DeucarianControlCenterCard>(snapshot.GetCards(area));
             if (checks)
             {
                 var status = DeucarianControlCenterStatus.Success;
@@ -36,12 +42,14 @@ namespace Deucarian.Editor
                 var list = Ui.Region("advanced-check-list", "dw-navigation-list"); root.Add(list);
                 foreach (var card in cards)
                 {
+                    if (checks && !DeucarianProjectCheckReview.Matches(card, filter)) continue;
                     string id = card.Id;
                     bool expanded = expandedChecks.TryGetValue(id, out var value) ? value : id == focusedId;
                     AddCheck(list, card, expanded, execute, next => expandedChecks[id] = next);
                 }
+                if (list.childCount == 0) list.Add(Ui.Label("No checks match this filter.", "dw-note"));
             }
-            if (checks) root.Add(Ui.Label("Other tools", "dw-section-title"));
+            if (checks) return;
             var tools = Ui.Region("advanced-tool-list", "dw-navigation-list"); root.Add(tools);
             foreach (var tool in snapshot.Tools)
             {
@@ -85,7 +93,11 @@ namespace Deucarian.Editor
             var actions = Ui.Actions();
             foreach (var action in card.Actions)
             {
-                var captured = action; var button = Ui.Button(action.Label, () => execute(captured));
+                var captured = action;
+                string label = !string.IsNullOrEmpty(action.NavigationToolId) &&
+                    DeucarianToolRegistry.TryGet(action.NavigationToolId, out var tool)
+                    ? "Open " + tool.DisplayName : action.Label;
+                var button = Ui.Button(label, () => execute(captured));
                 button.name = "control-center-action-" + action.Id; button.tooltip = action.Description; actions.Add(button);
             }
             details.Add(actions); item.Add(details); Ui.Show(details, expanded);

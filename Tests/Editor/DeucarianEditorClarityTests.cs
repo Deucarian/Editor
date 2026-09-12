@@ -27,7 +27,10 @@ namespace Deucarian.Editor.Tests
                 Assert.That(row.Q<Label>(className: "dw-navigation-title").text, Is.EqualTo(issue.Description));
                 Assert.That(row.tooltip, Is.EqualTo(issue.Title));
                 Assert.That(view.Root.Q("control-center-open-test.diagnostics"), Is.Null);
+                Assert.That(view.Root.Q("control-center-open-test.developer"), Is.Null, "Project checks do not mix in developer tool destinations.");
+                view.Render(snapshot, DeucarianControlCenterArea.Developer, null, "");
                 Assert.That(view.Root.Q("control-center-open-test.developer"), Is.Not.Null);
+                Assert.That(view.Root.Q("control-center-open-test.diagnostics"), Is.Null);
             }
         }
 

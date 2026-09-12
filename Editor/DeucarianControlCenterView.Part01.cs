@@ -31,6 +31,11 @@ namespace Deucarian.Editor
             string query)
         {
             bool samePage = content != null && renderedArea == selectedArea && renderedQuery == query;
+            bool focusChanged = focusedTargetId != renderedFocusId;
+            if (!samePage || (focusChanged && !string.IsNullOrEmpty(focusedTargetId)))
+                checkFilter = DeucarianProjectCheckFilter.All;
+            if (focusChanged && !string.IsNullOrEmpty(focusedTargetId)) expandedChecks.Remove(focusedTargetId);
+            renderedFocusId = focusedTargetId;
             Vector2 scrollOffset = samePage ? content.scrollOffset : Vector2.zero;
             string focusedName = samePage ? (Root.focusController?.focusedElement as VisualElement)?.name : null;
             renderedArea = selectedArea;
@@ -75,7 +80,7 @@ namespace Deucarian.Editor
                 if (revision != renderRevision) return;
                 content.scrollOffset = scrollOffset;
                 if (!string.IsNullOrEmpty(focusedName)) Root.Q<VisualElement>(focusedName)?.Focus();
-                if (!samePage && !string.IsNullOrEmpty(focusedTargetId))
+                if ((!samePage || focusChanged) && !string.IsNullOrEmpty(focusedTargetId))
                 {
                     var target = content.Q<VisualElement>("control-center-card-" + focusedTargetId);
                     if (target != null) content.ScrollTo(target);
@@ -123,14 +128,27 @@ namespace Deucarian.Editor
                 name = "control-center-sidebar"
             };
             result.AddToClassList("dw-control-sections");
-            if (selectedArea == DeucarianControlCenterArea.Project || selectedArea == DeucarianControlCenterArea.Developer)
+            if (selectedArea == DeucarianControlCenterArea.Project)
             {
-                var tabs = new DeucarianEditorChoiceBar(new[] { "Project checks", "Developer tools" },
-                    selectedArea == DeucarianControlCenterArea.Project ? 0 : 1, tabs: true);
-                tabs.Changed += index => navigate(index == 0 ? DeucarianControlCenterArea.Project : DeucarianControlCenterArea.Developer, null);
+                var cards = DeucarianProjectCheckReview.Collect(snapshot);
+                var labels = new string[4];
+                var names = new[] { "All", "Errors", "Warnings", "Information" };
+                for (int i = 0; i < labels.Length; i++)
+                {
+                    var filter = (DeucarianProjectCheckFilter)i;
+                    labels[i] = names[i] + " (" + cards.FindAll(card => DeucarianProjectCheckReview.Matches(card, filter)).Count + ")";
+                }
+                var tabs = new DeucarianEditorChoiceBar(labels, (int)checkFilter, tabs: true);
+                tabs.name = "control-center-check-filters";
+                tabs.Changed += index =>
+                {
+                    checkFilter = (DeucarianProjectCheckFilter)index;
+                    Render(snapshot, selectedArea, null, renderedQuery);
+                };
                 result.Add(tabs);
                 return result;
             }
+            if (selectedArea == DeucarianControlCenterArea.Developer) return result;
             foreach (DeucarianControlCenterArea area in snapshot.Areas)
             {
                 DeucarianControlCenterArea captured = area;
@@ -158,7 +176,7 @@ namespace Deucarian.Editor
             }
             if (area == DeucarianControlCenterArea.Project || area == DeucarianControlCenterArea.Developer)
             {
-                DeucarianControlCenterAdvancedPresentation.Build(content, snapshot, area, focusedTargetId, refresh, ExecuteCardAction, expandedChecks);
+                DeucarianControlCenterAdvancedPresentation.Build(content, snapshot, area, focusedTargetId, refresh, ExecuteCardAction, expandedChecks, navigate, checkFilter);
                 return;
             }
             DeucarianControlCenterVisuals.AddPageHeading(content,

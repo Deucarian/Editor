@@ -17,6 +17,8 @@ namespace Deucarian.Editor
         private ScrollView content;
         private DeucarianControlCenterArea renderedArea;
         private string renderedQuery;
+        private string renderedFocusId;
+        private DeucarianProjectCheckFilter checkFilter;
         private int renderRevision;
         private int selectedSearchResult = -1;
         private readonly List<DeucarianControlCenterSearchResult> searchResults = new List<DeucarianControlCenterSearchResult>();
