@@ -1,6 +1,6 @@
 # Changelog
 
-## Asset workflow — Unreleased
+## [1.13.0] - Unreleased
 
 - Unify package/project asset selection, explicit create/customize/default actions and origin hints. Retain native object fields across dependent content updates and scale Overview search rows with workspace typography.
 
