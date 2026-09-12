@@ -503,6 +503,7 @@
 .deucarian-workspace .dw-feature-side-preview.dw-split-stacked > .dw-form-pane { width: auto; padding: 0; }
 .deucarian-workspace .dw-feature-side-preview.dw-split-stacked > .dw-preview-pane { width: 100%; margin-top: 24px; }
 .deucarian-workspace .dw-spatial-axis { position: absolute; width: 28px; height: 30px; font-size: 18px; -unity-text-align: middle-center; }
+.deucarian-workspace .dw-orientation-gizmo { position: absolute; left: 12px; bottom: 12px; width: 124px; height: 124px; }
 .deucarian-workspace .dw-button.dw-search-result { height: auto; min-height: 88px; flex-shrink: 0; align-items: stretch; padding: 16px 20px; margin: 0 0 8px; border-left-width: 4px; border-left-color: transparent; -unity-text-align: middle-left; }
 .deucarian-workspace .dw-search-result > .dw-message-title { font-size: 26px; white-space: normal; }
 .deucarian-workspace .dw-search-result > .dw-muted { font-size: 22px; white-space: normal; margin-top: 6px; }
