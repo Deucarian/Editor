@@ -9,7 +9,7 @@ namespace Deucarian.Editor
         private readonly VisualElement viewport;
         private readonly VisualElement content;
         private readonly VisualElement footer;
-        internal const float DefaultScale = 0.75f;
+        internal const float DefaultScale = 0.50625f;
         private readonly SliderInt slider;
         private readonly Button reset;
         private bool disposed;

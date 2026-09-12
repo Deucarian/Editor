@@ -11,9 +11,30 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorWorkspaceScaleTests
     {
         private int previous;
+        private int previousLegacy;
+        private int previousEarlier;
 
-        [SetUp] public void SavePreference() { previous = DeucarianEditorAppearance.WorkspaceScalePercent; DeucarianEditorAppearance.WorkspaceScalePercent = 100; }
-        [TearDown] public void RestorePreference() => DeucarianEditorAppearance.WorkspaceScalePercent = previous;
+        [SetUp] public void SavePreference()
+        {
+            previous = DeucarianEditorProjectPreferences.GetInt(DeucarianEditorAppearance.ScaleKey, int.MinValue);
+            previousLegacy = DeucarianEditorProjectPreferences.GetInt(DeucarianEditorAppearance.LegacyScaleKey, int.MinValue);
+            previousEarlier = DeucarianEditorProjectPreferences.GetInt(DeucarianEditorAppearance.EarlierScaleKey, int.MinValue);
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.EarlierScaleKey);
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.LegacyScaleKey);
+            DeucarianEditorProjectPreferences.SetInt(DeucarianEditorAppearance.ScaleKey, 100);
+        }
+        [TearDown] public void RestorePreference()
+        {
+            Restore(DeucarianEditorAppearance.ScaleKey, previous);
+            Restore(DeucarianEditorAppearance.LegacyScaleKey, previousLegacy);
+            Restore(DeucarianEditorAppearance.EarlierScaleKey, previousEarlier);
+        }
+
+        private static void Restore(string key, int value)
+        {
+            if (value == int.MinValue) DeucarianEditorProjectPreferences.Delete(key);
+            else DeucarianEditorProjectPreferences.SetInt(key, value);
+        }
 
         [TestCase(-100, 75)]
         [TestCase(125, 125)]
@@ -39,7 +60,23 @@ namespace Deucarian.Editor.Tests
         {
             DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.ScaleKey);
             Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(100));
-            Assert.That(DeucarianEditorWorkspaceScale.DefaultScale, Is.EqualTo(0.75f));
+            Assert.That(DeucarianEditorWorkspaceScale.DefaultScale, Is.EqualTo(0.675f * 0.75f).Within(0.00001f));
+        }
+
+        [TestCase(75, 100)]
+        [TestCase(90, 120)]
+        [TestCase(100, 100)]
+        [TestCase(125, 150)]
+        [TestCase(150, 150)]
+        public void LegacyPreferenceRebasesOnceWithinTheSupportedRange(int legacy, int expected)
+        {
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.ScaleKey);
+            DeucarianEditorProjectPreferences.SetInt(DeucarianEditorAppearance.LegacyScaleKey, legacy);
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(expected));
+            DeucarianEditorProjectPreferences.SetInt(DeucarianEditorAppearance.LegacyScaleKey, 75);
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(expected));
+            DeucarianEditorAppearance.WorkspaceScalePercent = 100;
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(100));
         }
 
         [UnityTest]

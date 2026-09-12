@@ -89,6 +89,10 @@
 .deucarian-workspace .dw-navigation-group { margin: 0; flex-shrink: 0; }
 .deucarian-workspace .dw-navigation-group > .unity-toggle { min-height: 40px; margin: 0; padding: 0 14px; color: var(--dw-muted); }
 .deucarian-workspace .dw-navigation-group > .unity-toggle .unity-toggle__text { white-space: normal; }
+.deucarian-workspace .dw-navigation-group > .unity-toggle:hover,
+.deucarian-workspace .dw-navigation-group > .unity-toggle:focus { background-color: var(--dw-hover); color: var(--dw-text); }
+.deucarian-workspace .dw-navigation-group > .unity-toggle:hover .dw-navigation-group-icon,
+.deucarian-workspace .dw-navigation-group > .unity-toggle:focus .dw-navigation-group-icon { -unity-background-image-tint-color: var(--dw-accent); }
 .deucarian-workspace .dw-navigation-group > .unity-foldout__content { margin-left: 0; padding-left: 8px; }
 .deucarian-workspace .dw-navigation-group .dw-nav-item { min-height: 38px; height: auto; padding: 8px 12px; }
 .deucarian-workspace .dw-navigation-group .dw-nav-item .dw-icon { width: 18px; height: 18px; margin-right: 12px; }

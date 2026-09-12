@@ -1,9 +1,17 @@
 # Changelog
 
-## [1.12.0] - 2026-09-11
+## [1.12.0] - Unreleased
 
 - Add shared asset/declarative-C# definition synchronization, stable identity and conflict handling, domain schema adapters, Definitions UI, generated assembly setup and build validation.
 - Align declared package dependencies with the definition-authoring development wave.
+
+- Add subtle background and accent-icon feedback when hovering or keyboard-focusing sidebar category headings; preserve selected tool styling and layout.
+
+- Rebase Control Center 100% to the previous 75% size (after the earlier 90% rebase), retaining fixed-size scale controls and migrating non-default preferences.
+- Cover the new baseline, preference migration, fixed controls and viewport layouts with editor tests.
+- Add a compact, scoped Project Settings shell for package providers without changing Control Center page styling.
+- Keep feature switches compact in Project Settings and isolate its custom-font text rendering from Unity 6's ATG worker-thread failure.
+- Support real rendered scene textures in spatial previews and a wrapping, evenly sized navigation toolbar.
 
 
 ## [1.11.0] - 2026-09-11
