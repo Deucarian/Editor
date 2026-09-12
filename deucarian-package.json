@@ -13,8 +13,8 @@
     "Deucarian.Editor.EditorShellExample"
   ],
   "testAssemblies": [
-    "Deucarian.Editor.Tests",
-    "Deucarian.Editor.EditorShellExample.Tests"
+    "Deucarian.Editor.EditorShellExample.Tests",
+    "Deucarian.Editor.Tests"
   ],
   "requiredDependencies": [],
   "optionalVersionDefinedDependencies": [],

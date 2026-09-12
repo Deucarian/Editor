@@ -30,20 +30,21 @@ namespace Deucarian.Editor
         public VisualElement MotionPreviewRoot { get; }
         public VisualElement PreviewRoot { get; }
         public VisualElement VisibleRows => rows;
+        public VisualElement Definitions { get; }
         public Action<DeucarianEditorMessageRow, DeucarianEditorMessageData> PresentRow { get; set; }
         public Action<DeucarianEditorMessageRow, VisualElement, int> PlaceRow { get; set; }
         public Action<DeucarianEditorMessageRow, Action> DismissRow { get; set; }
         public event Action<int> TabChanged;
 
         public DeucarianEditorLabWorkspace(VisualElement root, string context, string title, string subtitle,
-            Action clearMessages, Action<string> selectTarget)
+            Action clearMessages, Action<string> selectTarget, string definitionTabLabel = null)
         {
             this.selectTarget = selectTarget ?? throw new ArgumentNullException(nameof(selectTarget));
             Workspace = new DeucarianEditorWorkspace(root, context);
             Workspace.Title.text = title;
             Workspace.Subtitle.text = subtitle;
             Workspace.ContextButton.SetEnabled(false);
-            tabs = new DeucarianEditorChoiceBar(new[] { "Test", "Appearance", "Audio" }, tabs: true);
+            tabs = new DeucarianEditorChoiceBar(definitionTabLabel == null ? new[] { "Test", "Appearance", "Audio" } : new[] { "Test", "Appearance", "Audio", definitionTabLabel }, tabs: true);
             Workspace.Tabs.Add(tabs);
             tabs.Changed += SelectTab;
             Workspace.Scope.AddToClassList("dw-lab-destination");
@@ -98,6 +99,7 @@ namespace Deucarian.Editor
             Appearance = new DeucarianEditorWorkspaceForm(appearanceForm);
             Audio = new DeucarianEditorWorkspaceForm(AddPage());
             pages[2].AddToClassList("dw-settings-page");
+            if (definitionTabLabel != null) Definitions = AddPage();
             DeucarianEditorWorkspaceControls.Show(Workspace.Footer, false);
             SelectTab(0);
         }
@@ -114,7 +116,7 @@ namespace Deucarian.Editor
             for (int i = 0; i < pages.Count; i++) DeucarianEditorWorkspaceControls.Show(pages[i], i == index);
             DeucarianEditorWorkspaceControls.Show(Workspace.Scope, index < 2);
             Workspace.Subtitle.text = index == 0 ? "Add and resolve messages in the editor or running app." : index == 1
-                ? "Configure message layout and transitions; preview the final result." : "Choose and preview notification sounds by severity.";
+                ? "Configure message layout and transitions; preview the final result." : index == 2 ? "Choose and preview notification sounds by severity." : "Create and edit reusable definitions for code and Inspector components.";
             TabChanged?.Invoke(index);
         }
 
