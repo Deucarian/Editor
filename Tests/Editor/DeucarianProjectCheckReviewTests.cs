@@ -50,7 +50,13 @@ namespace Deucarian.Editor.Tests
                     view.Render(snapshot, DeucarianControlCenterArea.Project, null, "");
                     Assert.That(view.Root.Q("control-center-card-error"), Is.Null, "Refresh keeps the filter.");
                     filters = view.Root.Q<DeucarianEditorChoiceBar>("control-center-check-filters");
-                    yield return Submit(filters.Q<Button>("choice-3"));
+                    var warningTab = filters.Q<Button>("choice-2");
+                    warningTab.Focus();
+                    using (var evt = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.RightArrow }))
+                    { evt.target = warningTab; warningTab.SendEvent(evt); }
+                    for (int frame = 0; frame < 3; frame++) yield return null;
+                    var informationTab = view.Root.Q<DeucarianEditorChoiceBar>("control-center-check-filters").Q<Button>("choice-3");
+                    Assert.That(window.rootVisualElement.focusController.focusedElement, Is.SameAs(informationTab));
                     Assert.That(view.Root.Query<Label>().ToList().Any(label => label.text == "No checks match this filter."), Is.True);
                     Assert.That(navigations, Is.Zero);
                     view.Render(snapshot, DeucarianControlCenterArea.Project, error.Id, "");
