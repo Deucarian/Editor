@@ -144,6 +144,12 @@ namespace Deucarian.Editor
                 {
                     checkFilter = (DeucarianProjectCheckFilter)index;
                     Render(snapshot, selectedArea, null, renderedQuery);
+                    int revision = renderRevision;
+                    Root.schedule.Execute(() =>
+                    {
+                        if (revision == renderRevision)
+                            Root.Q<DeucarianEditorChoiceBar>("control-center-check-filters")?.Q<Button>("choice-" + index)?.Focus();
+                    });
                 };
                 result.Add(tabs);
                 return result;
