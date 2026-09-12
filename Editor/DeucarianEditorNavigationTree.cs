@@ -17,6 +17,7 @@ namespace Deucarian.Editor
         private bool filteredView;
         private bool revealSelection = true;
         private bool disposed;
+        private bool rendering, renderPending;
 
         internal DeucarianEditorNavigationTree(DeucarianEditorWorkspace workspace, string selected, bool filter)
         {
@@ -37,6 +38,7 @@ namespace Deucarian.Editor
         private void Subscribe() { DeucarianToolRegistry.Changed -= Render; DeucarianToolRegistry.Changed += Render; }
         private void OnAttach(AttachToPanelEvent evt)
         {
+            if (evt.target != workspace.Root) return;
             restoringScroll = true;
             revealSelection = true;
             state = workspace.Root.GetFirstAncestorOfType<DeucarianEditorPageHost>()?.NavigationState ?? state;
@@ -45,6 +47,7 @@ namespace Deucarian.Editor
         }
         private void OnDetach(DetachFromPanelEvent evt)
         {
+            if (evt.target != workspace.Root) return;
             SaveScroll();
             restoringScroll = true;
             DeucarianToolRegistry.Changed -= Render;
@@ -54,6 +57,22 @@ namespace Deucarian.Editor
         private void Render()
         {
             if (disposed) return;
+            if (rendering) { renderPending = true; return; }
+            rendering = true;
+            try { RenderTree(); }
+            finally
+            {
+                rendering = false;
+                if (renderPending)
+                {
+                    renderPending = false;
+                    workspace.Root.schedule.Execute(Render);
+                }
+            }
+        }
+
+        private void RenderTree()
+        {
             SaveScroll();
             restoringScroll = true;
             workspace.ClearNavigation();
