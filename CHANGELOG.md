@@ -2,6 +2,8 @@
 
 ## [1.13.0] - Unreleased
 
+- Coalesce nested navigation presentation refreshes and ignore descendant panel events, preventing duplicate navigation IDs when constructing an already attached package page.
+
 - Keep a non-interactive, color-coded X/Y/Z orientation reference above real rendered spatial previews; it follows the preview camera without intercepting gestures.
 
 - Unify package/project asset selection, explicit create/customize/default actions and origin hints. Retain native object fields across dependent content updates and scale Overview search rows with workspace typography.
