@@ -9,6 +9,8 @@ namespace Deucarian.Editor
     public abstract class DeucarianAssetKeySource
     {
         public abstract Type KeyType { get; }
+        /// <summary>Definition asset type, or null for custom projections that cannot be narrowed.</summary>
+        public virtual Type SourceAssetType => null;
         public abstract Type DefinitionSetAttribute { get; }
         public abstract string GeneratedClassName { get; }
         public abstract IReadOnlyList<DeucarianKeyChoice> ReadDefinitions();
@@ -23,6 +25,7 @@ namespace Deucarian.Editor
 
     public abstract class DeucarianAssetKeySource<TAsset> : DeucarianAssetKeySource where TAsset : ScriptableObject
     {
+        public override Type SourceAssetType => typeof(TAsset);
         protected abstract DeucarianKeyChoice ReadDefinition(TAsset asset);
 
         public override IReadOnlyList<DeucarianKeyChoice> ReadDefinitions()

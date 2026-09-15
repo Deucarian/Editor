@@ -91,9 +91,8 @@ namespace Deucarian.Editor.Definitions
                 Required(serialized, IdPath).stringValue = value.Id;
                 Required(serialized, NamePath).stringValue = value.Name;
                 DeucarianDefinitionSections.Write(serialized, value);
-                serialized.ApplyModifiedPropertiesWithoutUndo();
+                if (serialized.ApplyModifiedPropertiesWithoutUndo()) EditorUtility.SetDirty(asset);
             }
-            EditorUtility.SetDirty(asset);
         }
 
         public override void Validate(DeucarianDefinitionSpec spec)

@@ -17,6 +17,20 @@ namespace Deucarian.Editor
         }
 
         internal void SetExpanded(string path, bool value) => expanded[path] = value;
+
+        internal DeucarianEditorReloadSnapshot.Group[] CaptureGroups()
+        {
+            var result = new List<DeucarianEditorReloadSnapshot.Group>();
+            foreach (var pair in expanded)
+                result.Add(new DeucarianEditorReloadSnapshot.Group { path = pair.Key, expanded = pair.Value });
+            return result.ToArray();
+        }
+
+        internal void Restore(DeucarianEditorReloadSnapshot snapshot)
+        {
+            ScrollOffset = snapshot.navigationScroll;
+            foreach (var group in snapshot.groups) expanded[group.path] = group.expanded;
+        }
     }
 
     internal sealed class DeucarianEditorPageHost : VisualElement

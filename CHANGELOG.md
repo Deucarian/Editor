@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.15.0] - 2026-09-15
+
+- Retry temporarily unavailable pages without replacing saved navigation or drafts with Home. Synchronize legacy numbered definition sources and preserve discoverable source names for newly created definitions.
+- Accept IDE-added namespace imports and regions in data declarations, preserve their formatting on code edits, and update declaration symbols when definitions are renamed.
+- Preserve window-local pages, owner drafts, navigation and scroll through script reloads. Batch definition synchronization and skip unchanged generated sources. Limit all shared asset menus to three levels.
+
+
+## [1.14.0] - 2026-09-15
+
+- Host a domain runtime preview inside the shared Lab while keeping shared message controls available.
+
 ## [1.13.0] - Unreleased
 
 - Coalesce nested navigation presentation refreshes and ignore descendant panel events, preventing duplicate navigation IDs when constructing an already attached package page.

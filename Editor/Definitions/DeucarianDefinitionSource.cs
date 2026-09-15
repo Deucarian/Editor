@@ -15,6 +15,11 @@ namespace Deucarian.Editor.Definitions
         internal const string Begin = "// definition-value";
         internal const string End = "// end-definition-value";
 
+        // Earlier generated unique paths put the numeric suffix after .definition.
+        // Keep those existing declarations discoverable without renaming user files.
+        internal static bool IsSourcePath(string path) => path != null &&
+            Regex.IsMatch(path, @"\.definition(?:\s*\d+)?\.cs$", RegexOptions.IgnoreCase);
+
         public static string Write(DeucarianDefinitionSchema schema, DeucarianDefinitionSpec spec)
         {
             schema.Validate(spec);
@@ -38,22 +43,32 @@ namespace Deucarian.Editor.Definitions
         public static DeucarianDefinitionSpec Read(DeucarianDefinitionSchema schema, string source)
         {
             if (SchemaId(source) != schema.Id) throw new FormatException("Definition schema does not match " + schema.DisplayName + ".");
+            source = Regex.Replace(source, @"(?m)^[ \t]*#(?:end)?region\b[^\r\n]*", string.Empty);
             int begin = source.IndexOf(Begin, StringComparison.Ordinal);
             int end = source.LastIndexOf(End, StringComparison.Ordinal);
             if (begin < 0 || end <= begin) throw new FormatException("Keep the definition-value markers around the declaration initializer.");
             string expression = source.Substring(begin + Begin.Length, end - begin - Begin.Length).Trim();
             if (!expression.EndsWith(";", StringComparison.Ordinal)) throw new FormatException("End the definition initializer with a semicolon.");
-            var spec = (DeucarianDefinitionSpec)new DeucarianDefinitionParser(expression.Substring(0, expression.Length - 1)).Read(schema.SpecType);
+            string prefix = source.Substring(0, begin);
+            const string imports = @"(?m)^[ \t]*using\s+([a-zA-Z_][a-zA-Z0-9_.]*)\s*;[ \t]*";
+            var namespaces = Regex.Matches(prefix, imports).Cast<Match>().Select(x => x.Groups[1].Value);
+            var parser = new DeucarianDefinitionParser(expression.Substring(0, expression.Length - 1), namespaces);
+            var spec = (DeucarianDefinitionSpec)parser.Read(schema.SpecType);
             schema.Validate(spec);
             // Only the dedicated declarative frame is owned. Reject helpers instead of overwriting them.
             string expected = Write(schema, spec);
             string before = expected.Substring(0, expected.IndexOf(Begin, StringComparison.Ordinal));
             string after = expected.Substring(expected.LastIndexOf(End, StringComparison.Ordinal));
-            string sourceFrame = Regex.Replace(source.Substring(0, begin), @"public\s+static\s+class\s+[a-zA-Z_][a-zA-Z0-9_]*", "public static class " + Identifier(spec.Name));
+            string sourceFrame = Regex.Replace(Regex.Replace(prefix, imports, string.Empty), @"public\s+static\s+class\s+[a-zA-Z_][a-zA-Z0-9_]*", "public static class " + Identifier(spec.Name));
+            sourceFrame = Regex.Replace(sourceFrame, @"public\s+static\s+([a-zA-Z_:][a-zA-Z0-9_:.]*)\s+Value\s*=>", match =>
+                parser.MatchesType(match.Groups[1].Value, schema.SpecType) ? "public static " + TypeName(schema.SpecType) + " Value =>" : match.Value);
             if (Whitespace(sourceFrame) != Whitespace(before) || Whitespace(source.Substring(end)) != Whitespace(after))
                 throw new FormatException("Keep this file's declaration frame intact. Edit its values or use the definition editor; put application methods in another file.");
             return spec;
         }
+
+        internal static string UpdateSymbol(string source, DeucarianDefinitionSpec spec) =>
+            new Regex(@"(public\s+static\s+class\s+)[a-zA-Z_][a-zA-Z0-9_]*").Replace(source, match => match.Groups[1].Value + Identifier(spec.Name), 1);
 
         internal static string Whitespace(string value) => Regex.Replace(value, @"\s+", string.Empty);
         public static string Identifier(string value)
