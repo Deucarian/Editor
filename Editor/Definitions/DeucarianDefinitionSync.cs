@@ -14,23 +14,30 @@ namespace Deucarian.Editor.Definitions
     public static class DeucarianDefinitionSync
     {
         public static IReadOnlyList<DeucarianDefinitionRecord> Records => DeucarianDefinitionIndex.Read().records.AsReadOnly();
+        internal static string CaptureHash(DeucarianDefinitionSchema schema, ScriptableObject asset) => Hash(schema, schema.Read(asset));
 
-        public static ScriptableObject Create(DeucarianDefinitionSchema schema, string name)
+        public static ScriptableObject Create(DeucarianDefinitionSchema schema, string name) => Create(schema, schema.Create(name));
+
+        public static ScriptableObject Duplicate(DeucarianDefinitionSchema schema, ScriptableObject asset)
+        {
+            var spec = schema.Read(asset);
+            spec.Id = Guid.NewGuid().ToString("N");
+            spec.Name += "Copy";
+            return Create(schema, spec);
+        }
+
+        private static ScriptableObject Create(DeucarianDefinitionSchema schema, DeucarianDefinitionSpec spec)
         {
             var names = AssetDatabase.FindAssets("t:" + schema.AssetType.Name, new[] { "Assets" })
                 .Select(x => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(x), schema.AssetType) as ScriptableObject)
                 .Where(x => x != null).Select(x => DeucarianKeySourceText.Identifier(schema.Read(x).Name)).ToHashSet(StringComparer.Ordinal);
-            string original = name;
-            for (int suffix = 2; names.Contains(DeucarianKeySourceText.Identifier(name)); suffix++) name = original + suffix;
-            var spec = schema.Create(name);
+            string original = spec.Name;
+            for (int suffix = 2; names.Contains(DeucarianKeySourceText.Identifier(spec.Name)); suffix++) spec.Name = original + suffix;
             schema.Validate(spec);
             string directory = "Assets/DeucarianDefinitions/" + schema.Id;
             Directory.CreateDirectory(directory + "/Editor");
-            string sourcePath = AssetDatabase.GenerateUniqueAssetPath(directory + "/Editor/" + DeucarianDefinitionSource.Identifier(name) + ".definition.cs");
-            EnsureAuthoringAssembly(schema, directory + "/Editor");
-            File.WriteAllText(sourcePath, DeucarianDefinitionSource.Write(schema, spec));
-            AssetDatabase.ImportAsset(sourcePath);
-            return SynchronizeSource(schema, sourcePath);
+            var asset = CreateAsset(schema, spec, directory + "/Editor/definition.cs");
+            return Adopt(schema, asset);
         }
 
         public static ScriptableObject Adopt(DeucarianDefinitionSchema schema, ScriptableObject asset)
@@ -45,11 +52,19 @@ namespace Deucarian.Editor.Definitions
             if (Records.Any(x => x.schema == schema.Id && x.identity == spec.Id)) throw new InvalidOperationException("Another managed definition uses '" + spec.Id + "'. Duplicate through Definitions to assign a new identity.");
             string directory = "Assets/DeucarianDefinitions/" + schema.Id + "/Editor";
             Directory.CreateDirectory(directory);
-            EnsureAuthoringAssembly(schema, directory);
             string sourcePath = AssetDatabase.GenerateUniqueAssetPath(directory + "/" + DeucarianDefinitionSource.Identifier(spec.Name) + ".definition.cs");
-            string source = DeucarianDefinitionSource.Write(schema, spec);
-            File.WriteAllText(sourcePath, source);
-            AssetDatabase.ImportAsset(sourcePath);
+            // The asset exists before discovery; import all of its compilation inputs together.
+            DeucarianDefinitionSections.Save(asset, schema.SpecType);
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                EnsureAuthoringAssembly(schema, directory);
+                File.WriteAllText(sourcePath, DeucarianDefinitionSource.Write(schema, spec));
+                AssetDatabase.ImportAsset(sourcePath);
+                schema.RefreshCatalog();
+                DeucarianKeyGeneration.RefreshForDefinition(schema.AssetType);
+            }
+            finally { AssetDatabase.StopAssetEditing(); }
             var index = DeucarianDefinitionIndex.Read();
             index.records.Add(new DeucarianDefinitionRecord
             {
@@ -57,8 +72,7 @@ namespace Deucarian.Editor.Definitions
                 assetGuid = AssetDatabase.AssetPathToGUID(assetPath), identity = spec.Id, lastHash = Hash(schema, spec)
             });
             index.Save();
-            schema.RefreshCatalog();
-            foreach (var provider in DeucarianKeyGeneration.Sources()) DeucarianKeyGeneration.Refresh(provider);
+            DeucarianDefinitionImport.Acknowledge(asset);
             return asset;
         }
 
@@ -115,16 +129,21 @@ namespace Deucarian.Editor.Definitions
                     if (assetSpec.Id != record.identity) throw new InvalidOperationException("A definition's stable ID cannot be edited. Create a new definition instead.");
                     ValidateName(schema, assetSpec);
                     spec = assetSpec;
-                    WriteSource(sourcePath, schema, spec);
                 }
-                else if (codeChanged) schema.Apply(asset, spec);
+                else if (codeChanged && codeHash != assetHash) schema.Apply(asset, spec);
             }
-            WriteSource(sourcePath, schema, spec);
+            // A valid code edit already contains the agreed values. Preserve its formatting:
+            // normalizing it here would cause another source import and compilation.
+            if (Hash(schema, DeucarianDefinitionSource.Read(schema, File.ReadAllText(sourcePath))) != Hash(schema, spec))
+                WriteSource(sourcePath, schema, spec);
             record.lastHash = Hash(schema, spec);
             index.Save();
-            AssetDatabase.SaveAssets();
+            DeucarianDefinitionSections.Save(asset, schema.SpecType);
             schema.RefreshCatalog();
-            foreach (var source in DeucarianKeyGeneration.Sources()) DeucarianKeyGeneration.Refresh(source);
+            DeucarianKeyGeneration.RefreshForDefinition(schema.AssetType);
+            DeucarianDefinitionImport.ClearError(sourcePath);
+            DeucarianDefinitionImport.ClearError(AssetDatabase.GetAssetPath(asset));
+            DeucarianDefinitionImport.Acknowledge(asset);
             return asset;
         }
 
@@ -138,14 +157,18 @@ namespace Deucarian.Editor.Definitions
             if (spec.Id != record.identity) throw new InvalidOperationException("Restore the original stable ID before resolving this definition.");
             ValidateName(schema, spec);
             Undo.RecordObject(asset, "Resolve definition changes");
-            if (keepCode) schema.Apply(asset, spec);
-            WriteSource(sourcePath, schema, spec);
+            if (keepCode)
+            {
+                if (Hash(schema, schema.Read(asset)) != Hash(schema, spec)) schema.Apply(asset, spec);
+            }
+            else WriteSource(sourcePath, schema, spec);
             var index = DeucarianDefinitionIndex.Read();
             index.records.Find(x => x.sourceGuid == record.sourceGuid).lastHash = Hash(schema, spec);
-            index.Save(); AssetDatabase.SaveAssets(); schema.RefreshCatalog();
+            index.Save(); DeucarianDefinitionSections.Save(asset, schema.SpecType); schema.RefreshCatalog();
             DeucarianDefinitionImport.ClearError(sourcePath);
             DeucarianDefinitionImport.ClearError(AssetDatabase.GetAssetPath(asset));
-            foreach (var provider in DeucarianKeyGeneration.Sources()) DeucarianKeyGeneration.Refresh(provider);
+            DeucarianKeyGeneration.RefreshForDefinition(schema.AssetType);
+            DeucarianDefinitionImport.Acknowledge(asset);
         }
 
         public static void Delete(DeucarianDefinitionSchema schema, DeucarianDefinitionRecord record)
@@ -158,7 +181,7 @@ namespace Deucarian.Editor.Definitions
             if (!string.IsNullOrEmpty(asset) && File.Exists(asset) && !AssetDatabase.MoveAssetToTrash(asset)) throw new IOException("Could not remove " + asset + ". Restore the declaration from Trash before retrying, or remove the remaining asset in Unity.");
             var index = DeucarianDefinitionIndex.Read(); index.records.RemoveAll(x => x.sourceGuid == record.sourceGuid); index.Save();
             schema.RefreshCatalog();
-            foreach (var provider in DeucarianKeyGeneration.Sources()) DeucarianKeyGeneration.Refresh(provider);
+            DeucarianKeyGeneration.RefreshForDefinition(schema.AssetType);
         }
 
         public static IReadOnlyList<string> ValidateAll()
@@ -221,7 +244,7 @@ namespace Deucarian.Editor.Definitions
             if (File.Exists(path))
             {
                 string existing = File.ReadAllText(path);
-                if (existing == value) return;
+                if (DeucarianKeySourceText.SameContent(existing, value)) return;
                 string owned = "^\\s*\\{\\s*\"name\"\\s*:\\s*\"Deucarian\\.Definitions\\." + Regex.Escape(schema.Id) + "\"\\s*,\\s*\"references\"\\s*:\\s*\\[(?:\\s*\"[A-Za-z0-9_.-]+\"\\s*,?)*\\s*\\]\\s*,\\s*\"includePlatforms\"\\s*:\\s*\\[\\s*\"Editor\"\\s*\\]\\s*\\}\\s*$";
                 if (!Regex.IsMatch(existing, owned)) throw new InvalidOperationException("Move the custom asmdef outside the generated authoring folder: " + path);
             }

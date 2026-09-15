@@ -23,7 +23,13 @@ namespace Deucarian.Editor
                     route => activate?.Invoke(controller, route),
                     () => deactivate?.Invoke(controller),
                     bounds => { controller.position = bounds; update?.Invoke(controller); },
-                    () => Release(controller));
+                    () => Release(controller),
+                    () => (controller as IDeucarianEditorReloadState)?.CaptureReloadState(),
+                    state => {
+                        if (!(controller is IDeucarianEditorReloadState owner)) return;
+                        owner.RestoreReloadState(state);
+                        build(controller, root);
+                    });
             }
             catch
             {

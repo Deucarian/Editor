@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 
 namespace Deucarian.Editor
@@ -24,32 +25,53 @@ namespace Deucarian.Editor
             string expected = DeucarianKeySourceText.Create(source);
             bool exists = File.Exists(source.OutputPath);
             if (!exists && source.ReadDefinitions().Count == 0) return;
-            if (File.Exists(source.AssemblyPath) && File.ReadAllText(source.AssemblyPath) != source.AssemblyDefinition)
+            if (File.Exists(source.AssemblyPath) && !DeucarianKeySourceText.SameContent(File.ReadAllText(source.AssemblyPath), source.AssemblyDefinition))
                 throw new InvalidOperationException(source.AssemblyPath + " differs from its generated definition. Move the custom assembly file out of the generated folder, then reimport a source definition.");
-            if (!File.Exists(source.AssemblyPath))
-            {
-                Directory.CreateDirectory(source.OutputDirectory);
-                File.WriteAllText(source.AssemblyPath, source.AssemblyDefinition);
-                AssetDatabase.ImportAsset(source.AssemblyPath);
-            }
+            bool writeAssembly = !File.Exists(source.AssemblyPath);
             if (exists)
             {
                 string current = File.ReadAllText(source.OutputPath);
-                if (current == expected) return;
+                if (DeucarianKeySourceText.SameContent(current, expected) && !writeAssembly) return;
                 if (!current.StartsWith(DeucarianKeySourceText.Header, StringComparison.Ordinal))
                     throw new InvalidOperationException(source.OutputPath + " is not an owned generated file. Move or rename it before generating definition keys.");
             }
             Directory.CreateDirectory(Path.GetDirectoryName(source.OutputPath));
-            File.WriteAllText(source.OutputPath, expected);
-            AssetDatabase.ImportAsset(source.OutputPath);
+            // Import the assembly and its members together; importing an empty new assembly
+            // first schedules an unnecessary compilation before its source is available.
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                if (writeAssembly)
+                {
+                    File.WriteAllText(source.AssemblyPath, source.AssemblyDefinition);
+                    AssetDatabase.ImportAsset(source.AssemblyPath);
+                }
+                if (!exists || !DeucarianKeySourceText.SameContent(File.ReadAllText(source.OutputPath), expected))
+                {
+                    File.WriteAllText(source.OutputPath, expected);
+                    AssetDatabase.ImportAsset(source.OutputPath);
+                }
+            }
+            finally { AssetDatabase.StopAssetEditing(); }
+        }
+
+        internal static void RefreshForDefinition(Type assetType)
+        {
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                foreach (var source in Sources())
+                    if (source.SourceAssetType == null || source.SourceAssetType.IsAssignableFrom(assetType)) Refresh(source);
+            }
+            finally { AssetDatabase.StopAssetEditing(); }
         }
 
         public static void Validate(DeucarianAssetKeySource source)
         {
             string expected = DeucarianKeySourceText.Create(source);
             if (!File.Exists(source.OutputPath) && source.ReadDefinitions().Count == 0) return;
-            if (!File.Exists(source.OutputPath) || File.ReadAllText(source.OutputPath) != expected ||
-                !File.Exists(source.AssemblyPath) || File.ReadAllText(source.AssemblyPath) != source.AssemblyDefinition)
+            if (!File.Exists(source.OutputPath) || !DeucarianKeySourceText.SameContent(File.ReadAllText(source.OutputPath), expected) ||
+                !File.Exists(source.AssemblyPath) || !DeucarianKeySourceText.SameContent(File.ReadAllText(source.AssemblyPath), source.AssemblyDefinition))
                 throw new InvalidOperationException(source.OutputPath + " is missing or stale. Reimport a source definition and let Unity finish generating and compiling its typed keys before building.");
         }
 
@@ -62,17 +84,45 @@ namespace Deucarian.Editor
         }
     }
 
+    [InitializeOnLoad]
     internal sealed class DeucarianKeyImportRefresh : AssetPostprocessor
     {
+        static DeucarianKeyImportRefresh()
+        {
+            ScheduleRefresh();
+        }
         private static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFrom)
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || BuildPipeline.isBuildingPlayer ||
                 SessionState.GetBool(DeucarianKeyGeneration.AutomaticRefreshDisabledSessionKey, false)) return;
-            foreach (var source in DeucarianKeyGeneration.Sources())
+            if (!imported.Concat(deleted).Concat(moved).Concat(movedFrom).Any(AffectsDefinitions)) return;
+            ScheduleRefresh();
+        }
+
+        private static void ScheduleRefresh()
+        {
+            EditorApplication.delayCall -= Refresh;
+            EditorApplication.delayCall += Refresh;
+        }
+
+        internal static bool AffectsDefinitions(string path) => path.StartsWith("Assets/", StringComparison.Ordinal) &&
+            !path.StartsWith("Assets/DeucarianGeneratedKeys/", StringComparison.Ordinal) && path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase);
+
+        private static void Refresh()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode || BuildPipeline.isBuildingPlayer ||
+                SessionState.GetBool(DeucarianKeyGeneration.AutomaticRefreshDisabledSessionKey, false)) return;
+            // Never write or import generated sources from inside an asset postprocessor.
+            AssetDatabase.StartAssetEditing();
+            try
             {
-                try { DeucarianKeyGeneration.Refresh(source); }
-                catch (Exception) { /* The Inspector and build validator show source-specific repair guidance. */ }
+                foreach (var source in DeucarianKeyGeneration.Sources())
+                {
+                    try { DeucarianKeyGeneration.Refresh(source); }
+                    catch (Exception) { /* The Inspector and build validator show source-specific repair guidance. */ }
+                }
             }
+            finally { AssetDatabase.StopAssetEditing(); }
         }
     }
 }

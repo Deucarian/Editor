@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.15.0] - 2026-09-15
+
+- Preserve window-local pages, owner drafts, navigation and scroll through script reloads. Batch definition synchronization and skip unchanged generated sources. Limit all shared asset menus to three levels.
+
+
 ## [1.14.0] - 2026-09-15
 
 - Host a domain runtime preview inside the shared Lab while keeping shared message controls available.

@@ -24,6 +24,8 @@ The [typed key guide](Documentation~/TypedKeys.md) explains the asset-to-code wo
 
 The left sidebar changes pages in the current window, keeping each page's draft and session alive. Right-click a sidebar item and choose **Open in new window** for an independent workspace. Closing a workspace releases its pages; ordinary page changes do not reset lab messages or stop package operations.
 
+Script reloads restore the current page, sidebar expansion and named scroll areas in the same native window. A package opts its authoring state into `IDeucarianEditorReloadState` using a bounded, sanitized DTO; asset references should use stable GUIDs. The shared window-page bridge restores that state before rebuilding controls. Plain pages can supply `captureReloadState` and `restoreReloadState` callbacks. Do not capture credentials or runtime message payloads. A saved owner draft takes precedence over an older navigation route, and independent windows keep separate snapshots.
+
 
 ## Shared workspace
 
@@ -31,7 +33,7 @@ Shared responsive workspace, searchable list/detail surfaces, form bindings, sta
 
 Requires Editor 1.5.2 or newer. Development is delivered through Git `#develop`; this change does not promote the stable `#main` channel.
 
-Current package version: `1.14.0`.
+Current package version: `1.15.0`.
 
 Native workspaces use the same styled controls and scale-aware keyboard scrolling. Theming scope controls retain their place before tabs; preview/form columns retain their intended widths. The lab exposes a preview region and tab events, while its consumer owns preview playback. Revisiting the selected Overview route keeps the existing page alive.
 

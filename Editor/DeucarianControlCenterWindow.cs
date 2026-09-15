@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Deucarian.Editor
 {
     /// <summary>Unified, package-contributed Deucarian editor entry point.</summary>
-    public sealed class DeucarianControlCenterWindow : EditorWindow
+    public sealed class DeucarianControlCenterWindow : EditorWindow, IDeucarianEditorReloadState
     {
         public const string MenuPath = "Tools/Deucarian/Control Center...";
         public const string DeveloperMenuPath =
@@ -35,6 +35,26 @@ namespace Deucarian.Editor
         public DeucarianControlCenterArea SelectedArea => selectedArea;
         public string FocusedTargetId => focusedTargetId;
         internal string SearchQuery => searchQuery;
+
+        public string CaptureReloadState() => JsonUtility.ToJson(new ReloadState {
+            area = selectedArea, search = searchQuery, focused = focusedTargetId, settings = showSettings });
+
+        public void RestoreReloadState(string state)
+        {
+            var saved = JsonUtility.FromJson<ReloadState>(state);
+            if (saved == null) return;
+            selectedArea = saved.area;
+            searchQuery = saved.search ?? string.Empty;
+            focusedTargetId = saved.focused;
+            showSettings = saved.settings;
+        }
+
+        [Serializable] private sealed class ReloadState
+        {
+            public DeucarianControlCenterArea area;
+            public string search, focused;
+            public bool settings;
+        }
 
         [MenuItem(MenuPath, priority = -1000)]
         private static void OpenMenu()

@@ -17,20 +17,25 @@ namespace Deucarian.Editor.Definitions
         private readonly VisualElement details;
         private readonly Label status;
         private readonly Action<ScriptableObject> preview;
+        private readonly DeucarianDefinitionPanelState state;
+        private IDisposable editing;
+        private ScriptableObject selectedAsset;
         private DeucarianEditorSerializedForm serialized;
         private readonly List<DeucarianEditorSerializedForm> sections = new List<DeucarianEditorSerializedForm>();
-        private string filter = string.Empty;
-        private string createName = "NewDefinition";
         private bool disposed;
 
-        public DeucarianDefinitionPanel(VisualElement root, DeucarianDefinitionSchema schema, Action<ScriptableObject> preview = null)
+        public DeucarianDefinitionPanel(VisualElement root, DeucarianDefinitionSchema schema, Action<ScriptableObject> preview = null, DeucarianDefinitionPanelState state = null)
         {
             this.schema = schema ?? throw new ArgumentNullException(nameof(schema));
             this.preview = preview;
+            this.state = state ?? new DeucarianDefinitionPanelState();
+            if (!string.IsNullOrEmpty(this.state.SchemaId) && this.state.SchemaId != schema.Id)
+                throw new ArgumentException("Definition panel state belongs to a different schema.", nameof(state));
+            this.state.SchemaId = schema.Id;
             var tools = new DeucarianEditorWorkspaceForm(root);
-            tools.Text("definition-search", "Search definitions", () => filter, value => { filter = value; RefreshList(); });
-            tools.Text("definition-name", "New definition name", () => createName, value => createName = value);
-            tools.Action("definition-create", "Create definition", () => Run(() => Select(DeucarianDefinitionSync.Create(schema, createName))), () => !string.IsNullOrWhiteSpace(createName), true);
+            tools.Text("definition-search", "Search definitions", () => this.state.Search, value => { this.state.Search = value; RefreshList(); });
+            tools.Text("definition-name", "New definition name", () => this.state.CreateName, value => this.state.CreateName = value);
+            tools.Action("definition-create", "Create definition", () => Run(() => Select(DeucarianDefinitionSync.Create(schema, this.state.CreateName))), () => !string.IsNullOrWhiteSpace(this.state.CreateName), true);
             status = DeucarianEditorWorkspaceControls.Label("Definitions are shared by code calls and Inspector components.", "dw-muted");
             root.Add(status);
             rows = DeucarianEditorWorkspaceControls.Scroll("definition-list");
@@ -38,23 +43,48 @@ namespace Deucarian.Editor.Definitions
             root.Add(DeucarianEditorWorkspaceControls.Split(rows, details));
             EditorApplication.projectChanged += RefreshList;
             RefreshList();
+            string selectedGuid = this.state.SelectedAssetGuid;
+            Select(AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(selectedGuid ?? string.Empty), schema.AssetType) as ScriptableObject);
+            var listScroll = (ScrollView)rows;
+            var detailScroll = (ScrollView)details;
+            Vector2 savedList = this.state.ListScroll, savedDetails = this.state.DetailsScroll;
+            root.schedule.Execute(() =>
+            {
+                if (disposed) return;
+                listScroll.scrollOffset = savedList; detailScroll.scrollOffset = savedDetails;
+            });
+            listScroll.verticalScroller.valueChanged += _ => this.state.ListScroll = listScroll.scrollOffset;
+            detailScroll.verticalScroller.valueChanged += _ => this.state.DetailsScroll = detailScroll.scrollOffset;
+            listScroll.horizontalScroller.valueChanged += _ => this.state.ListScroll = listScroll.scrollOffset;
+            detailScroll.horizontalScroller.valueChanged += _ => this.state.DetailsScroll = detailScroll.scrollOffset;
         }
 
-        public void Select(ScriptableObject asset)
+        public DeucarianDefinitionPanelState CaptureState() => state;
+
+        public void Select(ScriptableObject asset) => Select(asset, false);
+
+        private void Select(ScriptableObject asset, bool rebuild)
         {
+            if (!rebuild && asset != null && asset == selectedAsset) return;
+            editing?.Dispose(); editing = null;
+            selectedAsset = asset;
+            state.SelectedAssetGuid = asset == null ? string.Empty : AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(asset));
             serialized?.Dispose(); serialized = null; details.Clear();
             foreach (var section in sections) section.Dispose();
             sections.Clear();
             if (asset == null) return;
+            editing = DeucarianDefinitionImport.BeginEditing(schema, asset);
             var actions = new DeucarianEditorWorkspaceForm(details);
-            actions.Note(() => "Edit reusable defaults. Component and call overrides leave this definition unchanged.");
             var record = DeucarianDefinitionSync.FindAsset(asset);
+            actions.Note(() => record == null
+                ? "Edit reusable defaults here. Enable code editing to create a synchronized declaration."
+                : "Edit reusable defaults here. Save and synchronize updates their code together when you are ready; changing fields does not interrupt this editor.");
             if (record == null)
-                actions.Action("definition-adopt", "Enable code editing", () => Run(() => { DeucarianDefinitionSync.Adopt(schema, asset); Select(asset); }));
+                actions.Action("definition-adopt", "Enable code editing", () => Run(() => { DeucarianDefinitionSync.Adopt(schema, asset); Select(asset, true); }));
             else
             {
                 actions.Action("definition-code", "Open definition code", () => AssetDatabase.OpenAsset(AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(record.sourceGuid))));
-                actions.Action("definition-sync", "Save and synchronize", () => Run(() => { AssetDatabase.SaveAssets(); DeucarianDefinitionSync.SynchronizeSource(schema, AssetDatabase.GUIDToAssetPath(record.sourceGuid)); }));
+                actions.Action("definition-sync", "Save and synchronize", () => Run(() => DeucarianDefinitionSync.SynchronizeSource(schema, AssetDatabase.GUIDToAssetPath(record.sourceGuid))));
             }
             if (preview != null || schema.CanPreview) actions.Action("definition-preview", "Preview", () => Run(() => { if (preview != null) preview(asset); else schema.Preview(asset); }));
             actions.Action("definition-duplicate", "Duplicate", () => Run(() => Duplicate(asset)));
@@ -63,8 +93,8 @@ namespace Deucarian.Editor.Definitions
                 var advanced = actions.Section("Source and references", true);
                 advanced.Note(() => AssetDatabase.GUIDToAssetPath(record.sourceGuid));
                 advanced.Action("definition-references", "Find asset references", () => Run(() => FindReferences(asset), false));
-                advanced.Action("definition-keep-code", "Resolve conflict: keep code", () => Run(() => { DeucarianDefinitionSync.Resolve(schema, record, true); Select(asset); }));
-                advanced.Action("definition-keep-asset", "Resolve conflict: keep asset", () => Run(() => { DeucarianDefinitionSync.Resolve(schema, record, false); Select(asset); }));
+                advanced.Action("definition-keep-code", "Resolve conflict: keep code", () => Run(() => { DeucarianDefinitionSync.Resolve(schema, record, true); Select(asset, true); }));
+                advanced.Action("definition-keep-asset", "Resolve conflict: keep asset", () => Run(() => { DeucarianDefinitionSync.Resolve(schema, record, false); Select(asset, true); }));
                 advanced.Action("definition-delete", "Delete definition", () => Run(() =>
                 {
                     if (!EditorUtility.DisplayDialog("Delete " + asset.name + "?", "Move the definition and its editable code to Trash. Existing code calls and serialized selections must be updated.", "Move to Trash", "Cancel")) return;
@@ -103,8 +133,10 @@ namespace Deucarian.Editor.Definitions
                 if (asset == null) continue;
                 string label = schema.Read(asset).Name;
                 if (string.IsNullOrEmpty(label)) label = asset.name;
-                if (!string.IsNullOrEmpty(filter) && label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                rows.Add(DeucarianEditorWorkspaceControls.Button(label, () => Select(asset)));
+                if (!string.IsNullOrEmpty(state.Search) && label.IndexOf(state.Search, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                var row = DeucarianEditorWorkspaceControls.Button(label, () => Select(asset));
+                row.EnableInClassList("dw-selected", asset == selectedAsset);
+                rows.Add(row);
             }
             foreach (var record in DeucarianDefinitionSync.Records.Where(x => x.schema == schema.Id && AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(x.assetGuid)) == null))
                 rows.Add(DeucarianEditorWorkspaceControls.Button("Missing asset: " + record.identity, () =>
@@ -120,14 +152,7 @@ namespace Deucarian.Editor.Definitions
 
         private void Duplicate(ScriptableObject asset)
         {
-            var original = schema.Read(asset);
-            var copy = DeucarianDefinitionSync.Create(schema, original.Name + "Copy");
-            var created = schema.Read(copy);
-            original.Id = created.Id; original.Name = created.Name;
-            schema.Apply(copy, original);
-            var record = DeucarianDefinitionSync.FindAsset(copy);
-            DeucarianDefinitionSync.SynchronizeSource(schema, AssetDatabase.GUIDToAssetPath(record.sourceGuid));
-            Select(copy);
+            Select(DeucarianDefinitionSync.Duplicate(schema, asset));
         }
         private void FindReferences(ScriptableObject asset)
         {
@@ -138,12 +163,13 @@ namespace Deucarian.Editor.Definitions
         }
         private void Run(Action action, bool showSaved = true)
         {
-            try { action(); if (showSaved) status.text = "Definition saved. Unity will finish compiling its typed accessors."; }
+            try { action(); if (showSaved) status.text = "Definition saved. Unity compiles only when its code or typed accessors change."; }
             catch (Exception error) { status.text = error.Message; }
         }
         public void Dispose()
         {
             if (disposed) return; disposed = true;
+            editing?.Dispose(); editing = null;
             EditorApplication.projectChanged -= RefreshList; serialized?.Dispose();
             foreach (var section in sections) section.Dispose();
             sections.Clear();
