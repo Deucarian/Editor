@@ -1,5 +1,103 @@
 # Changelog
 
+## [1.13.0] - Unreleased
+
+- Coalesce nested navigation presentation refreshes and ignore descendant panel events, preventing duplicate navigation IDs when constructing an already attached package page.
+
+- Keep a non-interactive, color-coded X/Y/Z orientation reference above real rendered spatial previews; it follows the preview camera without intercepting gestures.
+
+- Unify package/project asset selection, explicit create/customize/default actions and origin hints. Retain native object fields across dependent content updates and scale Overview search rows with workspace typography.
+
+## [1.12.0] - Unreleased
+
+- Keep Overview review navigation on one project-check list, including issues contributed by domain sections; filter by severity without switching pages, preserve filters on refresh, and name explicit tool destinations.
+- Add shared asset/declarative-C# definition synchronization, stable identity and conflict handling, domain schema adapters, Definitions UI, generated assembly setup and build validation.
+- Align declared package dependencies with the definition-authoring development wave.
+
+- Add subtle background and accent-icon feedback when hovering or keyboard-focusing sidebar category headings; preserve selected tool styling and layout.
+
+- Rebase Control Center 100% to the previous 75% size (after the earlier 90% rebase), retaining fixed-size scale controls and migrating non-default preferences.
+- Cover the new baseline, preference migration, fixed controls and viewport layouts with editor tests.
+- Add a compact, scoped Project Settings shell for package providers without changing Control Center page styling.
+- Keep feature switches compact in Project Settings and isolate its custom-font text rendering from Unity 6's ATG worker-thread failure.
+- Support real rendered scene textures in spatial previews and a wrapping, evenly sized navigation toolbar.
+
+
+## [1.11.0] - 2026-09-11
+
+- Keep Advanced reachable while sidebar categories expand, with independent scrolling for the tool list.
+- Give primary, secondary and quiet buttons equal dimensions and aligned baselines.
+- Describe the Component Gallery, project settings and Control Center by their actual editor tasks.
+- Expose camera-projected preview geometry for interactive package-owned navigation sessions.
+- Share one final notification preview between Test and Appearance, with generic row appearance controls.
+- Add layout regressions for expanded navigation, button alignment and interactive preview composition.
+
+## [1.10.8] - 2026-09-11
+
+- Include Unity 2021.3's editor field namespace for the Control Center appearance dropdown, completing the numeric and choice-field compatibility fixes.
+
+## [1.10.7] - 2026-09-11
+
+- Import the editor UI field namespace used by the numeric stepper on Unity 2021.3, while preserving Unity 6 behavior and the shared visual design.
+
+## [1.10.6] - 2026-09-11
+
+- Match loading skeletons, package change rows, commit placement and history cards to the design references.
+- Keep long file paths and status text separated, use shared checkbox styling, and retain commit drafts below both review panes.
+- Add an inline presentation for existing workflow steps and responsive review geometry coverage.
+
+## [1.10.5] - 2026-09-11
+
+- Preserve per-window navigation expansion, selection visibility and scroll position across pages, search and UI scales.
+- Keep compact page titles, project-name ellipsis, read-only baselines and disabled icon-button colors consistent.
+- Constrain notification preview columns and scope spatial toolbar styling to its own component; cover 28 responsive size/scale combinations.
+- Clarify Advanced checks without duplicating domain tools, and finish native Inspector, authoring, gallery and sample presentation.
+- Extend shared controls with dark/light contrast, attached geometry, source-aware collection and spatial-preview regressions.
+
+## [1.10.4] - 2026-09-11
+
+- Match centered session panels, side-by-side navigation previews and anchored collection actions to the approved designs.
+- Clip spatial-preview meshes to their own viewport and correct face winding, with zoom and geometry regression checks.
+- Keep contextual operation activity out of the stationary scale dock and add the licensed Lucide user-session icon.
+
+## [1.10.3] - 2026-09-11
+
+- Align native filters, paneled collections, trailing switches and action rows with the approved reference compositions.
+- Give code examples and change reviews a bundled, licensed monospace font.
+- Keep empty descriptions out of status/list layouts and correct compact operation-footer button typography.
+
+## [1.10.2] - 2026-09-11
+
+- Preserve Overview content on repeated navigation and keep form/preview columns at their intended widths.
+- Keep keyboard-focused controls visible inside scaled scrolling forms, including narrow layouts.
+- Refine palette context, color-field proportions and spacing using the shared visual system.
+- Keep notification playback with its owning package; the shared lab exposes a preview region and tab event.
+
+## [1.10.1] - 2026-09-11
+
+- Keep wrapped headings and context filters scrollable without starving page content at large UI scales.
+- Replace the unsupported last-child style selector with an explicit navigation-arrow class.
+- Avoid hiding Unity's built-in slider fill member with the shared fill renderer.
+
+## [1.10.0] - 2026-09-11
+
+- Recompose the shared workspace and native forms around the approved visual references: charcoal gradient, typography, Lucide icons, reusable buttons and fixed colored scale dock.
+- Add native serialized Inspector styling with source/Undo/multi-selection coverage; retain legacy adapters for compatibility.
+- Keep project settings and page navigation inside the current Control Center, with persistent Advanced expansion state.
+- Support integrated Workspace / Changes / History composition, literal colored diffs, explicit staging and caller-owned publishing controls.
+
+Visual acceptance and the portfolio consumer rollout are tracked separately; this package does not own domain actions.
+
+## [1.9.1] - 2026-09-10
+
+- Keep shared switches compact in stretched form columns and give slider value fields enough height to remain readable.
+- Cover resolved control geometry in narrow and wide attached Inspector layouts.
+
+## [1.9.0] - 2026-09-10
+
+- Unify charcoal/teal surfaces, reusable button roles, colored sliders, switches and submenu icons. Keep the compact 100% baseline and stationary scale dock.
+- Add capability-disabled presentation and optional step-based change review without owning package policy.
+
 ## [1.8.1] - 2026-09-10
 
 ### Added

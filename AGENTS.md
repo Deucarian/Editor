@@ -10,6 +10,9 @@ Follow the canonical Deucarian governance docs in [Package Registry](https://git
 This package owns:
 
 - Shared editor chrome, icons, resources, style tokens, and editor-only UI Toolkit helpers.
+- Shared typed definition authoring: bounded declarative C# synchronization,
+  identity/conflict tracking, catalog editing controls and assembly generation.
+  Domain packages provide their own schemas, validation and runtime projections.
 
 Registered capabilities:
 - `editor-shell`

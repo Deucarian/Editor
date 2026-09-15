@@ -1,7 +1,7 @@
 # Editor Shell Example
 
-This sample composes a small editor window from the shared Deucarian visual shell, package header, and panel primitives.
+This sample composes a native tool page from the shared workspace, form, feature section, and button controls.
 
-After importing the sample, open **Tools > Deucarian > Control Center...** and choose **Developer > Tools > Editor Shell Example**. The sample's explicit `DeucarianToolRegistry` registration is a compact reference for discoverable standalone tools without extra global menus.
+After importing the sample, open **Tools > Deucarian > Control Center...** and choose **Developer > Shell example**. Navigation stays inside the current window. `EditorShellExampleWindow.Open()` is an explicit standalone entry point; that window also hosts in-place navigation.
 
-Use `EditorShellExampleView.Create()` as a reference for keeping package-specific controls inside shared editor chrome. The view builder remains separate from the `EditorWindow` so the composition is straightforward to exercise in EditMode tests.
+Use `EditorShellExampleView.CreatePage()` as the reference: the page owns its draft and disposes its workspace when the host closes. A host can deactivate and reactivate it without rebuilding controls or discarding the draft. `Create()` remains a simple single-use view helper and disposes on detach.

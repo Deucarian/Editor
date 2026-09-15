@@ -17,9 +17,9 @@ namespace Deucarian.Editor
         static DeucarianControlCenterBuiltIns()
         {
             DeucarianToolRegistry.Register(new DeucarianToolDescriptor("deucarian.editor.workspace-preview",
-                "Editor Component Gallery", "Explore shared fields, buttons and status styles. No application settings.",
+                "Editor Component Gallery", "Preview the shared controls used to build Deucarian editor UIs.",
                 DeucarianControlCenterArea.Developer, DeucarianEditorWorkspacePreviewWindow.Open, PackageName,
-                createPage: DeucarianEditorWorkspacePreviewWindow.CreatePage));
+                iconKey: DeucarianEditorIconIds.Dashboard, createPage: DeucarianEditorWorkspacePreviewWindow.CreatePage));
             ProviderRegistration =
                 DeucarianControlCenterRegistry.RegisterCardProvider(Provider);
             ToolRegistration = DeucarianToolRegistry.Register(

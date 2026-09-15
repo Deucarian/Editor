@@ -11,36 +11,25 @@ namespace Deucarian.Editor
         {
             DeucarianControlCenterCard attention = FindAttention(snapshot);
             var status = attention?.Status ?? DeucarianControlCenterStatus.Success;
-            var focus = DeucarianEditorWorkspaceControls.Region("control-center-focus", "dw-overview-focus");
-            focus.AddToClassList("dw-focus--" + status.ToString().ToLowerInvariant());
-            string icon = status == DeucarianControlCenterStatus.Error ? DeucarianEditorIconIds.Error
-                : status == DeucarianControlCenterStatus.Warning ? DeucarianEditorIconIds.Warning : DeucarianEditorIconIds.Success;
-            focus.Add(DeucarianEditorWorkspaceControls.Icon(icon));
-            var text = DeucarianEditorWorkspaceControls.Region(null, "dw-focus-text");
-            text.Add(DeucarianEditorWorkspaceControls.Label("PROJECT STATUS", "dw-eyebrow"));
-            text.Add(DeucarianEditorWorkspaceControls.Label(attention == null
-                ? "No issues reported" : "Needs your attention", "dw-focus-title"));
-            text.Add(DeucarianEditorWorkspaceControls.Label(attention == null
-                ? "Continue with a tool below."
-                : DescribeAttention(attention), "dw-focus-description"));
-            focus.tooltip = "Status reported by checks from installed packages.";
-            var area = attention?.Area ?? DeucarianControlCenterArea.Project;
+            var summary = new DeucarianEditorStatusSummary("control-center-focus");
+            summary.Set(attention == null ? "No issues reported" : "Needs your attention",
+                attention == null ? "Your installed package checks have no reported issues." : DescribeAttention(attention),
+                status == DeucarianControlCenterStatus.Error ? DeucarianEditorStatus.Error
+                : status == DeucarianControlCenterStatus.Warning ? DeucarianEditorStatus.Warning : DeucarianEditorStatus.Success);
+            summary.Root.tooltip = "Status reported by checks from installed packages.";
             string target = attention?.Id;
-            var action = DeucarianEditorWorkspaceControls.Button(attention == null
-                ? "View project checks" : "Review " + DeucarianControlCenterAreaIds.GetDisplayName(area), () => navigate(area, target));
+            var action = DeucarianEditorWorkspaceControls.Button("Review project", () => navigate(DeucarianControlCenterArea.Project, target), true);
             action.name = "control-center-focus-action";
-            action.EnableInClassList("dw-primary", attention != null);
-            text.Add(action);
-            focus.Add(text);
-            return focus;
+            summary.Actions.Add(action);
+            return summary.Root;
         }
 
         internal static DeucarianControlCenterCard FindAttention(DeucarianControlCenterSnapshot snapshot)
         {
             DeucarianControlCenterCard result = null;
-            foreach (var card in AllCards(snapshot))
+            foreach (var card in DeucarianProjectCheckReview.AllCards(snapshot))
             {
-                if (card.Status < DeucarianControlCenterStatus.Warning || IsSummary(card)) continue;
+                if (card.Status < DeucarianControlCenterStatus.Warning || DeucarianProjectCheckReview.IsSummary(card)) continue;
                 if (result == null || card.Status > result.Status) result = card;
             }
             return result;
@@ -52,16 +41,6 @@ namespace Deucarian.Editor
                 return card.Title + " · " + card.StatusText;
             return card.Description.Length > 0 ? card.Description : card.Title;
         }
-
-        private static IEnumerable<DeucarianControlCenterCard> AllCards(DeucarianControlCenterSnapshot snapshot)
-        {
-            foreach (var card in snapshot.Cards) yield return card;
-            foreach (var section in snapshot.Sections)
-                foreach (var card in section.Cards) yield return card;
-        }
-
-        private static bool IsSummary(DeucarianControlCenterCard card) =>
-            card.Id == "deucarian.readiness.overview" || TryGetSummaryArea(card.Id, out _);
 
         internal static bool TryGetSummaryArea(string id, out DeucarianControlCenterArea area)
         {

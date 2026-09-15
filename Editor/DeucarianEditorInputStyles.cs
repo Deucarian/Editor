@@ -15,6 +15,9 @@ namespace Deucarian.Editor
         public GUIStyle Toolbar { get; }
         public GUIStyle Search { get; }
         public GUIStyle NativeCaption { get; }
+        public GUIStyle SliderTrack { get; }
+        public GUIStyle SliderThumb { get; }
+        public GUIStyle Switch { get; }
 
         internal DeucarianEditorInputStyles()
         {
@@ -40,6 +43,22 @@ namespace Deucarian.Editor
             NativeCaption = DeucarianEditorStyles.CopyStyle(() => EditorStyles.miniLabel);
             DeucarianEditorTypography.ApplyBody(NativeCaption);
             SetText(NativeCaption, DeucarianEditorSurfacePalette.Muted);
+            SliderTrack = new GUIStyle { fixedHeight = 4, stretchWidth = true, margin = new RectOffset() };
+            SliderThumb = new GUIStyle { fixedWidth = 14, fixedHeight = 14 };
+            SliderThumb.normal.background = DeucarianEditorTextures.Bordered("slider-thumb", Color.white, Color.white);
+            SliderThumb.hover.background = SliderThumb.normal.background;
+            SliderThumb.active.background = SliderThumb.normal.background;
+            Switch = new GUIStyle { fixedWidth = 54, fixedHeight = 28, border = new RectOffset(4, 4, 4, 4) };
+            Switch.normal.background = DeucarianEditorTextures.Bordered("switch-off",
+                DeucarianEditorSurfacePalette.Border, DeucarianEditorSurfacePalette.Border);
+            Switch.onNormal.background = DeucarianEditorTextures.Bordered("switch-on",
+                DeucarianEditorSurfacePalette.Primary, DeucarianEditorSurfacePalette.Primary);
+            Switch.hover.background = Switch.normal.background;
+            Switch.onHover.background = Switch.onNormal.background;
+            Switch.focused.background = DeucarianEditorTextures.Bordered("switch-focus",
+                DeucarianEditorSurfacePalette.Border, DeucarianEditorSurfacePalette.Accent);
+            Switch.onFocused.background = DeucarianEditorTextures.Bordered("switch-on-focus",
+                DeucarianEditorSurfacePalette.Primary, DeucarianEditorSurfacePalette.Accent);
         }
 
         private static GUIStyle Field(Func<GUIStyle> source)
@@ -51,6 +70,16 @@ namespace Deucarian.Editor
             style.padding = new RectOffset(8, 8, 4, 4);
             style.fixedHeight = 0;
             SetText(style, DeucarianEditorSurfacePalette.Text);
+            // Preserve popup/search affordances supplied by Unity; plain text surfaces are owned.
+            if (style.name == EditorStyles.textField.name || style.name == EditorStyles.textArea.name)
+            {
+                style.border = new RectOffset(4, 4, 4, 4);
+                style.normal.background = DeucarianEditorTextures.Bordered("input",
+                    DeucarianEditorSurfacePalette.Field, DeucarianEditorSurfacePalette.Border);
+                style.focused.background = DeucarianEditorTextures.Bordered("input-focus",
+                    DeucarianEditorSurfacePalette.Field, DeucarianEditorSurfacePalette.Accent);
+                style.hover.background = style.normal.background;
+            }
             return style;
         }
 

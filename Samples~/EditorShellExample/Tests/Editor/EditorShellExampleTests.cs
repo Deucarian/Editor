@@ -6,15 +6,22 @@ namespace Deucarian.Editor.Samples.Tests
     public sealed class EditorShellExampleTests
     {
         [Test]
-        public void CreateBuildsSharedShellAndPackagePanel()
+        public void PageUsesSharedControlsAndKeepsDraftAcrossActivation()
         {
-            VisualElement root = EditorShellExampleView.Create();
-            Label status = root.Q<Label>("editor-shell-example-status");
-
-            Assert.NotNull(root.Q<VisualElement>("deucarian-window-shell"));
-            Assert.NotNull(root.Q<VisualElement>("editor-shell-example-panel"));
-            Assert.NotNull(status);
-            Assert.That(status.text, Is.EqualTo("Ready to add package-specific controls."));
+            using (var page = EditorShellExampleView.CreatePage())
+            {
+                var root = page.Root;
+                var input = root.Q<TextField>("example-label");
+                input.value = "Kept draft";
+                page.Deactivate(); page.Activate(null);
+                Assert.AreSame(input, root.Q<TextField>("example-label"));
+                Assert.AreEqual("Kept draft", input.value);
+                Assert.NotNull(root.Q("workspace-navigation"));
+                Assert.NotNull(root.Q("workspace-scale-slider"));
+                Assert.NotNull(root.Q("editor-shell-example-panel"));
+                Assert.NotNull(root.Q(className: "dw-primary"));
+                Assert.AreEqual("Hello", root.Q<Label>("editor-shell-example-status").text);
+            }
         }
     }
 }

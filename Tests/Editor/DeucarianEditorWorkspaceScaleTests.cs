@@ -11,9 +11,30 @@ namespace Deucarian.Editor.Tests
     public sealed class DeucarianEditorWorkspaceScaleTests
     {
         private int previous;
+        private int previousLegacy;
+        private int previousEarlier;
 
-        [SetUp] public void SavePreference() { previous = DeucarianEditorAppearance.WorkspaceScalePercent; DeucarianEditorAppearance.WorkspaceScalePercent = 100; }
-        [TearDown] public void RestorePreference() => DeucarianEditorAppearance.WorkspaceScalePercent = previous;
+        [SetUp] public void SavePreference()
+        {
+            previous = DeucarianEditorProjectPreferences.GetInt(DeucarianEditorAppearance.ScaleKey, int.MinValue);
+            previousLegacy = DeucarianEditorProjectPreferences.GetInt(DeucarianEditorAppearance.LegacyScaleKey, int.MinValue);
+            previousEarlier = DeucarianEditorProjectPreferences.GetInt(DeucarianEditorAppearance.EarlierScaleKey, int.MinValue);
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.EarlierScaleKey);
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.LegacyScaleKey);
+            DeucarianEditorProjectPreferences.SetInt(DeucarianEditorAppearance.ScaleKey, 100);
+        }
+        [TearDown] public void RestorePreference()
+        {
+            Restore(DeucarianEditorAppearance.ScaleKey, previous);
+            Restore(DeucarianEditorAppearance.LegacyScaleKey, previousLegacy);
+            Restore(DeucarianEditorAppearance.EarlierScaleKey, previousEarlier);
+        }
+
+        private static void Restore(string key, int value)
+        {
+            if (value == int.MinValue) DeucarianEditorProjectPreferences.Delete(key);
+            else DeucarianEditorProjectPreferences.SetInt(key, value);
+        }
 
         [TestCase(-100, 75)]
         [TestCase(125, 125)]
@@ -39,7 +60,23 @@ namespace Deucarian.Editor.Tests
         {
             DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.ScaleKey);
             Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(100));
-            Assert.That(DeucarianEditorWorkspaceScale.DefaultScale, Is.EqualTo(0.75f));
+            Assert.That(DeucarianEditorWorkspaceScale.DefaultScale, Is.EqualTo(0.675f * 0.75f).Within(0.00001f));
+        }
+
+        [TestCase(75, 100)]
+        [TestCase(90, 120)]
+        [TestCase(100, 100)]
+        [TestCase(125, 150)]
+        [TestCase(150, 150)]
+        public void LegacyPreferenceRebasesOnceWithinTheSupportedRange(int legacy, int expected)
+        {
+            DeucarianEditorProjectPreferences.Delete(DeucarianEditorAppearance.ScaleKey);
+            DeucarianEditorProjectPreferences.SetInt(DeucarianEditorAppearance.LegacyScaleKey, legacy);
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(expected));
+            DeucarianEditorProjectPreferences.SetInt(DeucarianEditorAppearance.LegacyScaleKey, 75);
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(expected));
+            DeucarianEditorAppearance.WorkspaceScalePercent = 100;
+            Assert.That(DeucarianEditorAppearance.WorkspaceScalePercent, Is.EqualTo(100));
         }
 
         [UnityTest]
@@ -85,9 +122,13 @@ namespace Deucarian.Editor.Tests
                             Assert.That(workspace.Footer.worldBound.yMax, Is.LessThanOrEqualTo(page.worldBound.yMax + 2), context);
                             Assert.That(slider.worldBound.xMax, Is.LessThanOrEqualTo(page.worldBound.xMax + 2), context);
                             Assert.That(workspace.Content.resolvedStyle.height, Is.GreaterThan(30), context);
-                            if (workspace.Root.resolvedStyle.width < 760)
-                                Assert.That(page.Q("workspace-navigation-menu").resolvedStyle.display,
-                                    Is.EqualTo(DisplayStyle.Flex), context + " uses a bounded navigation menu");
+                            if (workspace.Root.resolvedStyle.width < 1470)
+                            {
+                                Assert.That(page.Q("workspace-navigation-rail").resolvedStyle.display,
+                                    Is.EqualTo(DisplayStyle.Flex), context + " uses the compact icon rail");
+                                Assert.That(workspace.Sidebar.resolvedStyle.width, Is.EqualTo(110).Within(1), context);
+                                Assert.That(page.Q("workspace-navigation-scroll").resolvedStyle.display, Is.EqualTo(DisplayStyle.None), context);
+                            }
                             var resetButton = page.Q<Button>("workspace-scale-reset");
                             if (sliderBounds.HasValue)
                             {
@@ -99,7 +140,7 @@ namespace Deucarian.Editor.Tests
                             resetBounds = resetButton.worldBound;
                             Assert.That(viewport.worldBound.yMax, Is.LessThanOrEqualTo(slider.worldBound.yMin + 1), context + " the fixed dock must not cover content");
                             Assert.That(input.value, Is.EqualTo("Keep this draft"));
-                            Assert.That(workspace.Root.ClassListContains("dw-compact"), Is.EqualTo(workspace.Root.resolvedStyle.width < 1100), context);
+                            Assert.That(workspace.Root.ClassListContains("dw-compact"), Is.EqualTo(workspace.Root.resolvedStyle.width < 1470), context);
                         }
                     }
                     page.RemoveFromHierarchy();

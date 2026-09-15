@@ -58,8 +58,8 @@ namespace Deucarian.Editor.Tests
                 Assert.IsTrue(DeucarianEditorIcons.IsKnownIconId(iconId), iconId);
                 Texture2D texture = DeucarianEditorIcons.GetIcon(iconId);
                 Assert.NotNull(texture, iconId);
-                Assert.AreEqual(32, texture.width, iconId);
-                Assert.AreEqual(32, texture.height, iconId);
+                Assert.AreEqual(128, texture.width, iconId);
+                Assert.AreEqual(128, texture.height, iconId);
                 Assert.IsTrue(File.Exists(Path.Combine(svgRoot, iconId + ".svg")), iconId);
 
                 string metaPath = pngPath + ".meta";

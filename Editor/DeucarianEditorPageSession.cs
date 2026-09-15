@@ -22,27 +22,40 @@ namespace Deucarian.Editor
         public DeucarianEditorPageSession(EditorWindow window, string homeId,
             Action<VisualElement> buildHome, Action<string> activateHome = null,
             Action deactivateHome = null)
+            : this(window, homeId, () => CreateHome(homeId, buildHome, activateHome, deactivateHome)) { }
+
+        public DeucarianEditorPageSession(EditorWindow window, string homeId, IDeucarianEditorPage homePage)
+            : this(window, homeId, () => homePage ?? throw new ArgumentNullException(nameof(homePage))) { }
+
+        private DeucarianEditorPageSession(EditorWindow window, string homeId, Func<IDeucarianEditorPage> createHome)
         {
             this.window = window != null ? window : throw new ArgumentNullException(nameof(window));
             this.homeId = homeId ?? throw new ArgumentNullException(nameof(homeId));
             homeTitle = new UnityEngine.GUIContent(window.titleContent);
             if (DeucarianToolRegistry.TryGet(homeId, out var homeTool)) homeTitle.text = homeTool.DisplayName;
-            if (buildHome == null) throw new ArgumentNullException(nameof(buildHome));
             root = window.rootVisualElement;
             root.Clear();
             pageHost = new DeucarianEditorPageHost();
             root.Add(pageHost);
-            var homeRoot = new VisualElement { name = "deucarian-page-" + homeId };
-            homeRoot.style.flexGrow = 1;
-            homeRoot.style.minHeight = 0;
-            buildHome(homeRoot);
-            pages.Add(homeId, new DeucarianEditorPage(homeRoot, activateHome, deactivateHome));
+            var home = createHome();
+            home.Root.style.flexGrow = 1;
+            home.Root.style.minHeight = 0;
+            pages.Add(homeId, home);
             ActiveToolId = homeId;
             window.titleContent = new UnityEngine.GUIContent(homeTitle);
-            pageHost.Add(homeRoot);
+            pageHost.Add(home.Root);
             root.RegisterCallback<DeucarianEditorNavigateEvent>(OnNavigate);
             refresh = root.schedule.Execute(Update).Every(100);
             AssemblyReloadEvents.beforeAssemblyReload += Dispose;
+        }
+
+        private static IDeucarianEditorPage CreateHome(string id, Action<VisualElement> build,
+            Action<string> activate, Action deactivate)
+        {
+            if (build == null) throw new ArgumentNullException(nameof(build));
+            var home = new VisualElement { name = "deucarian-page-" + id };
+            build(home);
+            return new DeucarianEditorPage(home, activate, deactivate);
         }
 
         public string ActiveToolId { get; private set; }

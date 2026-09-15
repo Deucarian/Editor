@@ -40,7 +40,7 @@ namespace Deucarian.Editor
             style.padding = new RectOffset(14, 14, 4, 4);
             style.margin = new RectOffset(2, 2, 4, 4);
             style.border = new RectOffset(4, 4, 4, 4);
-            DeucarianEditorInputStyles.SetText(style, primary ? Color.white : DeucarianEditorSurfacePalette.Text);
+            DeucarianEditorInputStyles.SetText(style, primary ? DeucarianEditorSurfacePalette.PrimaryText : DeucarianEditorSurfacePalette.Text);
             style.normal.background = DeucarianEditorTextures.Bordered("button-" + role,
                 primary ? DeucarianEditorSurfacePalette.Primary : DeucarianEditorSurfacePalette.Field,
                 primary ? DeucarianEditorSurfacePalette.Accent : DeucarianEditorSurfacePalette.Border);

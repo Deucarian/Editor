@@ -46,7 +46,8 @@ namespace Deucarian.Editor
             string navigationPath = null,
             string navigationGroupIcon = null,
             string navigationLabel = null,
-            bool showNavigationIcon = true)
+            bool showNavigationIcon = true,
+            Func<bool> isFeatureEnabled = null)
         {
             Id = DeucarianControlCenterAction.Require(id, nameof(id));
             DisplayName = DeucarianControlCenterAction.Require(
@@ -72,6 +73,7 @@ namespace Deucarian.Editor
             NavigationGroupIcon = navigationGroupIcon;
             NavigationLabel = string.IsNullOrWhiteSpace(navigationLabel) ? DisplayName : navigationLabel.Trim();
             ShowNavigationIcon = showNavigationIcon;
+            IsFeatureEnabled = isFeatureEnabled;
         }
 
         public string Id { get; }
@@ -87,6 +89,7 @@ namespace Deucarian.Editor
         public string NavigationGroupIcon { get; }
         public string NavigationLabel { get; }
         public bool ShowNavigationIcon { get; }
+        public Func<bool> IsFeatureEnabled { get; }
         public void Open()
         {
             open();
@@ -102,6 +105,8 @@ namespace Deucarian.Editor
                 StringComparer.Ordinal);
 
         public static event Action Changed;
+
+        public static void RefreshPresentation() => Changed?.Invoke();
 
         public static IDisposable Register(DeucarianToolDescriptor tool)
         {

@@ -35,6 +35,17 @@ namespace Deucarian.Editor
         public VisualElement Details { get; }
         public VisualElement Collection { get; }
 
+        public void UsePanels(bool filtersInList = false)
+        {
+            Collection.AddToClassList("dw-collection-panels");
+            if (filtersInList)
+            {
+                var list = Collection.Q<ScrollView>("workspace-collection");
+                list.Insert(0, Workspace.Scope);
+                Collection.AddToClassList("dw-collection-local-scope");
+            }
+        }
+
         public void SetItems(IReadOnlyList<DeucarianEditorCollectionItem> items, string selectedId, string emptyText)
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
@@ -72,21 +83,32 @@ namespace Deucarian.Editor
             private readonly Label title;
             private readonly Label subtitle;
             private readonly Label status;
+            private readonly VisualElement icon;
+            private readonly VisualElement glyph;
+            private readonly VisualElement actionIcon;
             private DeucarianEditorCollectionItem current;
 
             internal Entry()
             {
                 select = DeucarianEditorWorkspaceControls.Button(string.Empty, () => current.Select?.Invoke());
                 select.AddToClassList("dw-collection-select");
+                icon = DeucarianEditorWorkspaceControls.Region(null, "dw-collection-icon");
+                glyph = DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Document);
+                icon.Add(glyph);
+                select.Add(icon);
+                var copy = DeucarianEditorWorkspaceControls.Region(null, "dw-collection-copy");
                 title = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-message-title");
                 subtitle = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
                 status = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-collection-status");
-                select.Add(title);
-                select.Add(subtitle);
+                copy.Add(title);
+                copy.Add(subtitle);
+                select.Add(copy);
                 Root.Add(select);
                 Root.Add(status);
                 action = DeucarianEditorWorkspaceControls.Button(string.Empty, () => current.Execute?.Invoke());
                 action.AddToClassList("dw-collection-action");
+                actionIcon = DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Play);
+                action.Add(actionIcon);
                 Root.Add(action);
             }
 
@@ -97,8 +119,17 @@ namespace Deucarian.Editor
                 Root.EnableInClassList("dw-selected", selected);
                 title.text = item.Title;
                 subtitle.text = item.Description;
+                DeucarianEditorWorkspaceControls.Show(subtitle, !string.IsNullOrWhiteSpace(item.Description));
                 status.text = item.Status;
-                action.text = item.ActionLabel;
+                bool iconAction = !string.IsNullOrEmpty(item.ActionIconId);
+                action.text = iconAction ? string.Empty : item.ActionLabel;
+                action.tooltip = item.ActionLabel + " · " + item.Title;
+                action.EnableInClassList("dw-round-action", iconAction);
+                if (iconAction) actionIcon.style.backgroundImage = new StyleBackground(DeucarianEditorIcons.GetIcon(item.ActionIconId));
+                DeucarianEditorWorkspaceControls.Show(actionIcon, iconAction);
+                DeucarianEditorWorkspaceControls.Show(icon, !string.IsNullOrEmpty(item.IconId));
+                if (!string.IsNullOrEmpty(item.IconId)) glyph.style.backgroundImage = new StyleBackground(DeucarianEditorIcons.GetIcon(item.IconId));
+                DeucarianEditorWorkspaceControls.Show(status, !string.IsNullOrEmpty(item.Status));
                 action.SetEnabled(item.ActionEnabled);
                 DeucarianEditorWorkspaceControls.Show(action, item.Execute != null);
                 select.tooltip = item.Title + " · " + item.Description;

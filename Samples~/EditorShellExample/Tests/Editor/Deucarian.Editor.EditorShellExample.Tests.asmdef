@@ -2,6 +2,7 @@
   "name": "Deucarian.Editor.EditorShellExample.Tests",
   "rootNamespace": "Deucarian.Editor.Samples.Tests",
   "references": [
+    "Deucarian.Editor",
     "Deucarian.Editor.EditorShellExample"
   ],
   "includePlatforms": [

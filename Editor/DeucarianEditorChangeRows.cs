@@ -70,6 +70,7 @@ namespace Deucarian.Editor
             {
                 selected = new Toggle { name = "review-select", tooltip = "Select this change for an explicit action." };
                 selected.AddToClassList("dw-review-select");
+                selected.AddToClassList("dw-checkbox");
                 selected.RegisterValueChangedCallback(evt => current.Select?.Invoke(evt.newValue));
                 Root.Add(selected);
                 inspect = DeucarianEditorWorkspaceControls.Button(string.Empty, () => current.Inspect?.Invoke());
@@ -79,9 +80,9 @@ namespace Deucarian.Editor
                 state = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
                 related = DeucarianEditorWorkspaceControls.Label(string.Empty, "dw-muted");
                 path.enableRichText = state.enableRichText = related.enableRichText = false;
-                inspect.Add(path);
-                inspect.Add(state);
-                inspect.Add(related);
+                inspect.Add(DeucarianEditorWorkspaceControls.Icon(DeucarianEditorIconIds.Document));
+                var copy = DeucarianEditorWorkspaceControls.Region(null, "dw-review-row-copy");
+                copy.Add(path); copy.Add(state); copy.Add(related); inspect.Add(copy);
                 Root.Add(inspect);
             }
 
@@ -95,7 +96,8 @@ namespace Deucarian.Editor
                 selected.tooltip = "Select " + Clip(item.Path) + (item.Staged ? " (staged)" : " (unstaged)");
                 inspect.SetEnabled(item.Inspect != null);
                 path.text = Clip(item.Path);
-                state.text = (item.Staged ? "Staged" : "Unstaged") + " · " + Clip(item.Status);
+                string status = Clip(item.Status);
+                state.text = string.IsNullOrEmpty(status) ? (item.Staged ? "Staged" : "Unstaged") : status;
                 related.text = Clip(item.RelatedPath);
                 DeucarianEditorWorkspaceControls.Show(related, !string.IsNullOrEmpty(item.RelatedPath));
                 inspect.tooltip = path.text + " · " + state.text;

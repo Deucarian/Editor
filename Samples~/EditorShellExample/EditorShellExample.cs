@@ -8,52 +8,60 @@ namespace Deucarian.Editor.Samples
     /// <summary>Minimal package tool built from the shared editor shell.</summary>
     public sealed class EditorShellExampleWindow : EditorWindow
     {
+        private DeucarianEditorPageSession session;
         public static void Open()
         {
             EditorShellExampleWindow window =
                 GetWindow<EditorShellExampleWindow>();
             window.titleContent = new GUIContent("Editor Shell Example");
-            window.minSize = new Vector2(420f, 260f);
+            DeucarianEditorWorkspace.ConfigureWindow(window);
             window.Show();
         }
 
         public void CreateGUI()
         {
-            rootVisualElement.Add(EditorShellExampleView.Create());
+            session?.Dispose();
+            session = new DeucarianEditorPageSession(this, EditorShellExampleView.ToolId, EditorShellExampleView.CreatePage());
         }
+
+        private void OnDisable() { session?.Dispose(); session = null; }
     }
 
     /// <summary>Builds the sample view as a testable composition.</summary>
     public static class EditorShellExampleView
     {
+        public const string ToolId = "deucarian.samples.editor-shell-example";
+
         public static VisualElement Create()
+        {
+            var page = CreatePage();
+            page.Root.RegisterCallback<DetachFromPanelEvent>(_ => page.Dispose());
+            return page.Root;
+        }
+
+        public static IDeucarianEditorPage CreatePage()
         {
             VisualElement root = new VisualElement
             {
                 name = "editor-shell-example"
             };
-            var layout = new DeucarianEditorTaskLayout(root, "editor", "Editor Shell Example",
-                "One clear action, visible context, optional detail.");
-            root.RegisterCallback<DetachFromPanelEvent>(_ => layout.Dispose());
-            layout.Context.Add(new Label("Project-local example · no runtime connection"));
-            var input = new TextField("Label") { value = "Hello" };
-            layout.Content.Add(input);
-            var preview = new Label("Hello");
-            layout.Preview.Add(preview);
-            layout.Actions.Add(new Button(() => { preview.text = input.value; layout.Status.text = "Preview updated."; }) { text = "Update preview" });
-            layout.Advanced.Add(new Label("Place optional package-specific controls here."));
-            layout.Status.text = "Ready. Type a label and update the preview.";
-
-            VisualElement panel =
-                DeucarianEditorVisualShell.CreatePanel();
-            panel.name = "editor-shell-example-panel";
-            panel.Add(new Label(
-                "Ready to add package-specific controls.")
-            {
-                name = "editor-shell-example-status"
-            });
-            layout.Content.Add(panel);
-            return root;
+            var workspace = new DeucarianEditorWorkspace(root, Application.productName);
+            workspace.Title.text = "Editor shell example";
+            workspace.Subtitle.text = "One action, with a preview you can change.";
+            DeucarianEditorWorkspaceNavigation.Populate(workspace, ToolId);
+            var scroll = DeucarianEditorWorkspaceControls.Scroll("example-content");
+            workspace.Content.Add(scroll);
+            var section = new DeucarianEditorFeatureSection("editor-shell-example-panel", "Try a label",
+                "Your draft stays here when you switch tools.", DeucarianEditorIconIds.Sample);
+            scroll.Add(section.Root);
+            string draft = "Hello";
+            var form = new DeucarianEditorWorkspaceForm(section.Details);
+            form.Text("example-label", "Label", () => draft, value => draft = value);
+            var preview = DeucarianEditorWorkspaceControls.Label("Hello", "dw-section-title");
+            preview.name = "editor-shell-example-status";
+            section.Details.Add(preview);
+            section.Actions.Add(DeucarianEditorWorkspaceControls.Button("Update preview", () => preview.text = draft, true));
+            return new DeucarianEditorPage(root, dispose: workspace.Dispose);
         }
     }
 
@@ -66,7 +74,7 @@ namespace Deucarian.Editor.Samples
         {
             Registration = DeucarianToolRegistry.Register(
                 new DeucarianToolDescriptor(
-                    "deucarian.samples.editor-shell-example",
+                    EditorShellExampleView.ToolId,
                     "Editor Shell Example",
                     "Open the imported shared editor-shell sample.",
                     DeucarianControlCenterArea.Developer,
@@ -74,7 +82,8 @@ namespace Deucarian.Editor.Samples
                     "com.deucarian.editor",
                     DeucarianEditorIconIds.Sample,
                     new[] { "sample", "shell", "example" },
-                    1000));
+                    1000, createPage: EditorShellExampleView.CreatePage,
+                    navigationPath: "Developer", navigationLabel: "Shell example"));
         }
     }
 }

@@ -31,6 +31,11 @@ namespace Deucarian.Editor
             string query)
         {
             bool samePage = content != null && renderedArea == selectedArea && renderedQuery == query;
+            bool focusChanged = focusedTargetId != renderedFocusId;
+            if (!samePage || (focusChanged && !string.IsNullOrEmpty(focusedTargetId)))
+                checkFilter = DeucarianProjectCheckFilter.All;
+            if (focusChanged && !string.IsNullOrEmpty(focusedTargetId)) expandedChecks.Remove(focusedTargetId);
+            renderedFocusId = focusedTargetId;
             Vector2 scrollOffset = samePage ? content.scrollOffset : Vector2.zero;
             string focusedName = samePage ? (Root.focusController?.focusedElement as VisualElement)?.name : null;
             renderedArea = selectedArea;
@@ -51,6 +56,7 @@ namespace Deucarian.Editor
             }
             sidebar?.RemoveFromHierarchy();
             sidebar = CreateSidebar(snapshot, selectedArea);
+            DeucarianEditorWorkspaceControls.Show(sidebar, selectedArea != DeucarianControlCenterArea.Overview);
             layout.Insert(0, sidebar);
             content.Clear();
 
@@ -74,7 +80,7 @@ namespace Deucarian.Editor
                 if (revision != renderRevision) return;
                 content.scrollOffset = scrollOffset;
                 if (!string.IsNullOrEmpty(focusedName)) Root.Q<VisualElement>(focusedName)?.Focus();
-                if (!samePage && !string.IsNullOrEmpty(focusedTargetId))
+                if ((!samePage || focusChanged) && !string.IsNullOrEmpty(focusedTargetId))
                 {
                     var target = content.Q<VisualElement>("control-center-card-" + focusedTargetId);
                     if (target != null) content.ScrollTo(target);
@@ -122,6 +128,33 @@ namespace Deucarian.Editor
                 name = "control-center-sidebar"
             };
             result.AddToClassList("dw-control-sections");
+            if (selectedArea == DeucarianControlCenterArea.Project)
+            {
+                var cards = DeucarianProjectCheckReview.Collect(snapshot);
+                var labels = new string[4];
+                var names = new[] { "All", "Errors", "Warnings", "Information" };
+                for (int i = 0; i < labels.Length; i++)
+                {
+                    var filter = (DeucarianProjectCheckFilter)i;
+                    labels[i] = names[i] + " (" + cards.FindAll(card => DeucarianProjectCheckReview.Matches(card, filter)).Count + ")";
+                }
+                var tabs = new DeucarianEditorChoiceBar(labels, (int)checkFilter, tabs: true);
+                tabs.name = "control-center-check-filters";
+                tabs.Changed += index =>
+                {
+                    checkFilter = (DeucarianProjectCheckFilter)index;
+                    Render(snapshot, selectedArea, null, renderedQuery);
+                    int revision = renderRevision;
+                    Root.schedule.Execute(() =>
+                    {
+                        if (revision == renderRevision)
+                            Root.Q<DeucarianEditorChoiceBar>("control-center-check-filters")?.Q<Button>("choice-" + index)?.Focus();
+                    });
+                };
+                result.Add(tabs);
+                return result;
+            }
+            if (selectedArea == DeucarianControlCenterArea.Developer) return result;
             foreach (DeucarianControlCenterArea area in snapshot.Areas)
             {
                 DeucarianControlCenterArea captured = area;
@@ -141,21 +174,26 @@ namespace Deucarian.Editor
             DeucarianControlCenterArea area,
             string focusedTargetId)
         {
-            if (area != DeucarianControlCenterArea.Overview)
-                DeucarianControlCenterVisuals.AddPageHeading(content,
-                    DeucarianControlCenterAreaIds.GetDisplayName(area), GetAreaDescription(area));
-            else
+            if (area == DeucarianControlCenterArea.Overview)
+            {
                 content.Add(DeucarianControlCenterOverviewPresentation.CreateFocus(snapshot, navigate));
+                content.Add(DeucarianControlCenterContinueWorking.Create(snapshot, Root));
+                return;
+            }
+            if (area == DeucarianControlCenterArea.Project || area == DeucarianControlCenterArea.Developer)
+            {
+                DeucarianControlCenterAdvancedPresentation.Build(content, snapshot, area, focusedTargetId, refresh, ExecuteCardAction, expandedChecks, navigate, checkFilter);
+                return;
+            }
+            DeucarianControlCenterVisuals.AddPageHeading(content,
+                DeucarianControlCenterAreaIds.GetDisplayName(area), GetAreaDescription(area));
             VisualElement cards = CreateCardHost();
             content.Add(cards);
             foreach (DeucarianControlCenterCard card in snapshot.Cards)
             {
                 if (card.Area == area)
                 {
-                    if (area == DeucarianControlCenterArea.Overview && card.Id == "deucarian.readiness.overview") continue;
-                    cards.Add(area == DeucarianControlCenterArea.Overview && DeucarianControlCenterOverviewPresentation.TryGetSummaryArea(card.Id, out _)
-                        ? DeucarianControlCenterOverviewPresentation.CreateSummary(card, navigate)
-                        : DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
+                    cards.Add(DeucarianControlCenterCardRenderer.Create(card, focusedTargetId, ExecuteCardAction));
                 }
             }
 
@@ -175,78 +213,8 @@ namespace Deucarian.Editor
                 }
             }
 
-            if (area == DeucarianControlCenterArea.Developer || area == DeucarianControlCenterArea.Overview)
-                RenderTools(content, snapshot.Tools, area);
         }
 
-        private void RenderTools(
-            VisualElement content,
-            IReadOnlyList<DeucarianToolDescriptor> tools,
-            DeucarianControlCenterArea area)
-        {
-            var matching = new List<DeucarianToolDescriptor>();
-            foreach (DeucarianToolDescriptor tool in tools)
-            {
-                if (tool.Id != DeucarianToolIds.ControlCenter &&
-                    (area == DeucarianControlCenterArea.Developer || DeucarianToolHistory.IsFavorite(tool.Id) ||
-                        DeucarianToolHistory.RecentIndex(tool.Id) >= 0 && DeucarianToolHistory.RecentIndex(tool.Id) < 3))
-                {
-                    matching.Add(tool);
-                }
-            }
-
-            if (matching.Count == 0)
-            {
-                return;
-            }
-
-            matching.Sort((left, right) =>
-            {
-                int favorite = DeucarianToolHistory.IsFavorite(right.Id).CompareTo(DeucarianToolHistory.IsFavorite(left.Id));
-                if (favorite != 0) return favorite;
-                int leftIndex = DeucarianToolHistory.RecentIndex(left.Id);
-                int rightIndex = DeucarianToolHistory.RecentIndex(right.Id);
-                int recent = (leftIndex < 0 ? int.MaxValue : leftIndex).CompareTo(rightIndex < 0 ? int.MaxValue : rightIndex);
-                return recent != 0 ? recent : string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
-            });
-
-            DeucarianControlCenterVisuals.AddSectionHeading(
-                content,
-                area == DeucarianControlCenterArea.Overview ? "Your tools" : "Tools",
-                string.Empty);
-            foreach (DeucarianToolDescriptor tool in matching)
-            {
-                DeucarianToolDescriptor captured = tool;
-                var row = new VisualElement
-                {
-                    name = "control-center-tool-" + tool.Id
-                };
-                row.AddToClassList("dw-tool-row");
-                DeucarianEditorResponsiveLayout.AdaptToWidth(row, "dw-tool-stacked", 520);
-                var text = DeucarianEditorWorkspaceControls.Region(null, "dw-tool-text");
-                text.Add(DeucarianControlCenterVisuals.CreateLabel(tool.DisplayName, true));
-                row.tooltip = tool.Description;
-                if (area != DeucarianControlCenterArea.Overview && tool.Description.Length > 0)
-                {
-                    text.Add(DeucarianControlCenterVisuals.CreateMutedLabel(tool.Description));
-                }
-
-                row.Add(text);
-                var button = DeucarianEditorWorkspaceControls.Button("Open",
-                    () => DeucarianEditorNavigation.Open(Root, captured.Id));
-                button.name = "control-center-open-" + tool.Id;
-                bool favorite = DeucarianToolHistory.IsFavorite(tool.Id);
-                var pin = DeucarianEditorWorkspaceControls.Button(favorite ? "Unpin" : "Pin", () =>
-                {
-                    DeucarianToolHistory.SetFavorite(captured.Id, !DeucarianToolHistory.IsFavorite(captured.Id));
-                    refresh();
-                });
-                pin.name = "control-center-pin-" + tool.Id;
-                pin.tooltip = "Keep this tool on the overview for this project.";
-                row.Add(DeucarianEditorWorkspaceControls.Actions(button, pin));
-                content.Add(row);
-            }
-        }
 
         private void RenderSearch(
             VisualElement content,
@@ -263,20 +231,13 @@ namespace Deucarian.Editor
             {
                 searchResults.Add(result);
                 DeucarianControlCenterSearchResult captured = result;
-                var row = new Button(() => OpenSearchResult(captured))
-                {
-                    name = "control-center-search-result-" + result.TargetId
-                };
-                row.style.marginBottom = 6f;
-                row.style.paddingLeft = 10f;
-                row.style.paddingRight = 10f;
-                row.style.paddingTop = 8f;
-                row.style.paddingBottom = 8f;
-                row.style.unityTextAlign = TextAnchor.MiddleLeft;
-                row.Add(DeucarianControlCenterVisuals.CreateLabel(result.Title, true));
+                var row = DeucarianEditorWorkspaceControls.Button(string.Empty, () => OpenSearchResult(captured));
+                row.name = "control-center-search-result-" + result.TargetId;
+                row.AddToClassList("dw-search-result");
+                row.Add(DeucarianEditorWorkspaceControls.Label(result.Title, "dw-message-title"));
                 if (result.Description.Length > 0)
                 {
-                    row.Add(DeucarianControlCenterVisuals.CreateMutedLabel(result.Description));
+                    row.Add(DeucarianEditorWorkspaceControls.Label(result.Description, "dw-muted"));
                 }
 
                 content.Add(row);
@@ -293,12 +254,11 @@ namespace Deucarian.Editor
         internal void MoveSearchSelection(int direction)
         {
             if (searchButtons.Count == 0) return;
-            if (selectedSearchResult >= 0) searchButtons[selectedSearchResult].style.borderLeftWidth = 0;
+            if (selectedSearchResult >= 0) searchButtons[selectedSearchResult].RemoveFromClassList("dw-selected");
             selectedSearchResult = selectedSearchResult < 0 ? (direction > 0 ? 0 : searchButtons.Count - 1)
                 : (selectedSearchResult + direction + searchButtons.Count) % searchButtons.Count;
             var selected = searchButtons[selectedSearchResult];
-            selected.style.borderLeftWidth = 3;
-            selected.style.borderLeftColor = DeucarianEditorTheme.Accent;
+            selected.AddToClassList("dw-selected");
             content.ScrollTo(selected);
         }
 
