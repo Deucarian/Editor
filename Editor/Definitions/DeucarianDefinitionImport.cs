@@ -13,16 +13,15 @@ namespace Deucarian.Editor.Definitions
     [InitializeOnLoad]
     internal sealed class DeucarianDefinitionImport : AssetPostprocessor
     {
-        private static readonly HashSet<string> pending = new HashSet<string>(StringComparer.Ordinal);
+        private static readonly DeucarianDefinitionWorkQueue work = new DeucarianDefinitionWorkQueue();
         private static readonly Dictionary<string, string> errors = new Dictionary<string, string>(StringComparer.Ordinal);
-        private static bool scheduled;
         internal static IReadOnlyDictionary<string, string> Errors => errors;
         internal static void ClearError(string path) => errors.Remove(path);
         internal static bool BelongsTo(string path, string schema)
         {
             var record = DeucarianDefinitionSync.Records.FirstOrDefault(x => AssetDatabase.GUIDToAssetPath(x.sourceGuid) == path || AssetDatabase.GUIDToAssetPath(x.assetGuid) == path);
             if (record != null) return record.schema == schema;
-            if (!path.EndsWith(".definition.cs", StringComparison.Ordinal) || !File.Exists(path)) return false;
+            if (!DeucarianDefinitionSource.IsSourcePath(path) || !File.Exists(path)) return false;
             try { return DeucarianDefinitionSource.SchemaId(File.ReadAllText(path)) == schema; }
             catch { return true; }
         }
@@ -46,31 +45,36 @@ namespace Deucarian.Editor.Definitions
         private static void Scan()
         {
             if (Disabled || !Directory.Exists("Assets")) return;
-            foreach (var path in Directory.GetFiles("Assets", "*.definition.cs", SearchOption.AllDirectories)) Enqueue(path.Replace('\\', '/'));
+            foreach (var path in Directory.EnumerateFiles("Assets", "*.cs", SearchOption.AllDirectories).Where(DeucarianDefinitionSource.IsSourcePath)) Enqueue(path.Replace('\\', '/'));
         }
         internal static void Enqueue(string path)
         {
-            if (string.IsNullOrEmpty(path) || !path.StartsWith("Assets/", StringComparison.Ordinal)) return;
-            pending.Add(path);
-            if (scheduled) return;
-            scheduled = true; EditorApplication.delayCall += Drain;
+            if (string.IsNullOrEmpty(path) || !path.StartsWith("Assets/", StringComparison.Ordinal) ||
+                !(DeucarianDefinitionSource.IsSourcePath(path) || path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase))) return;
+            if (work.Enqueue(path, EditorApplication.timeSinceStartup)) EditorApplication.update += Drain;
         }
+
+        internal static IDisposable BeginEditing(DeucarianDefinitionSchema schema, ScriptableObject asset) =>
+            work.BeginEditing(AssetDatabase.GetAssetPath(asset), Enqueue, () => DeucarianDefinitionSync.CaptureHash(schema, asset));
+        internal static void Acknowledge(ScriptableObject asset) => work.Acknowledge(AssetDatabase.GetAssetPath(asset));
+
         private static void Drain()
         {
-            scheduled = false;
-            if (Disabled) { pending.Clear(); return; }
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
-            { scheduled = true; EditorApplication.delayCall += Drain; return; }
-            var paths = pending.ToArray(); pending.Clear();
+            var paths = work.TakeReady(EditorApplication.timeSinceStartup,
+                EditorApplication.isCompiling || EditorApplication.isUpdating || EditorGUIUtility.editingTextField);
+            if (paths == null) return;
+            EditorApplication.update -= Drain;
+            if (Disabled) return;
             var schemas = DeucarianDefinitionSchema.Discover();
+            var synchronized = new HashSet<string>(StringComparer.Ordinal);
             foreach (string path in paths)
                 try
                 {
-                    if (path.EndsWith(".definition.cs", StringComparison.Ordinal) && File.Exists(path))
+                    if (DeucarianDefinitionSource.IsSourcePath(path) && File.Exists(path))
                     {
                         string id = DeucarianDefinitionSource.SchemaId(File.ReadAllText(path));
                         var schema = schemas.FirstOrDefault(x => x.Id == id) ?? throw new InvalidOperationException("Install the definition package for schema " + id);
-                        DeucarianDefinitionSync.SynchronizeSource(schema, path);
+                        Synchronize(schema, path, synchronized);
                     }
                     else if (AssetDatabase.LoadMainAssetAtPath(path) is ScriptableObject asset)
                     {
@@ -78,18 +82,31 @@ namespace Deucarian.Editor.Definitions
                         if (record != null)
                         {
                             var schema = schemas.First(x => x.Id == record.schema);
-                            DeucarianDefinitionSync.SynchronizeSource(schema, AssetDatabase.GUIDToAssetPath(record.sourceGuid));
+                            Synchronize(schema, AssetDatabase.GUIDToAssetPath(record.sourceGuid), synchronized);
                         }
                         foreach (var parent in DeucarianDefinitionSync.Records)
                         {
                             string parentPath = AssetDatabase.GUIDToAssetPath(parent.assetGuid);
                             if (parentPath == path || !AssetDatabase.GetDependencies(parentPath, true).Contains(path)) continue;
-                            DeucarianDefinitionSync.SynchronizeSource(schemas.First(x => x.Id == parent.schema), AssetDatabase.GUIDToAssetPath(parent.sourceGuid));
+                            Synchronize(schemas.First(x => x.Id == parent.schema), AssetDatabase.GUIDToAssetPath(parent.sourceGuid), synchronized);
                         }
                     }
-                    errors.Remove(path);
                 }
                 catch (Exception error) { errors[path] = error.Message; }
+        }
+
+        private static void Synchronize(DeucarianDefinitionSchema schema, string path, HashSet<string> synchronized)
+        {
+            if (!synchronized.Add(path)) return;
+            var record = DeucarianDefinitionSync.Records.FirstOrDefault(x => AssetDatabase.GUIDToAssetPath(x.sourceGuid) == path);
+            if (record != null && work.ShouldDefer(AssetDatabase.GUIDToAssetPath(record.assetGuid))) return;
+            try
+            {
+                DeucarianDefinitionSync.SynchronizeSource(schema, path);
+                errors.Remove(path);
+                if (record != null) errors.Remove(AssetDatabase.GUIDToAssetPath(record.assetGuid));
+            }
+            catch (Exception error) { errors[path] = error.Message; }
         }
     }
 

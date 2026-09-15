@@ -19,6 +19,15 @@ generation. Runtime services still own active state and lifetimes.
    generated property from C#. Assign scene hosts once; callers do not create
    stores, presenters, pools or sessions for each operation.
 
+The definition form keeps native asset edits and Undo while you work. It waits
+to synchronize the selected definition's declaration until **Save and
+synchronize**, selecting another definition, or closing the page. This groups
+field edits into one code update instead of compiling after each keystroke.
+Creating or duplicating a definition imports its declaration, assembly and typed
+keys together. Repeating synchronization without changes leaves existing files
+untouched. The owning window retains each domain's selected definition, new-name
+draft, search and scroll position through a necessary reload.
+
 Existing project assets appear in Definitions. **Enable code editing** adopts an
 existing asset without replacing its GUID. Duplicate in Definitions to create a
 new identity. Rename the display name to change its generated property name.
@@ -39,7 +48,8 @@ new stable `Id` (for example a new GUID). The synchronizer creates its asset and
 refreshes the catalog and caller keys after import. Preserve the frame and
 `definition-value` markers. Keep application methods in ordinary C# files.
 
-The synchronizer formats owned declarations. `.g.cs` caller accessors are outputs;
+The synchronizer formats declarations when it writes asset edits; valid code
+edits retain their existing formatting. `.g.cs` caller accessors are outputs;
 do not edit them. A typical caller is:
 
 ```csharp

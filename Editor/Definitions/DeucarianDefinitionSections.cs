@@ -64,6 +64,18 @@ namespace Deucarian.Editor.Definitions
                 }
             }
         }
+
+        internal static void Save(ScriptableObject asset, Type specType)
+        {
+            using (var serialized = new SerializedObject(asset))
+                foreach (var field in specType.GetFields(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    var section = field.GetCustomAttribute<DefinitionSectionAttribute>();
+                    if (section == null) continue;
+                    if (Required(serialized, section.Path).objectReferenceValue is ScriptableObject child) Save(child, field.FieldType);
+                }
+            AssetDatabase.SaveAssetIfDirty(asset);
+        }
         private static SerializedProperty Required(SerializedObject value, string path) => value.FindProperty(path) ?? throw new InvalidOperationException("Definition schema has an unknown serialized field: " + path);
     }
 }

@@ -16,6 +16,8 @@ Create and Customize are explicit actions with a project save location. Merely v
 
 Use `DeucarianEditorAssetCatalog` for a lazily queried type index. Invalidate on relevant project changes; never rescan on repaint. The reusable field manages its subscription while attached.
 
+The shared chooser uses **Project / asset** or **Packages / package / asset** for every type. Folder breadcrumbs stay in the asset label, so bundled palettes, styles and nested project assets never require more than three menu levels. The full path remains the tooltip; filename and sub-asset identity distinguish duplicate names. Custom domain choosers use `DeucarianEditorAssetMenu.Path` for the same policy.
+
 ## Acceptance checks for consumers
 
 - Select A, B, C and None while the native picker remains open; the displayed value and dependent preview must follow every selection.

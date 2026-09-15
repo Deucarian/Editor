@@ -36,6 +36,19 @@ namespace Deucarian.Editor
         public Action<DeucarianEditorMessageRow, Action> DismissRow { get; set; }
         public event Action<int> TabChanged;
 
+        /// <summary>Uses a domain's real renderer while retaining editor-owned message controls.</summary>
+        public void SetRuntimePreview(VisualElement content)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            var controls = new Foldout { text = "Message controls", value = false, name = "lab-message-controls" };
+            controls.AddToClassList("dw-foldout");
+            controls.Add(empty);
+            controls.Add(rows);
+            controls.Add(overflow);
+            PreviewRoot.Insert(1, content);
+            PreviewRoot.Insert(2, controls);
+        }
+
         public DeucarianEditorLabWorkspace(VisualElement root, string context, string title, string subtitle,
             Action clearMessages, Action<string> selectTarget, string definitionTabLabel = null)
         {
