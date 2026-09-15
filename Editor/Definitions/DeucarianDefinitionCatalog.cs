@@ -40,7 +40,7 @@ namespace Deucarian.Editor.Definitions
                 var field = serialized.FindProperty(entriesField) ?? throw new InvalidOperationException("Catalog field is missing: " + entriesField);
                 field.arraySize = values.Length;
                 for (int i = 0; i < values.Length; i++) field.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
-                if (serialized.ApplyModifiedPropertiesWithoutUndo()) AssetDatabase.SaveAssets();
+                if (serialized.ApplyModifiedPropertiesWithoutUndo()) AssetDatabase.SaveAssetIfDirty(catalog);
             }
             return catalog;
         }
