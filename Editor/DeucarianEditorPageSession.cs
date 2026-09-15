@@ -16,6 +16,10 @@ namespace Deucarian.Editor
         private readonly string homeId;
         private readonly UnityEngine.GUIContent homeTitle;
         private readonly DeucarianEditorPageHost pageHost;
+        private readonly string reloadKey;
+        private readonly DeucarianEditorReloadSnapshot reloadState;
+        private readonly Dictionary<string, string> routes = new Dictionary<string, string>(StringComparer.Ordinal);
+        private string pendingRestore;
         private bool disposed;
         private bool navigating;
 
@@ -31,21 +35,42 @@ namespace Deucarian.Editor
         {
             this.window = window != null ? window : throw new ArgumentNullException(nameof(window));
             this.homeId = homeId ?? throw new ArgumentNullException(nameof(homeId));
+            reloadKey = DeucarianEditorReloadSnapshot.Key(window, homeId);
+            reloadState = DeucarianEditorReloadSnapshot.Load(reloadKey);
+            pendingRestore = reloadState.activeToolId;
+            var savedHome = reloadState.Find(homeId);
+            if (!string.IsNullOrEmpty(savedHome?.ownerState) && window is IDeucarianEditorReloadState owner)
+                owner.RestoreReloadState(savedHome.ownerState);
             homeTitle = new UnityEngine.GUIContent(window.titleContent);
             if (DeucarianToolRegistry.TryGet(homeId, out var homeTool)) homeTitle.text = homeTool.DisplayName;
             root = window.rootVisualElement;
             root.Clear();
             pageHost = new DeucarianEditorPageHost();
+            pageHost.NavigationState.Restore(reloadState);
             root.Add(pageHost);
             var home = createHome();
+            try
+            {
+                if (!(window is IDeucarianEditorReloadState) && !string.IsNullOrEmpty(savedHome?.ownerState))
+                    (home as IDeucarianEditorReloadState)?.RestoreReloadState(savedHome.ownerState);
+            }
+            catch
+            {
+                try { home.Dispose(); }
+                finally { pageHost.RemoveFromHierarchy(); }
+                throw;
+            }
+            routes[homeId] = savedHome?.route;
             home.Root.style.flexGrow = 1;
             home.Root.style.minHeight = 0;
             pages.Add(homeId, home);
             ActiveToolId = homeId;
             window.titleContent = new UnityEngine.GUIContent(homeTitle);
             pageHost.Add(home.Root);
+            DeucarianEditorReloadSnapshot.RestoreScroll(savedHome, home.Root);
             root.RegisterCallback<DeucarianEditorNavigateEvent>(OnNavigate);
             refresh = root.schedule.Execute(Update).Every(100);
+            root.schedule.Execute(RestoreSelection);
             AssemblyReloadEvents.beforeAssemblyReload += Dispose;
         }
 
@@ -60,10 +85,12 @@ namespace Deucarian.Editor
 
         public string ActiveToolId { get; private set; }
         public int PageCount => pages.Count;
+        internal bool HasRestoredHomeState => !string.IsNullOrEmpty(reloadState.Find(homeId)?.ownerState);
 
         public bool Navigate(string toolId, string route = null)
         {
             if (disposed || string.IsNullOrEmpty(toolId)) return false;
+            pendingRestore = null;
             if (navigating) throw new InvalidOperationException("A page transition is already in progress.");
             if (toolId == ActiveToolId && string.IsNullOrEmpty(route)) return true;
             navigating = true;
@@ -76,6 +103,7 @@ namespace Deucarian.Editor
             if (toolId == ActiveToolId)
             {
                 pages[toolId].Activate(route);
+                routes[toolId] = route;
                 return true;
             }
             bool created = false;
@@ -86,6 +114,13 @@ namespace Deucarian.Editor
                 next = descriptor.CreatePage();
                 if (next == null) throw new InvalidOperationException("The tool did not create a page: " + toolId);
                 created = true;
+                var saved = reloadState.Find(toolId);
+                try
+                {
+                    if (!string.IsNullOrEmpty(saved?.ownerState))
+                        (next as IDeucarianEditorReloadState)?.RestoreReloadState(saved.ownerState);
+                }
+                catch { next.Dispose(); throw; }
             }
             var previous = pages[ActiveToolId];
             try { previous.Deactivate(); }
@@ -115,6 +150,8 @@ namespace Deucarian.Editor
             next.Root.style.minHeight = 0;
             pageHost.Add(next.Root);
             ActiveToolId = toolId;
+            routes[toolId] = route;
+            if (created) DeucarianEditorReloadSnapshot.RestoreScroll(reloadState.Find(toolId), next.Root);
             if (toolId == homeId || homeId == DeucarianToolIds.ControlCenter)
                 window.titleContent = new UnityEngine.GUIContent(homeTitle);
             else if (DeucarianToolRegistry.TryGet(toolId, out var tool))
@@ -141,13 +178,47 @@ namespace Deucarian.Editor
         private void Update()
         {
             if (disposed || window == null) return;
+            RestoreSelection();
             pages[ActiveToolId].Update(window.position);
             if (ActiveToolId != homeId) window.Repaint();
+        }
+
+        internal void RestoreSelection()
+        {
+            if (disposed || string.IsNullOrEmpty(pendingRestore)) return;
+            string destination = pendingRestore;
+            if (destination != homeId && (!DeucarianToolRegistry.TryGet(destination, out var tool) || tool.CreatePage == null)) return;
+            pendingRestore = null;
+            var saved = reloadState.Find(destination);
+            // A navigation route is a command, not the owner's current selection. A
+            // restored draft takes precedence over an old "select asset A" route.
+            try { Navigate(destination, string.IsNullOrEmpty(saved?.ownerState) ? saved?.route : null); }
+            catch { window.ShowNotification(new UnityEngine.GUIContent("Could not restore this page. Its saved draft is retained for another attempt.")); }
+        }
+
+        private void SaveReloadState()
+        {
+            reloadState.activeToolId = pendingRestore ?? ActiveToolId;
+            reloadState.navigationScroll = pageHost.NavigationState.ScrollOffset;
+            reloadState.groups = pageHost.NavigationState.CaptureGroups();
+            foreach (var pair in pages)
+            {
+                routes.TryGetValue(pair.Key, out string route);
+                try
+                {
+                    reloadState.Capture(pair.Key, route, pair.Value,
+                        pair.Key == homeId ? window as IDeucarianEditorReloadState : null);
+                }
+                catch { window.ShowNotification(new UnityEngine.GUIContent("A page could not save its draft. Other pages were preserved.")); }
+            }
+            reloadState.Save(reloadKey);
         }
 
         public void Dispose()
         {
             if (disposed) return;
+            try { SaveReloadState(); }
+            catch { window.ShowNotification(new UnityEngine.GUIContent("Could not save the workspace state for reload.")); }
             disposed = true;
             AssemblyReloadEvents.beforeAssemblyReload -= Dispose;
             refresh?.Pause();

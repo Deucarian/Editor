@@ -30,11 +30,10 @@ namespace Deucarian.Editor
             ReleasePages();
             if (!DeucarianToolRegistry.TryGet(toolId, out var tool) || tool.CreatePage == null) return;
             initialPage = tool.CreatePage();
-            session = new DeucarianEditorPageSession(this, toolId,
-                root => root.Add(initialPage.Root), initialPage.Activate, initialPage.Deactivate);
+            session = new DeucarianEditorPageSession(this, toolId, initialPage);
             initialPage.Root.style.flexGrow = 1;
             initialPage.Update(position);
-            initialPage.Activate(route);
+            initialPage.Activate(session.HasRestoredHomeState ? null : route);
         }
 
         private void OnInspectorUpdate()
@@ -49,7 +48,6 @@ namespace Deucarian.Editor
             finally
             {
                 session = null;
-                initialPage?.Dispose();
                 initialPage = null;
             }
         }

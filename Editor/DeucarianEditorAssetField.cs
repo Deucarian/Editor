@@ -96,7 +96,9 @@ namespace Deucarian.Editor
             {
                 Object candidate = asset;
                 string path = AssetDatabase.GetAssetPath(asset);
-                menu.AddItem(new GUIContent(path + (AssetDatabase.IsSubAsset(asset) ? "/" + asset.name : "")),
+                long localId = 0;
+                if (AssetDatabase.IsSubAsset(asset)) AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string _, out localId);
+                menu.AddItem(new GUIContent(DeucarianEditorAssetMenu.Path(path, asset.name, localId), path),
                     read() == candidate, () => { write(candidate); Refresh(); });
             }
             if (catalog.Find().Count == 0) menu.AddDisabledItem(new GUIContent("No matching project or package assets"));
