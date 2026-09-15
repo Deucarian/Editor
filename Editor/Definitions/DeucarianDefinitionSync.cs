@@ -138,6 +138,12 @@ namespace Deucarian.Editor.Definitions
             // normalizing it here would cause another source import and compilation.
             if (Hash(schema, DeucarianDefinitionSource.Read(schema, File.ReadAllText(sourcePath))) != Hash(schema, spec))
                 WriteSource(sourcePath, schema, spec);
+            else
+            {
+                string source = File.ReadAllText(sourcePath);
+                string renamed = DeucarianDefinitionSource.UpdateSymbol(source, spec);
+                if (renamed != source) { File.WriteAllText(sourcePath, renamed); AssetDatabase.ImportAsset(sourcePath); }
+            }
             record.lastHash = Hash(schema, spec);
             index.Save();
             DeucarianDefinitionSections.Save(asset, schema.SpecType);

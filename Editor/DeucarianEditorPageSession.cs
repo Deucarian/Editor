@@ -71,7 +71,7 @@ namespace Deucarian.Editor
             DeucarianEditorReloadSnapshot.RestoreScroll(savedHome, home.Root);
             root.RegisterCallback<DeucarianEditorNavigateEvent>(OnNavigate);
             refresh = root.schedule.Execute(Update).Every(100);
-            root.schedule.Execute(RestoreSelection);
+            root.schedule.Execute(RestoreWhenReady);
             AssemblyReloadEvents.beforeAssemblyReload += Dispose;
         }
 
@@ -179,15 +179,19 @@ namespace Deucarian.Editor
         private void Update()
         {
             if (disposed || window == null) return;
-            RestoreSelection();
+            RestoreWhenReady();
             pages[ActiveToolId].Update(window.position);
             if (ActiveToolId != homeId) window.Repaint();
+        }
+
+        private void RestoreWhenReady()
+        {
+            if (!EditorApplication.isCompiling && !EditorApplication.isUpdating) RestoreSelection();
         }
 
         internal void RestoreSelection()
         {
             if (disposed || string.IsNullOrEmpty(pendingRestore)) return;
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
             string destination = pendingRestore;
             if (destination != homeId && (!DeucarianToolRegistry.TryGet(destination, out var tool) || tool.CreatePage == null)) return;
             pendingRestore = null;

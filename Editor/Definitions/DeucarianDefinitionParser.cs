@@ -10,8 +10,21 @@ namespace Deucarian.Editor.Definitions
     internal sealed class DeucarianDefinitionParser
     {
         private readonly string source;
+        private readonly HashSet<string> namespaces;
         private int position;
-        internal DeucarianDefinitionParser(string source) { this.source = source; }
+        internal DeucarianDefinitionParser(string source, IEnumerable<string> namespaces = null)
+        { this.source = source; this.namespaces = new HashSet<string>(namespaces ?? Array.Empty<string>(), StringComparer.Ordinal); }
+
+        internal bool MatchesType(string token, Type type) => token == DeucarianDefinitionSource.TypeName(type)
+            || token == DeucarianDefinitionSource.TypeName(type).Substring(8)
+            || (namespaces.Contains(type.IsArray ? type.GetElementType().Namespace : type.Namespace)
+                && token == (type.IsArray ? type.GetElementType().Name + "[]" : type.Name));
+
+        private void TypeToken(Type type)
+        {
+            string token = Atom();
+            if (!MatchesType(token, type)) throw Error("Expected " + type.Name + " (fully qualified or imported)");
+        }
         internal object Read(Type type)
         {
             object value = Value(type, 0);
@@ -33,13 +46,13 @@ namespace Deucarian.Editor.Definitions
             if (type == typeof(bool)) { if (Take("true")) return true; Need("false"); return false; }
             if (type.IsEnum)
             {
-                string prefix = DeucarianDefinitionSource.TypeName(type) + ".";
                 var members = new List<string>();
                 do
                 {
                     string token = Atom();
-                    if (!token.StartsWith(prefix, StringComparison.Ordinal)) throw Error("Use a fully qualified " + type.Name + " member");
-                    string member = token.Substring(prefix.Length);
+                    int separator = token.LastIndexOf('.');
+                    if (separator < 0 || !MatchesType(token.Substring(0, separator), type)) throw Error("Use a " + type.Name + " member");
+                    string member = token.Substring(separator + 1);
                     if (!Enum.GetNames(type).Contains(member)) throw Error("Unknown " + type.Name + " member: " + member);
                     members.Add(member);
                 } while (Take("|"));
@@ -59,11 +72,15 @@ namespace Deucarian.Editor.Definitions
             }
             if (typeof(UnityEngine.Object).IsAssignableFrom(type))
             {
-                Need("global::Deucarian.Editor.Definitions.DeucarianDefinitionAssets.Load<" + DeucarianDefinitionSource.TypeName(type) + ">");
+                string method = DeucarianDefinitionSource.TypeName(typeof(DeucarianDefinitionAssets)) + ".Load";
+                if (!Take(method) && !Take(method.Substring(8)) &&
+                    !(namespaces.Contains(typeof(DeucarianDefinitionAssets).Namespace) && Take("DeucarianDefinitionAssets.Load")))
+                    throw Error("Use the definition asset reference helper");
+                Need("<"); TypeToken(type); Need(">");
                 Need("("); string guid = String(); Need(","); long id = (long)Value(typeof(long), depth + 1); Need(")");
                 return DeucarianDefinitionAssets.Load(type, guid, id);
             }
-            Need("new"); Need(DeucarianDefinitionSource.TypeName(type)); Need("{");
+            Need("new"); TypeToken(type); Need("{");
             if (type.IsArray)
             {
                 var values = new List<object>();
@@ -121,7 +138,7 @@ namespace Deucarian.Editor.Definitions
         private string Atom()
         {
             Space(); int start = position;
-            while (position < source.Length && !char.IsWhiteSpace(source[position]) && ",{}=()|".IndexOf(source[position]) < 0) position++;
+            while (position < source.Length && !char.IsWhiteSpace(source[position]) && ",{}=()|<>".IndexOf(source[position]) < 0) position++;
             if (start == position) throw Error("Expected a declaration value");
             return source.Substring(start, position - start);
         }
