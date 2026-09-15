@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.14.0] - 2026-09-15
+
+- Host a domain runtime preview inside the shared Lab while keeping shared message controls available.
+
 ## [1.13.0] - Unreleased
 
 - Coalesce nested navigation presentation refreshes and ignore descendant panel events, preventing duplicate navigation IDs when constructing an already attached package page.
