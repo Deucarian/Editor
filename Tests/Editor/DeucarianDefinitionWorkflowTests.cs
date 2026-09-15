@@ -151,6 +151,28 @@ namespace Deucarian.Editor.Tests
             }
         }
 
+        [Test]
+        public void ReusingARenamedDefinitionNameKeepsANormallyDiscoverableSourcePath()
+        {
+            var first = DeucarianDefinitionSync.Create(schema, "Example");
+            var spec = schema.Read(first);
+            spec.Name = "Renamed";
+            schema.Apply(first, spec);
+            DeucarianDefinitionSync.SynchronizeSource(schema, AssetDatabase.GUIDToAssetPath(DeucarianDefinitionSync.FindAsset(first).sourceGuid));
+            var next = DeucarianDefinitionSync.Create(schema, "Example");
+            string path = AssetDatabase.GUIDToAssetPath(DeucarianDefinitionSync.FindAsset(next).sourceGuid);
+            Assert.That(path, Does.EndWith("_2.definition.cs"));
+            Assert.That(schema.Read(next).Id, Is.Not.EqualTo(schema.Read(first).Id));
+        }
+
+        [TestCase("Example.definition.cs", true)]
+        [TestCase("Example.definition1.cs", true)]
+        [TestCase("Example.definition 2.cs", true)]
+        [TestCase("Example.cs", false)]
+        [TestCase("Example.definition.cs.meta", false)]
+        public void AutomaticImportRecognizesLegacyNumberedDeclarations(string path, bool expected) =>
+            Assert.That(DeucarianDefinitionSource.IsSourcePath(path), Is.EqualTo(expected));
+
         [TestCase("Assets/Example.asset", true)]
         [TestCase("Assets/DeucarianGeneratedKeys/ExampleKey/Keys.g.cs", false)]
         [TestCase("Assets/DeucarianDefinitions/example/Editor/Example.definition.cs", false)]

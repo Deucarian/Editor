@@ -22,6 +22,7 @@ namespace Deucarian.Editor
         private string pendingRestore;
         private bool disposed;
         private bool navigating;
+        private bool restoreNoticeShown;
 
         public DeucarianEditorPageSession(EditorWindow window, string homeId,
             Action<VisualElement> buildHome, Action<string> activateHome = null,
@@ -94,7 +95,7 @@ namespace Deucarian.Editor
             if (navigating) throw new InvalidOperationException("A page transition is already in progress.");
             if (toolId == ActiveToolId && string.IsNullOrEmpty(route)) return true;
             navigating = true;
-            try { return NavigateCore(toolId, route); }
+            try { bool result = NavigateCore(toolId, route); if (result) restoreNoticeShown = false; return result; }
             finally { navigating = false; }
         }
 
@@ -186,6 +187,7 @@ namespace Deucarian.Editor
         internal void RestoreSelection()
         {
             if (disposed || string.IsNullOrEmpty(pendingRestore)) return;
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
             string destination = pendingRestore;
             if (destination != homeId && (!DeucarianToolRegistry.TryGet(destination, out var tool) || tool.CreatePage == null)) return;
             pendingRestore = null;
@@ -193,7 +195,15 @@ namespace Deucarian.Editor
             // A navigation route is a command, not the owner's current selection. A
             // restored draft takes precedence over an old "select asset A" route.
             try { Navigate(destination, string.IsNullOrEmpty(saved?.ownerState) ? saved?.route : null); }
-            catch { window.ShowNotification(new UnityEngine.GUIContent("Could not restore this page. Its saved draft is retained for another attempt.")); }
+            catch
+            {
+                // A temporary import/registration failure must not turn the home page into
+                // the next saved selection, including when another reload follows immediately.
+                pendingRestore = destination;
+                if (!restoreNoticeShown)
+                    window.ShowNotification(new UnityEngine.GUIContent("Waiting to restore this page. Its saved draft is retained."));
+                restoreNoticeShown = true;
+            }
         }
 
         private void SaveReloadState()

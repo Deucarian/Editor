@@ -2,6 +2,7 @@
 
 ## [1.15.0] - 2026-09-15
 
+- Retry temporarily unavailable pages without replacing saved navigation or drafts with Home. Synchronize legacy numbered definition sources and preserve discoverable source names for newly created definitions.
 - Preserve window-local pages, owner drafts, navigation and scroll through script reloads. Batch definition synchronization and skip unchanged generated sources. Limit all shared asset menus to three levels.
 
 

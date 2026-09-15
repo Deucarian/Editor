@@ -21,7 +21,7 @@ namespace Deucarian.Editor.Definitions
         {
             var record = DeucarianDefinitionSync.Records.FirstOrDefault(x => AssetDatabase.GUIDToAssetPath(x.sourceGuid) == path || AssetDatabase.GUIDToAssetPath(x.assetGuid) == path);
             if (record != null) return record.schema == schema;
-            if (!path.EndsWith(".definition.cs", StringComparison.Ordinal) || !File.Exists(path)) return false;
+            if (!DeucarianDefinitionSource.IsSourcePath(path) || !File.Exists(path)) return false;
             try { return DeucarianDefinitionSource.SchemaId(File.ReadAllText(path)) == schema; }
             catch { return true; }
         }
@@ -45,12 +45,12 @@ namespace Deucarian.Editor.Definitions
         private static void Scan()
         {
             if (Disabled || !Directory.Exists("Assets")) return;
-            foreach (var path in Directory.GetFiles("Assets", "*.definition.cs", SearchOption.AllDirectories)) Enqueue(path.Replace('\\', '/'));
+            foreach (var path in Directory.EnumerateFiles("Assets", "*.cs", SearchOption.AllDirectories).Where(DeucarianDefinitionSource.IsSourcePath)) Enqueue(path.Replace('\\', '/'));
         }
         internal static void Enqueue(string path)
         {
             if (string.IsNullOrEmpty(path) || !path.StartsWith("Assets/", StringComparison.Ordinal) ||
-                !(path.EndsWith(".definition.cs", StringComparison.Ordinal) || path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase))) return;
+                !(DeucarianDefinitionSource.IsSourcePath(path) || path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase))) return;
             if (work.Enqueue(path, EditorApplication.timeSinceStartup)) EditorApplication.update += Drain;
         }
 
@@ -70,7 +70,7 @@ namespace Deucarian.Editor.Definitions
             foreach (string path in paths)
                 try
                 {
-                    if (path.EndsWith(".definition.cs", StringComparison.Ordinal) && File.Exists(path))
+                    if (DeucarianDefinitionSource.IsSourcePath(path) && File.Exists(path))
                     {
                         string id = DeucarianDefinitionSource.SchemaId(File.ReadAllText(path));
                         var schema = schemas.FirstOrDefault(x => x.Id == id) ?? throw new InvalidOperationException("Install the definition package for schema " + id);

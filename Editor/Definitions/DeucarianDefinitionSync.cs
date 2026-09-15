@@ -52,7 +52,9 @@ namespace Deucarian.Editor.Definitions
             if (Records.Any(x => x.schema == schema.Id && x.identity == spec.Id)) throw new InvalidOperationException("Another managed definition uses '" + spec.Id + "'. Duplicate through Definitions to assign a new identity.");
             string directory = "Assets/DeucarianDefinitions/" + schema.Id + "/Editor";
             Directory.CreateDirectory(directory);
-            string sourcePath = AssetDatabase.GenerateUniqueAssetPath(directory + "/" + DeucarianDefinitionSource.Identifier(spec.Name) + ".definition.cs");
+            string stem = directory + "/" + DeucarianDefinitionSource.Identifier(spec.Name);
+            string sourcePath = stem + ".definition.cs";
+            for (int suffix = 2; File.Exists(sourcePath); suffix++) sourcePath = stem + "_" + suffix + ".definition.cs";
             // The asset exists before discovery; import all of its compilation inputs together.
             DeucarianDefinitionSections.Save(asset, schema.SpecType);
             AssetDatabase.StartAssetEditing();
@@ -190,7 +192,7 @@ namespace Deucarian.Editor.Definitions
             var schemas = DeucarianDefinitionSchema.Discover().ToDictionary(x => x.Id);
             var knownSources = new HashSet<string>(Records.Select(x => x.sourceGuid), StringComparer.Ordinal);
             if (Directory.Exists("Assets"))
-                foreach (var file in Directory.GetFiles("Assets", "*.definition.cs", SearchOption.AllDirectories))
+                foreach (var file in Directory.EnumerateFiles("Assets", "*.cs", SearchOption.AllDirectories).Where(DeucarianDefinitionSource.IsSourcePath))
                 {
                     string sourcePath = file.Replace('\\', '/');
                     if (!knownSources.Contains(AssetDatabase.AssetPathToGUID(sourcePath))) errors.Add("Synchronize the new declaration before building: " + sourcePath);

@@ -15,6 +15,11 @@ namespace Deucarian.Editor.Definitions
         internal const string Begin = "// definition-value";
         internal const string End = "// end-definition-value";
 
+        // Earlier generated unique paths put the numeric suffix after .definition.
+        // Keep those existing declarations discoverable without renaming user files.
+        internal static bool IsSourcePath(string path) => path != null &&
+            Regex.IsMatch(path, @"\.definition(?:\s*\d+)?\.cs$", RegexOptions.IgnoreCase);
+
         public static string Write(DeucarianDefinitionSchema schema, DeucarianDefinitionSpec spec)
         {
             schema.Validate(spec);

@@ -164,6 +164,30 @@ namespace Deucarian.Editor.Tests
             return window;
         }
 
+        [Test]
+        public void TemporaryPageRestoreFailureRetainsSelectionAcrossAnotherReloadThenRecovers()
+        {
+            bool unavailable = false;
+            Register(Tool, () => unavailable ? throw new InvalidOperationException("Assets still importing") : SelectionPage());
+            var window = CreateWindow<TestWindow>();
+            session = NewSession(window);
+            session.Navigate(Tool, "select:Definition A");
+            window.rootVisualElement.Q<TextField>("selected-draft").value = "Newly created definition B";
+            session.Dispose();
+            unavailable = true;
+            session = NewSession(window);
+            session.RestoreSelection();
+            Assert.That(session.ActiveToolId, Is.EqualTo("home"));
+            session.Dispose();
+            Assert.That(DeucarianEditorReloadSnapshot.Load(DeucarianEditorReloadSnapshot.Key(window, "home")).activeToolId, Is.EqualTo(Tool));
+            session = NewSession(window);
+            session.RestoreSelection();
+            unavailable = false;
+            session.RestoreSelection();
+            Assert.That(session.ActiveToolId, Is.EqualTo(Tool));
+            Assert.That(window.rootVisualElement.Q<TextField>("selected-draft").value, Is.EqualTo("Newly created definition B"));
+        }
+
         private DeucarianEditorToolWindow CreateToolWindow(string route)
         {
             var window = CreateWindow<DeucarianEditorToolWindow>();
